@@ -520,7 +520,7 @@
       </div>
     </div>
 
-    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản cập nhật 07/11/2026 (di động)</p>
+    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản 15 câu/ngày</p>
   </main>
 
   <!-- ==========================================
@@ -2489,18 +2489,33 @@ Include EXACTLY 15 natural dialogue turns between Character A and Character B (o
 
       let nextLesson = null;
       let usedLiveAI = false;
+      state.lastGenErr = '';
 
       try {
         nextLesson = normalizeLesson(await callGeminiAPI(payload));
         usedLiveAI = true;
+        // Nếu AI trả thiếu câu, yêu cầu viết tiếp cho đủ 15 câu
+        try {
+          for (let k = 0; k < 2 && (nextLesson.dialogue || []).length < 15; k++) {
+            const need = 15 - nextLesson.dialogue.length;
+            const last = nextLesson.dialogue[nextLesson.dialogue.length - 1];
+            const more = await callGeminiAPI({
+              contents: [{ parts: [{ text: `Topic: "${nextLesson.topic}". Conversation so far (JSON): ${JSON.stringify(nextLesson.dialogue.map((l) => ({ speaker: l.speaker, english: l.english })))}\nContinue the SAME conversation with EXACTLY ${need} more turns, alternating speakers (the next speaker is ${last.speaker === 'A' ? 'B' : 'A'}). Use the same fields as before.` }] }],
+              systemInstruction: payload.systemInstruction,
+              generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { dialogue: payload.generationConfig.responseSchema.properties.dialogue }, required: ['dialogue'] } }
+            });
+            if (more.dialogue && more.dialogue.length) nextLesson.dialogue.push(...more.dialogue); else break;
+          }
+        } catch (e2) {}
       } catch (err) {
+        state.lastGenErr = (err && err.message) || String(err);
         // Seamless fallback to rich built-in lesson bank so user NEVER gets an error
         nextLesson = getSmartLocalLesson(customInputVal || topicToUse, presetId);
       }
 
       try {
         state.currentLesson = nextLesson;
-        if (state.currentDay) { try { const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}'); c[state.currentDay] = nextLesson; localStorage.setItem('ss_lessons', JSON.stringify(c)); } catch (e) {} }
+        if (state.currentDay && usedLiveAI) { try { const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}'); c[state.currentDay] = nextLesson; localStorage.setItem('ss_lessons', JSON.stringify(c)); } catch (e) {} }
         if (nextLesson.dialogue && nextLesson.dialogue.length > 0) {
           const firstLine = nextLesson.dialogue[0];
           const charInfo = nextLesson.characters[firstLine.speaker] || { name: 'Speaker', avatar: '🌟' };
@@ -2529,7 +2544,8 @@ Include EXACTLY 15 natural dialogue turns between Character A and Character B (o
         if (usedLiveAI) {
           showToast('✨ Gemini AI đã biên soạn bài học mới tinh cho bạn! (+15 XP)');
         } else {
-          showToast('✨ Đã tải bài học bản xứ mới thành công! (+15 XP)');
+          const noKey = !(state.customApiKey || '').trim() && typeof __app_id === 'undefined';
+          showToast(noKey ? '⚠️ Chưa có Gemini API Key nên đang dùng bài mẫu 5 câu. Nhập key ở Cài đặt AI để có 15 câu mỗi ngày.' : `⚠️ AI chưa phản hồi (${state.lastGenErr || 'không rõ lỗi'}), đã dùng bài mẫu 5 câu. Kiểm tra API Key, mạng hoặc đổi model rồi bấm lại.`, 'error');
         }
       } finally {
         state.isGeneratingLesson = false;
