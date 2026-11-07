@@ -430,17 +430,12 @@
               <label class="block text-xs font-extrabold text-slate-600 uppercase mb-1.5">
                 Lời bạn vừa nói (Có thể chỉnh sửa trước khi bấm AI Chấm Điểm):
               </label>
-              <div class="flex flex-col sm:flex-row gap-2">
-                <input
-                  id="spoken-transcript-input"
-                  type="text"
-                  placeholder="Giọng đọc của bạn sẽ hiển thị tại đây..."
-                  class="flex-1 bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-3 text-lg font-bold text-slate-800 focus:outline-none focus:border-rose-400"
-                />
+              <div class="flex flex-col gap-3">
+                <textarea id="spoken-transcript-input" rows="3" placeholder="Giọng đọc của bạn sẽ hiển thị tại đây..." class="flex-1 bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-3 text-lg font-bold text-slate-800 focus:outline-none focus:border-rose-400 w-full resize-none leading-relaxed" style="overflow:hidden"></textarea>
                 <button
                   id="evaluate-speech-btn"
                   onclick="handleEvaluateSpeech()"
-                  class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-extrabold text-sm shadow-md transition cursor-pointer disabled:opacity-60"
+                  class="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-extrabold text-sm shadow-md transition cursor-pointer disabled:opacity-60"
                 >
                   <i data-lucide="sparkles" class="w-4 h-4"></i>
                   <span id="evaluate-speech-text">AI Chấm Điểm Ngay</span>
@@ -1704,7 +1699,7 @@
       if (!d || state.isGeneratingLesson) return;
       try {
         const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}')[n];
-        if (c) { loadLesson(c, n); showToast(`Đã mở lại bài Ngày ${n}.`); return; }
+        if (c && (c.dialogue || []).length >= 15) { loadLesson(c, n); showToast(`Đã mở lại bài Ngày ${n}.`); return; }
       } catch (e) {}
       const ph = phaseOf(n);
       state.pendingDay = n;
@@ -1891,7 +1886,7 @@
           const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${attemptCfg.model}:generateContent?key=${attemptCfg.key}`;
           const doFetch = (p) => {
             const ctl = new AbortController();
-            const timer = setTimeout(() => ctl.abort(), 30000);
+            const timer = setTimeout(() => ctl.abort(), 60000);
             return fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), signal: ctl.signal }).finally(() => clearTimeout(timer));
           };
           let response;
@@ -2404,7 +2399,7 @@ Generate a realistic, natural everyday conversation with rich connected speech (
 Make sure all Vietnamese explanations are warm, cute, encouraging, and easy to understand. Use the '‿' symbol in the 'linking' field to clearly show where words link together. In 'viPron', write how a Vietnamese learner can read the sentence aloud using Vietnamese-style syllable spelling with hyphens between syllables (e.g. Hello -> Hé-lô), following the linking and reductions. Each character's 'avatar' must be exactly ONE emoji character, never a URL or text.`;
 
       const userQuery = `Create a fresh daily English speaking lesson for the situation/topic: "${topicToUse}". Today is ${getTodayIso()}; vary character names, settings and phrasing.${focusNote}
-Include 5 natural dialogue turns between Character A and Character B, 4 connected speech/linking secrets from the dialogue, and 4 native expressions compared with textbook English.`;
+Include EXACTLY 15 natural dialogue turns between Character A and Character B (one coherent conversation with a clear beginning, middle and end; each turn 1-2 short sentences; alternate speakers), 4 connected speech/linking secrets from the dialogue, and 4 native expressions compared with textbook English.`;
 
       const payload = {
         contents: [{ parts: [{ text: userQuery }] }],
@@ -3780,6 +3775,14 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
       loadLocal();
+      const ta = document.getElementById('spoken-transcript-input');
+      if (ta) {
+        const d = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+        const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.max(ta.scrollHeight, 84) + 'px'; };
+        Object.defineProperty(ta, 'value', { get() { return d.get.call(ta); }, set(v) { d.set.call(ta, v); grow(); } });
+        ta.addEventListener('input', grow);
+        if (window.ResizeObserver) new ResizeObserver(grow).observe(ta.parentElement);
+      }
       loadVoices();
       if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = loadVoices;
       renderHeaderStats();
