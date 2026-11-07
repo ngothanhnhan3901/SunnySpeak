@@ -2,7 +2,10 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="SunnySpeak" />
   <title>SunnySpeak - Học Nói Tiếng Anh Bản Xứ Mỗi Ngày</title>
   <meta name="description" content="SunnySpeak - luyện nói tiếng Anh bản xứ mỗi ngày: hội thoại, nối âm, phiên âm kiểu Việt và AI chấm điểm phát âm." />
   <meta name="theme-color" content="#FDE68A" />
@@ -89,6 +92,30 @@
     #view-practice p{overflow-wrap:break-word}
     .linking-arc{background:none!important;padding:0 1px!important;border-radius:0!important;font-size:1.1em}
       .score-box span{white-space:nowrap}
+  
+    /* ===== Tối ưu điện thoại ===== */
+    html,body{overflow-x:hidden}
+    *{-webkit-tap-highlight-color:transparent}
+    header{padding-top:env(safe-area-inset-top)}
+    @media (max-width:1023px){ #view-practice>div:last-child{order:-1} }
+    @media (max-width:640px){
+      html{font-size:16px}
+      .hide-m{display:none!important}
+      header{position:static!important;backdrop-filter:none!important}
+      body{padding-bottom:calc(5.75rem + env(safe-area-inset-bottom))!important}
+      #main-tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:2px solid #fde68a;padding:.4rem .5rem calc(.4rem + env(safe-area-inset-bottom))!important;gap:.4rem!important;max-width:none!important;overflow:visible!important;box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+      #main-tabs button{flex:1 1 0!important;flex-direction:column;gap:.15rem!important;padding:.45rem .25rem!important;font-size:.85rem!important;line-height:1.2;white-space:normal!important;text-align:center;justify-content:center}
+      #toast-container{left:.75rem!important;right:.75rem!important;bottom:calc(5.75rem + env(safe-area-inset-bottom))!important;max-width:none!important}
+      #checkin-modal>div,#apikey-modal>div{max-height:92dvh;overflow-y:auto}
+      input,select,textarea{font-size:16px!important}
+      button{min-height:42px}
+      .p-6,.p-8{padding:1.1rem!important}
+      #practice-target-english{font-size:1.75rem!important}
+      #practice-target-vipron{font-size:1.5rem!important}
+      #practice-target-ipa{font-size:1.1rem!important}
+      #practice-target-linking{font-size:1.35rem!important}
+      #voice-select{max-width:100%!important;flex:1 1 100%}
+    }
   </style>
 </head>
 <body class="min-h-screen pb-16 selection:bg-amber-200">
@@ -113,11 +140,11 @@
             <h1 class="text-xl sm:text-2xl font-black tracking-tight bg-gradient-to-r from-orange-500 via-rose-500 to-emerald-600 bg-clip-text text-transparent">
               SunnySpeak
             </h1>
-            <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-700 border border-teal-200">
+            <span class="hide-m text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-700 border border-teal-200">
               AI Native Coach
             </span>
           </div>
-          <p class="text-xs text-slate-500 font-semibold">
+          <p class="hide-m text-xs text-slate-500 font-semibold">
             Học hội thoại, nối âm & nói chuẩn bản xứ mỗi ngày
           </p>
         </div>
@@ -153,20 +180,20 @@
     </div>
 
     <!-- Main Navigation Tabs -->
-    <div class="max-w-7xl mx-auto px-4 flex gap-2 overflow-x-auto pb-2.5 pt-1">
+    <div id="main-tabs" class="max-w-7xl mx-auto px-4 flex gap-2 overflow-x-auto pb-2.5 pt-1">
       <button id="tab-btn-learn" onclick="switchMainTab('learn')" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-teal-500 text-white shadow-md shadow-teal-200">
         <i data-lucide="book-open" class="w-4 h-4"></i>
-        <span>1. Bài Học Mỗi Ngày (Hội Thoại & Nối Âm)</span>
+        <span>Bài học</span>
       </button>
 
       <button id="tab-btn-practice" onclick="switchMainTab('practice')" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-slate-100/80 text-slate-600 hover:bg-rose-50 hover:text-rose-700">
         <i data-lucide="mic" class="w-4 h-4"></i>
-        <span>2. Phòng Luyện Đọc & AI Chấm Điểm</span>
+        <span>Luyện nói</span>
       </button>
 
       <button id="tab-btn-journal" onclick="switchMainTab('journal')" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-slate-100/80 text-slate-600 hover:bg-amber-50 hover:text-amber-700">
         <i data-lucide="calendar" class="w-4 h-4"></i>
-        <span id="tab-journal-label">3. Nhật Ký Học Tập & Huy Hiệu (1)</span>
+        <span id="tab-journal-label">Nhật ký (1)</span>
       </button>
     </div>
   </header>
@@ -2103,7 +2130,7 @@
         state.playingText = null;
       };
 
-      setTimeout(() => window.speechSynthesis.speak(utterance), 120);
+      setTimeout(() => window.speechSynthesis.speak(utterance), /iPhone|iPad|iPod/.test(navigator.userAgent) ? 0 : 120);
     }
 
     function playFullDialogue() {
@@ -2821,7 +2848,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
 
       document.getElementById('header-streak').textContent = `${state.userStats.streak} Ngày`;
       document.getElementById('header-xp').textContent = `${state.userStats.xp} XP`;
-      document.getElementById('tab-journal-label').textContent = `3. Nhật Ký Học Tập & Huy Hiệu (${state.journalEntries.length})`;
+      document.getElementById('tab-journal-label').textContent = `Nhật ký (${state.journalEntries.length})`;
 
       // Update API Key Status Indicator in Header
       const dotEl = document.getElementById('apikey-status-dot');
@@ -3635,6 +3662,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       const inputEl = document.getElementById('spoken-transcript-input');
       if (inputEl) inputEl.value = '';
       renderPracticeView();
+      if (window.innerWidth < 1024) window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     window.speakCurrentTarget = (rate) => {
