@@ -1861,7 +1861,7 @@
     // MULTI-STRATEGY GEMINI API CALLER & FALLBACK ENGINE
     // ==========================================
     async function callGeminiAPI(payload) {
-      const userKey = (state.customApiKey || '').trim();
+      const userKey = (state.customApiKey || '').replace(/[^\x21-\x7E]/g, '');
 
       // Build candidate endpoints to try in order
       const candidateAttempts = [];
@@ -1883,11 +1883,11 @@
       let lastErr = null;
       for (const attemptCfg of candidateAttempts) {
         try {
-          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${attemptCfg.model}:generateContent?key=${attemptCfg.key}`;
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${attemptCfg.model}:generateContent`;
           const doFetch = (p) => {
             const ctl = new AbortController();
             const timer = setTimeout(() => ctl.abort(), 60000);
-            return fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), signal: ctl.signal }).finally(() => clearTimeout(timer));
+            return fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(attemptCfg.key ? { 'x-goog-api-key': attemptCfg.key } : {}) }, body: JSON.stringify(p), signal: ctl.signal }).finally(() => clearTimeout(timer));
           };
           let response;
           if (state.noThinkCfg) {
@@ -2739,10 +2739,10 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       feedbackEl.textContent = `⏳ Đang kết nối thử tới model "${modelSelect}"...`;
 
       try {
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelSelect}:generateContent?key=${keyInput}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelSelect}:generateContent`;
         const response = await fetch(apiUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': String(keyInput).replace(/[^\x21-\x7E]/g, '') },
           body: JSON.stringify({
             contents: [{ parts: [{ text: 'Say OK' }] }]
           })
@@ -2763,7 +2763,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       } catch (err) {
         feedbackEl.className = 'p-3 rounded-2xl text-xs font-extrabold bg-rose-50 text-rose-900 border border-rose-300';
         const em = String(err.message);
-        const hint = /404/.test(em) ? 'Model này không còn tồn tại, hãy chọn gemini-3.5-flash.' : /429/.test(em) ? 'Key đã hết hạn mức (quota) hoặc gọi quá nhanh, hãy thử lại sau.' : /40[03]/.test(em) ? 'API Key sai hoặc chưa được cấp quyền.' : 'Kiểm tra lại mạng.';
+        const hint = /401/.test(em) ? 'Google từ chối key (401). Hãy tạo key mới trong Google AI Studio (key dạng AQ. hoặc AIza có hạn chế) và dán lại, không thừa khoảng trắng.' : /404/.test(em) ? 'Model này không còn tồn tại, hãy chọn gemini-3.5-flash.' : /429/.test(em) ? 'Key đã hết hạn mức (quota) hoặc gọi quá nhanh, hãy thử lại sau.' : /40[03]/.test(em) ? 'API Key sai hoặc chưa được cấp quyền.' : 'Kiểm tra lại mạng.';
         feedbackEl.textContent = `❌ Không thể kết nối (${em}). ${hint}`;
       } finally {
         testBtnText.textContent = 'Kiểm Tra Kết Nối';
