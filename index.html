@@ -79,7 +79,7 @@
     [id^="filter-role-"]{flex:1 1 0;white-space:nowrap;text-align:center;padding:.45rem .6rem!important}
     [onclick*="toggleLearned"]{white-space:nowrap}
     #view-practice>div,#view-learn,#view-journal>div{min-width:0}
-    #view-practice p,#view-practice span{overflow-wrap:anywhere}
+    #view-practice p{overflow-wrap:break-word}
     .linking-arc{background:none!important;padding:0 1px!important;border-radius:0!important;font-size:1.1em}
   </style>
 </head>
@@ -1621,9 +1621,10 @@
             <p class="text-sm font-semibold text-indigo-700">Lộ trình 30 ngày · Giai đoạn ${ph.name} (${ph.level})</p>
             <h2 class="text-xl font-bold text-slate-800">Ngày ${next + 1}: ${escapeHtml(cur[0])}</h2>
             <p class="text-sm text-slate-600">Trọng tâm nối âm: ${escapeHtml(cur[2])} · Đã hoàn thành ${done.length}/30 ngày</p>
+            <p class="text-sm text-slate-600">Tick “đã học” hết các câu của ngày để hoàn thành ngày đó (+50 XP).</p>
             ${noKey ? '<p class="text-sm text-amber-700 font-semibold mt-1">Nhập Gemini API Key để AI soạn bài riêng cho từng ngày.</p>' : ''}
           </div>
-          <button onclick="startRoadmapDay(${next + 1})" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">Học bài hôm nay</button>
+          <button onclick="startRoadmapDay(${next + 1})" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">Bắt đầu Ngày ${next + 1}</button>
         </div>
         <div class="grid grid-cols-6 sm:grid-cols-10 gap-2">
           ${ROADMAP.map((d, i) => `<button onclick="startRoadmapDay(${i + 1})" title="${escapeHtml(d[0])}" class="py-2 rounded-xl text-sm font-semibold border-2 cursor-pointer ${done.includes(i + 1) ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : i === next ? 'bg-amber-100 border-amber-400 text-amber-900' : 'bg-white border-slate-200 text-slate-700'} ${state.currentDay === i + 1 ? 'ring-2 ring-teal-500' : ''}">${done.includes(i + 1) ? '✓' : i + 1}</button>`).join('')}
@@ -3194,7 +3195,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       container.classList.remove('hidden');
       container.innerHTML = `
         <div class="bg-white border-2 border-emerald-300 rounded-3xl p-6 shadow-md space-y-5 animate-pop">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div class="flex flex-col gap-5 pb-5 border-b border-slate-100">
             <div class="flex items-center gap-4">
               <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex flex-col items-center justify-center shadow-md shrink-0">
                 <span class="text-2xl font-black">${res.overallScore}</span>
@@ -3204,22 +3205,22 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
                 <span class="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs mb-1">
                   🎉 Nhận xét từ Gia sư Gemini AI
                 </span>
-                <h4 class="text-lg font-black text-slate-800">${escapeHtml(res.praiseVi)}</h4>
+                <h4 class="text-xl font-bold text-slate-800 leading-relaxed">${escapeHtml(res.praiseVi)}</h4>
               </div>
             </div>
 
-            <div class="flex gap-2">
-              <div class="bg-sky-50 border border-sky-200 px-3 py-2 rounded-2xl text-center">
+            <div class="grid grid-cols-3 gap-3">
+              <div class="bg-sky-50 border border-sky-200 px-3 py-3 rounded-2xl text-center">
                 <span class="text-xs text-sky-700 font-extrabold block">Độ chính xác</span>
-                <span class="text-base font-black text-sky-900">${res.accuracyScore}%</span>
+                <span class="text-3xl font-extrabold text-sky-900 block mt-1">${res.accuracyScore}%</span>
               </div>
-              <div class="bg-amber-50 border border-amber-200 px-3 py-2 rounded-2xl text-center">
+              <div class="bg-amber-50 border border-amber-200 px-3 py-3 rounded-2xl text-center">
                 <span class="text-xs text-amber-800 font-extrabold block">Nối âm</span>
-                <span class="text-base font-black text-amber-900">${res.linkingScore}%</span>
+                <span class="text-3xl font-extrabold text-amber-900 block mt-1">${res.linkingScore}%</span>
               </div>
-              <div class="bg-rose-50 border border-rose-200 px-3 py-2 rounded-2xl text-center">
+              <div class="bg-rose-50 border border-rose-200 px-3 py-3 rounded-2xl text-center">
                 <span class="text-xs text-rose-700 font-extrabold block">Trôi chảy</span>
-                <span class="text-base font-black text-rose-900">${res.fluencyScore}%</span>
+                <span class="text-3xl font-extrabold text-rose-900 block mt-1">${res.fluencyScore}%</span>
               </div>
             </div>
           </div>
