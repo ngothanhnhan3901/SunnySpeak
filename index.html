@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="SunnySpeak" />
@@ -115,6 +115,19 @@
       #practice-target-ipa{font-size:1.1rem!important}
       #practice-target-linking{font-size:1.35rem!important}
       #voice-select{max-width:100%!important;flex:1 1 100%}
+    }
+  
+    /* ===== Cố định khung, không xô lệch khi lướt ===== */
+    html{height:100%;overflow-x:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+    body{position:relative;width:100%;max-width:100vw;min-height:100%;overflow-x:hidden;overscroll-behavior:none;touch-action:pan-y}
+    .flex-1{min-width:0}
+    main,section{min-width:0;max-width:100%}
+    .dialogue-grid p,#view-learn p{overflow-wrap:break-word}
+    img,svg,audio,video{max-width:100%}
+    @media (max-width:640px){
+      .dialogue-grid>div{padding:.9rem!important}
+      .dialogue-grid .w-12.h-12{width:2.5rem;height:2.5rem;font-size:1.25rem}
+      .dialogue-grid .flex.items-start.gap-3\.5{gap:.65rem}
     }
   </style>
 </head>
@@ -1865,11 +1878,18 @@
       for (const attemptCfg of candidateAttempts) {
         try {
           const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${attemptCfg.model}:generateContent?key=${attemptCfg.key}`;
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
+          const doFetch = (p) => {
+            const ctl = new AbortController();
+            const timer = setTimeout(() => ctl.abort(), 30000);
+            return fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p), signal: ctl.signal }).finally(() => clearTimeout(timer));
+          };
+          let response;
+          if (state.noThinkCfg) {
+            response = await doFetch(payload);
+          } else {
+            response = await doFetch({ ...payload, generationConfig: { ...(payload.generationConfig || {}), thinkingConfig: { thinkingLevel: 'minimal' } } });
+            if (response.status === 400) { state.noThinkCfg = true; response = await doFetch(payload); }
+          }
 
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
@@ -2272,20 +2292,11 @@
         const blob = new Blob(recChunks, { type: mediaRec.mimeType || 'audio/webm' });
         audioEl.src = URL.createObjectURL(blob); audioEl.classList.remove('hidden');
         const oldPh = input.placeholder;
-        input.placeholder = '⏳ Google Gemini đang nhận dạng giọng nói của bạn...';
+        input.placeholder = '⏳ Gemini đang nghe và chấm điểm...';
         try {
           const b64 = await audioToWavBase64(blob);
           state.lastAudio = b64; state.lastAudioFor = state.selectedPracticeItem.english;
-          const r = await callGeminiAPI({
-            contents: [{ parts: [
-              { text: 'Transcribe EXACTLY what the speaker says in English, word for word. Do not correct grammar or mispronunciations and do not add words. If silent or unintelligible, return an empty string.' },
-              { inlineData: { mimeType: 'audio/wav', data: b64 } }
-            ] }],
-            generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { transcript: { type: 'STRING' } }, required: ['transcript'] } }
-          });
-          input.value = (r.transcript || '').trim();
-          if (!input.value) showToast('Chưa nghe rõ giọng bạn. Hãy thử đọc lại gần micro hơn.', 'error');
-          else showToast('Đã nhận dạng xong! Bấm "AI Chấm Điểm Ngay" nhé.');
+          await handleEvaluateSpeech();
         } catch (e) {
           showToast(`Không gửi được âm thanh lên Google (${e.message}). Kiểm tra API Key và mạng, hoặc gõ câu bạn vừa đọc vào ô bên dưới.`, 'error');
         } finally { input.placeholder = oldPh; }
@@ -2543,7 +2554,8 @@ Include 5 natural dialogue turns between Character A and Character B, 4 connecte
     // ==========================================
     async function handleEvaluateSpeech() {
       const spokenTranscript = document.getElementById('spoken-transcript-input')?.value.trim() || '';
-      if (!spokenTranscript) {
+      const hasAudio = !!(state.lastAudio && state.lastAudioFor === state.selectedPracticeItem.english);
+      if (!spokenTranscript && !hasAudio) {
         showToast('Hãy bấm biểu tượng Micro để đọc câu hoặc chọn Giả lập giọng đọc trước khi chấm điểm nhé!', 'info');
         return;
       }
@@ -2556,11 +2568,11 @@ Include 5 natural dialogue turns between Character A and Character B, 4 connecte
 Compare the Target Sentence with the Learner's Spoken Transcript.
 Evaluate accuracy, naturalness, and linking sounds.
 Even if punctuation is missing in the spoken transcript, do not penalize punctuation.
-Return constructive, warm feedback in Vietnamese.`;
+Return constructive, warm feedback in Vietnamese. Be concise: praiseVi and linkingFeedbackVi max 2 short sentences, nativeTipVi 1 sentence, advice max 8 words (empty string for good words). Fill heardTranscript with exactly what the learner said.`;
 
       const userQuery = `Target Sentence: "${state.selectedPracticeItem.english}"
 Target Linking Guide: "${state.selectedPracticeItem.linking}"
-Learner's Spoken Transcript: "${spokenTranscript}"
+Learner's Spoken Transcript: ${spokenTranscript ? `"${spokenTranscript}"` : '(none - transcribe the attached audio literally, word for word, into heardTranscript without correcting mistakes)'}
 
 Evaluate the learner's attempt and return a structured JSON score breakdown.`;
 
@@ -2572,6 +2584,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
           responseSchema: {
             type: 'OBJECT',
             properties: {
+              heardTranscript: { type: 'STRING' },
               overallScore: { type: 'INTEGER' },
               accuracyScore: { type: 'INTEGER' },
               linkingScore: { type: 'INTEGER' },
@@ -2593,6 +2606,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
               nativeTipVi: { type: 'STRING' }
             },
             required: [
+              'heardTranscript',
               'overallScore',
               'accuracyScore',
               'linkingScore',
@@ -2612,6 +2626,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
           payload.contents[0].parts[0].text += "\n(The learner's real recording is attached. Judge actual pronunciation, stress, intonation and linking from the audio, not only the transcript.)";
         }
         const result = await callGeminiAPI(payload);
+        if (result.heardTranscript) document.getElementById('spoken-transcript-input').value = result.heardTranscript;
         state.evaluationResult = result;
         autoLearn(result.overallScore);
         const earnedXp = Math.max(10, Math.round(result.overallScore / 4));
@@ -2619,6 +2634,10 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
         renderEvaluationResult();
         showToast(`🎉 AI đã chấm điểm: ${result.overallScore}/100! Bạn nhận được +${earnedXp} XP!`);
       } catch (err) {
+        if (!spokenTranscript) {
+          showToast('AI chưa chấm được. Kiểm tra mạng và API Key rồi ghi âm lại, hoặc gõ câu bạn đã đọc vào ô bên dưới.', 'error');
+          return;
+        }
         const localEval = evaluateSpeechLocally(
           state.selectedPracticeItem.english,
           state.selectedPracticeItem.linking,
@@ -2964,8 +2983,8 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
                         <div class="w-12 h-12 rounded-2xl bg-white border-2 border-amber-200 flex items-center justify-center text-2xl shrink-0 shadow-sm">
                           ${escapeHtml(char?.avatar || (isSpeakerA ? '🦊' : '🐰'))}
                         </div>
-                        <div class="space-y-2 flex-1">
-                          <div class="flex items-center gap-2">
+                        <div class="space-y-2 flex-1 min-w-0">
+                          <div class="flex flex-wrap items-center gap-2">
                             <span class="font-extrabold text-xs uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white text-slate-700 border border-slate-200">
                               ${escapeHtml(char?.name || 'Speaker ' + line.speaker)}
                             </span>
