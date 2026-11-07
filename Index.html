@@ -1,0 +1,3728 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SunnySpeak - Học Nói Tiếng Anh Bản Xứ Mỗi Ngày</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Quicksand & Nunito -->
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Nunito', 'Quicksand', sans-serif;
+      background-color: #FFFDF7;
+      color: #1e293b;
+    }
+    .linking-arc {
+      display: inline-block;
+      margin: 0 2px;
+      padding: 0 6px;
+      background-color: #fde68a;
+      color: #e11d48;
+      font-weight: 900;
+      border-radius: 9999px;
+      animation: pulse-gentle 2s infinite;
+    }
+    @keyframes pulse-gentle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    @keyframes bounce-in {
+      0% { opacity: 0; transform: translateY(12px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-pop {
+      animation: bounce-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fef3c7;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #fbbf24;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #f59e0b;
+    }
+  
+    /* ===== Đọc dễ hơn ===== */
+    html{font-size:17px}
+    body{font-family:'Be Vietnam Pro','Nunito',system-ui,sans-serif!important;line-height:1.65;color:#0f172a}
+    .font-black,.font-extrabold{font-weight:700!important}
+    .font-bold{font-weight:600!important}
+    .font-semibold,.font-medium{font-weight:500!important}
+    .uppercase{text-transform:none!important}
+    .tracking-wider,.tracking-tight{letter-spacing:0!important}
+    .text-xs,.text-\[11px\],.text-\[10px\]{font-size:.875rem!important;line-height:1.5!important}
+    .text-slate-400,.text-slate-500{color:#475569!important}
+    .text-slate-600{color:#334155!important}
+    .animate-pulse,.linking-arc{animation:none!important}
+    .linking-arc{padding:0 4px}
+    .font-mono{font-family:'Noto Sans','Segoe UI',sans-serif!important;font-size:.95rem!important;color:#475569!important}
+    h1,h2,h3,h4{line-height:1.3!important}
+    /* ===== Dàn trang đều ===== */
+    [id^="tab-btn-"]{flex:1 1 auto;justify-content:center}
+    #view-practice,#view-journal{align-items:stretch}
+    .dialogue-grid>div:last-child:nth-child(odd){grid-column:1/-1}
+    #learn-subtab-content>.grid>div{height:100%}
+      #role-filter-group{width:100%}
+    [id^="filter-role-"]{flex:1 1 0;white-space:nowrap;text-align:center;padding:.45rem .6rem!important}
+    [onclick*="toggleLearned"]{white-space:nowrap}
+    #view-practice>div,#view-learn,#view-journal>div{min-width:0}
+    #view-practice p,#view-practice span{overflow-wrap:anywhere}
+    .linking-arc{background:none!important;padding:0 1px!important;border-radius:0!important;font-size:1.1em}
+  </style>
+</head>
+<body class="min-h-screen pb-16 selection:bg-amber-200">
+
+  <!-- ==========================================
+       TOAST NOTIFICATION CONTAINER
+  ========================================== -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 max-w-md hidden"></div>
+
+  <!-- ==========================================
+       TOP HEADER BAR (CUTE PASTEL BAR)
+  ========================================== -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b-2 border-amber-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Logo & Mascot -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-3xl bg-gradient-to-tr from-amber-300 via-yellow-200 to-rose-200 flex items-center justify-center text-2xl shadow-sm border-2 border-white">
+          🐥
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl sm:text-2xl font-black tracking-tight bg-gradient-to-r from-orange-500 via-rose-500 to-emerald-600 bg-clip-text text-transparent">
+              SunnySpeak
+            </h1>
+            <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-700 border border-teal-200">
+              AI Native Coach
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 font-semibold">
+            Học hội thoại, nối âm & nói chuẩn bản xứ mỗi ngày
+          </p>
+        </div>
+      </div>
+
+      <!-- Gamification Stats & Check-in Button -->
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+        <!-- API Key Settings Button -->
+        <button id="header-apikey-btn" onclick="openApiKeyModal()" class="flex items-center gap-2 bg-slate-50 hover:bg-teal-50 border-2 border-slate-200 hover:border-teal-300 px-3 py-1.5 rounded-2xl transition cursor-pointer" title="Cài đặt Gemini API Key & Model">
+          <span id="apikey-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 ring-4 ring-amber-100"></span>
+          <i data-lucide="key-round" class="w-4 h-4 text-slate-700"></i>
+          <span id="header-apikey-text" class="font-extrabold text-slate-700 text-xs sm:text-sm">🔑 Cài đặt AI</span>
+        </button>
+
+        <!-- Streak Counter -->
+        <button onclick="openCheckInModal()" class="flex items-center gap-1.5 bg-orange-50 hover:bg-orange-100 border-2 border-orange-200 px-3 py-1.5 rounded-2xl transition cursor-pointer" title="Chuỗi ngày học liên tiếp">
+          <i data-lucide="flame" class="w-5 h-5 text-orange-500 fill-orange-400"></i>
+          <span id="header-streak" class="font-extrabold text-orange-700 text-sm">3 Ngày</span>
+        </button>
+
+        <!-- XP Points -->
+        <div class="flex items-center gap-1.5 bg-amber-50 border-2 border-amber-200 px-3 py-1.5 rounded-2xl">
+          <i data-lucide="star" class="w-5 h-5 text-amber-500 fill-amber-400"></i>
+          <span id="header-xp" class="font-extrabold text-amber-800 text-sm">120 XP</span>
+        </div>
+
+        <!-- Daily Check-in Button -->
+        <button id="header-checkin-btn" onclick="openCheckInModal()" class="flex items-center gap-2 px-3.5 py-2 rounded-2xl font-extrabold text-sm shadow-sm transition transform active:scale-95 cursor-pointer bg-gradient-to-r from-rose-400 to-orange-400 text-white hover:opacity-95 animate-pulse">
+          <i data-lucide="gift" class="w-4 h-4"></i>
+          <span id="header-checkin-text">Điểm Danh Nhận Quà</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <div class="max-w-7xl mx-auto px-4 flex gap-2 overflow-x-auto pb-2.5 pt-1">
+      <button id="tab-btn-learn" onclick="switchMainTab('learn')" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-teal-500 text-white shadow-md shadow-teal-200">
+        <i data-lucide="book-open" class="w-4 h-4"></i>
+        <span>1. Bài Học Mỗi Ngày (Hội Thoại & Nối Âm)</span>
+      </button>
+
+      <button id="tab-btn-practice" onclick="switchMainTab('practice')" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-slate-100/80 text-slate-600 hover:bg-rose-50 hover:text-rose-700">
+        <i data-lucide="mic" class="w-4 h-4"></i>
+        <span>2. Phòng Luyện Đọc & AI Chấm Điểm</span>
+      </button>
+
+      <button id="tab-btn-journal" onclick="switchMainTab('journal')" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-slate-100/80 text-slate-600 hover:bg-amber-50 hover:text-amber-700">
+        <i data-lucide="calendar" class="w-4 h-4"></i>
+        <span id="tab-journal-label">3. Nhật Ký Học Tập & Huy Hiệu (1)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       MAIN CONTENT AREA
+  ========================================== -->
+  <main class="max-w-7xl mx-auto px-4 pt-6">
+
+    <!-- ==========================================
+         VIEW 1: DAILY LESSON (DIALOGUE, LINKING, NATIVE)
+    ========================================== -->
+    <div id="view-learn" class="space-y-6">
+      <!-- Daily Topic Selector & AI Generator Card -->
+      <section class="bg-gradient-to-br from-teal-50 via-emerald-50 to-amber-50 border-2 border-teal-200 rounded-3xl p-5 sm:p-6 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-white text-teal-700 border border-teal-200 shadow-sm">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+              Google Gemini AI — Bài mới mỗi ngày
+            </span>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-800 mt-2">
+              Chọn tình huống thường nhật bạn muốn khám phá hôm nay! 🌈
+            </h2>
+          </div>
+
+          <!-- Audio Speed Control -->
+          <div class="flex items-center gap-2 self-start bg-white px-3.5 py-2 rounded-2xl border-2 border-teal-100 shadow-sm">
+            <i data-lucide="headphones" class="w-4 h-4 text-teal-600"></i>
+            <select id="voice-select" onchange="setVoice(this.value)" title="Giọng đọc tiếng Anh" class="max-w-[210px] text-sm font-semibold bg-slate-50 border-2 border-teal-100 rounded-xl px-2 py-1 cursor-pointer"></select>
+            <span class="text-xs font-bold text-slate-600">Tốc độ:</span>
+            <button id="speed-btn-normal" onclick="setGlobalSpeechRate(1.0)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition bg-teal-500 text-white">
+              1.0x Chuẩn
+            </button>
+            <button id="speed-btn-slow" onclick="setGlobalSpeechRate(0.75)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition bg-slate-100 text-slate-600">
+              0.75x Chậm
+            </button>
+          </div>
+        </div>
+
+        <!-- Preset Topic Pills Container -->
+        <div id="preset-topics-container" class="flex flex-wrap gap-2 mb-4"></div>
+
+        <!-- Custom Topic Input + Generate Button -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            id="custom-topic-input"
+            type="text"
+            placeholder="Hoặc tự nhập tình huống bất kỳ (VD: Hỏi đường ở New York, Mặc cả ở chợ đêm, Gặp gỡ đối tác...)"
+            class="flex-1 bg-white border-2 border-teal-200 rounded-2xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-teal-500"
+          />
+          <button
+            id="generate-lesson-btn"
+            onclick="handleGenerateNewLesson()"
+            class="flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-extrabold px-6 py-3 rounded-2xl shadow-md transition transform active:scale-95 cursor-pointer disabled:opacity-60"
+          >
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+            <span id="generate-lesson-text">Tạo Bài Học Mới Bằng AI</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="roadmap-card" class="bg-white border-2 border-indigo-200 rounded-3xl p-5 sm:p-6 shadow-sm"></section>
+
+      <!-- Current Lesson Header & Sub-Tabs -->
+      <div class="bg-white border-2 border-amber-200 rounded-3xl p-5 sm:p-6 shadow-sm">
+        <div id="lesson-overview-header" class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b-2 border-dashed border-amber-100">
+          <!-- Populated dynamically by JS -->
+        </div>
+
+        <!-- Sub-navigation inside Lesson -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-4">
+          <div class="flex flex-wrap gap-2">
+            <button id="subtab-btn-dialogue" onclick="switchLearnSubTab('dialogue')" class="flex items-center gap-2 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition cursor-pointer bg-amber-400 text-slate-900 shadow-sm">
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+              <span id="subtab-label-dialogue">Hội Thoại Tình Huống (5)</span>
+            </button>
+
+            <button id="subtab-btn-linking" onclick="switchLearnSubTab('linking')" class="flex items-center gap-2 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition cursor-pointer bg-amber-50 text-amber-900 hover:bg-amber-100">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              <span id="subtab-label-linking">Bí Kíp Nối Âm & Nuốt Âm (4)</span>
+            </button>
+
+            <button id="subtab-btn-native" onclick="switchLearnSubTab('native')" class="flex items-center gap-2 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition cursor-pointer bg-amber-50 text-amber-900 hover:bg-amber-100">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span id="subtab-label-native">Cách Nói Người Bản Xứ (4)</span>
+            </button>
+          </div>
+
+          <button id="play-all-dialogue-btn" onclick="playFullDialogue()" class="flex items-center gap-2 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition cursor-pointer bg-teal-500 hover:bg-teal-600 text-white shadow-sm">
+            <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+            <span id="play-all-dialogue-text">Nghe Toàn Bộ Hội Thoại</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Sub-Tab Content Container -->
+      <div id="learn-subtab-content"></div>
+    </div>
+
+    <!-- ==========================================
+         VIEW 2: INTERACTIVE SPEAKING & AI SCORING
+    ========================================== -->
+    <div id="view-practice" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left Column: Sentence Selector / Roleplay List -->
+      <div class="lg:col-span-5 bg-white border-2 border-amber-200 rounded-3xl p-5 space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-2">
+            <span>🎭</span>
+            <span>Chọn Câu Hoặc Đóng Vai</span>
+          </h3>
+          <div id="role-filter-group" class="flex gap-1 bg-slate-100 p-1 rounded-xl text-xs font-extrabold">
+            <button id="filter-role-ALL" onclick="setRoleplayFilter('ALL')" class="px-2.5 py-1 rounded-lg cursor-pointer bg-white text-slate-900 shadow-sm">
+              Tất cả
+            </button>
+            <button id="filter-role-A" onclick="setRoleplayFilter('A')" class="px-2.5 py-1 rounded-lg cursor-pointer text-slate-600">
+              Vai A
+            </button>
+            <button id="filter-role-B" onclick="setRoleplayFilter('B')" class="px-2.5 py-1 rounded-lg cursor-pointer text-slate-600">
+              Vai B
+            </button>
+          </div>
+        </div>
+
+        <div id="practice-sentence-list" class="space-y-4">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Right Column: Speaking Studio & AI Evaluation Result -->
+      <div class="lg:col-span-7 space-y-5">
+        <!-- Target Sentence Card -->
+        <div class="bg-gradient-to-br from-rose-50 via-amber-50 to-teal-50 border-2 border-rose-200 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span id="practice-target-avatar" class="text-3xl">🐰</span>
+              <div>
+                <span class="text-xs font-extrabold uppercase text-rose-600 block">
+                  Câu mẫu cần chinh phục
+                </span>
+                <span id="practice-target-speaker" class="text-sm font-extrabold text-slate-700">Maya (Customer)</span>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="speakCurrentTarget(1.0)" class="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-white hover:bg-teal-50 text-teal-800 border-2 border-teal-200 font-extrabold text-xs shadow-sm cursor-pointer">
+                <i data-lucide="volume-2" class="w-4 h-4 text-teal-600"></i>
+                <span>Nghe chuẩn (1.0x)</span>
+              </button>
+              <button onclick="speakCurrentTarget(0.75)" class="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-white hover:bg-amber-50 text-amber-900 border-2 border-amber-200 font-extrabold text-xs shadow-sm cursor-pointer">
+                <i data-lucide="volume-1" class="w-4 h-4 text-amber-600"></i>
+                <span>Nghe chậm (0.75x)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Big Target English Sentence -->
+          <div class="bg-white/95 border-2 border-amber-200 rounded-3xl p-5 space-y-2.5 shadow-sm">
+            <p id="practice-target-english" class="text-3xl sm:text-4xl font-bold text-slate-900 leading-snug"></p>
+            <p id="practice-target-ipa" class="text-xl sm:text-2xl font-medium text-slate-700 leading-relaxed" style="font-family:'Noto Sans','Segoe UI',sans-serif"></p>
+            <div class="rounded-2xl bg-rose-50 border-2 border-rose-200 px-4 py-3">
+              <p class="text-base font-semibold text-rose-800">Cách đọc kiểu Việt</p>
+              <p id="practice-target-vipron" class="text-2xl sm:text-3xl font-extrabold text-rose-700 leading-snug mt-1"></p>
+            </div>
+            <div class="pt-2 border-t border-dashed border-amber-200">
+              <span class="text-xs font-extrabold text-amber-700 uppercase block">
+                🔗 Gợi ý lướt & nối âm như người bản xứ:
+              </span>
+              <p id="practice-target-linking" class="text-2xl font-bold text-teal-800 mt-1"></p>
+            </div>
+            <p id="practice-target-vi" class="text-lg text-slate-700 font-medium pt-1"></p>
+          </div>
+
+          <!-- Microphone Controls & Transcript Box -->
+          <div class="bg-white rounded-3xl p-5 border-2 border-rose-200 space-y-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div class="flex items-center gap-3.5">
+                <button
+                  id="mic-record-btn"
+                  onclick="toggleListening()"
+                  class="w-16 h-16 rounded-3xl flex items-center justify-center shadow-lg transition transform active:scale-95 cursor-pointer bg-gradient-to-tr from-rose-500 to-orange-400 text-white hover:opacity-95 shrink-0"
+                  title="Bấm để bắt đầu hoặc dừng thu âm"
+                >
+                  <i id="mic-record-icon" data-lucide="mic" class="w-8 h-8"></i>
+                </button>
+                <div>
+                  <p id="mic-status-title" class="font-extrabold text-slate-800">
+                    Bấm Micro để đọc to câu trên
+                  </p>
+                  <p class="text-xs text-slate-500 font-medium">
+                    Bấm lần nữa để dừng. Giọng bạn được gửi lên Google Gemini để nhận dạng và chấm điểm.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Quick Simulation Buttons -->
+              <div class="flex flex-wrap gap-2">
+                <button onclick="simulateVoiceAttempt('perfect')" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-xs cursor-pointer transition">
+                  ⚡ Giả lập đọc chuẩn
+                </button>
+                <button onclick="simulateVoiceAttempt('almost')" class="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-extrabold text-xs cursor-pointer transition">
+                  ⚡ Giả lập đọc thiếu âm
+                </button>
+              </div>
+            </div>
+
+            <audio id="my-audio" controls class="hidden w-full"></audio>
+            <!-- Editable Transcript Input -->
+            <div>
+              <label class="block text-xs font-extrabold text-slate-600 uppercase mb-1.5">
+                Lời bạn vừa nói (Có thể chỉnh sửa trước khi bấm AI Chấm Điểm):
+              </label>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input
+                  id="spoken-transcript-input"
+                  type="text"
+                  placeholder="Giọng đọc của bạn sẽ hiển thị tại đây..."
+                  class="flex-1 bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-3 text-lg font-bold text-slate-800 focus:outline-none focus:border-rose-400"
+                />
+                <button
+                  id="evaluate-speech-btn"
+                  onclick="handleEvaluateSpeech()"
+                  class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-extrabold text-sm shadow-md transition cursor-pointer disabled:opacity-60"
+                >
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  <span id="evaluate-speech-text">AI Chấm Điểm Ngay</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Evaluation Score & Feedback Container -->
+        <div id="evaluation-result-container" class="hidden"></div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         VIEW 3: STUDY JOURNAL & REWARD BADGES
+    ========================================== -->
+    <div id="view-journal" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left Column: Badges & Achievements -->
+      <div class="lg:col-span-5 space-y-5">
+        <div class="bg-white border-2 border-amber-200 rounded-3xl p-5 space-y-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+              <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
+              <span>Bộ Sưu Tập Huy Hiệu</span>
+            </h3>
+            <span id="badges-xp-badge" class="text-xs font-extrabold px-3 py-1 rounded-full bg-amber-100 text-amber-900">
+              120 XP Hiện Có
+            </span>
+          </div>
+
+          <div id="badges-list-container" class="space-y-3">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Study Journal Entries -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="bg-white border-2 border-teal-200 rounded-3xl p-5 space-y-4 shadow-sm">
+          <div>
+            <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+              <i data-lucide="pen-tool" class="w-5 h-5 text-teal-600"></i>
+              <span>Nhật Ký Luyện Nói Hàng Ngày</span>
+            </h3>
+            <p class="text-xs text-slate-500 font-medium">
+              Lưu lại những mẫu câu đắt giá, điểm phát âm AI và cảm xúc của bạn sau mỗi buổi học
+            </p>
+          </div>
+
+          <!-- Quick Add Custom Note Form -->
+          <div class="bg-teal-50/60 border border-teal-200 rounded-2xl p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="text-xs font-extrabold text-teal-900 uppercase">
+                ✍️ Viết nhanh ghi chú mới vào nhật ký:
+              </p>
+              <div id="journal-mood-selector" class="flex items-center gap-1.5">
+                <!-- Mood pills populated by JS -->
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input
+                id="journal-quick-note-input"
+                type="text"
+                placeholder="VD: Hôm nay học được cách nối âm 'check it out' -> 'che-ki-tout'..."
+                class="flex-1 bg-white border border-teal-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500"
+              />
+              <button
+                onclick="handleSaveToJournal('journal-quick-note-input')"
+                class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs sm:text-sm cursor-pointer shrink-0 transition"
+              >
+                + Thêm Nhật Ký
+              </button>
+            </div>
+          </div>
+
+          <!-- Journal Timeline Container -->
+          <div id="journal-entries-container" class="space-y-3">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==========================================
+       DAILY CHECK-IN REWARD MODAL
+  ========================================== -->
+  <div id="checkin-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white border-4 border-amber-300 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl animate-pop">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="text-3xl">🎁</span>
+          <div>
+            <h3 class="text-xl font-black text-slate-800">Điểm Danh Nhận Thưởng Mỗi Ngày</h3>
+            <p class="text-xs text-slate-500 font-semibold">
+              Duy trì thói quen nói tiếng Anh 10 phút mỗi ngày để nhận kho báu XP!
+            </p>
+          </div>
+        </div>
+        <button onclick="closeCheckInModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-extrabold text-slate-600 cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- 7-Day Reward Track -->
+      <div id="checkin-days-grid" class="grid grid-cols-4 sm:grid-cols-7 gap-2"></div>
+
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div>
+          <p class="text-xs font-extrabold text-amber-800 uppercase">Chuỗi học hiện tại của bạn</p>
+          <p id="modal-streak-summary" class="text-lg font-black text-slate-900">
+            🔥 3 Ngày Liên Tiếp — Tổng 120 XP
+          </p>
+        </div>
+        <button
+          id="modal-claim-btn"
+          onclick="handleDailyCheckIn()"
+          class="px-5 py-3 rounded-2xl font-extrabold text-sm shadow-md transition cursor-pointer bg-gradient-to-r from-rose-500 to-orange-400 text-white hover:opacity-95 shrink-0"
+        >
+          Nhận Thưởng Ngay (+30 XP)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       API KEY & AI ENGINE SETTINGS MODAL
+  ========================================== -->
+  <div id="apikey-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white border-4 border-teal-300 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl animate-pop">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center text-2xl">
+            🔑
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-slate-800">Cài Đặt Kết Nối Google Gemini AI</h3>
+            <p class="text-xs text-slate-500 font-semibold">
+              Nhập khóa API cá nhân hoặc dùng Kho Bài Học Thông Minh tích hợp sẵn
+            </p>
+          </div>
+        </div>
+        <button onclick="closeApiKeyModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center font-extrabold text-slate-600 cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Connection Status Banner -->
+        <div id="apikey-modal-status-banner" class="p-3.5 rounded-2xl border-2 bg-amber-50 border-amber-200 flex items-start gap-3">
+          <span class="text-xl">💡</span>
+          <div class="text-xs space-y-0.5">
+            <p id="apikey-modal-status-title" class="font-extrabold text-amber-900">
+              Chế độ: Tự động kết hợp AI & Kho Bài Học Bản Xứ Có Sẵn
+            </p>
+            <p id="apikey-modal-status-desc" class="text-amber-800 font-medium">
+              Ngay cả khi bạn chưa nhập API Key, SunnySpeak vẫn có sẵn kho 7 chủ đề hội thoại bản xứ và bộ chấm điểm phát âm thông minh hoạt động 100%!
+            </p>
+          </div>
+        </div>
+
+        <!-- API Key Input -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-extrabold text-slate-700 uppercase">
+              Gemini API Key (Tùy chọn - Lấy miễn phí tại Google AI Studio):
+            </label>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-xs font-extrabold text-teal-600 hover:underline">
+              Lấy API Key ↗
+            </a>
+          </div>
+          <div class="relative flex items-center">
+            <input
+              id="apikey-input-field"
+              type="password"
+              placeholder="AIzaSy... (Dán khóa Gemini API của bạn vào đây)"
+              class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl pl-4 pr-20 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-teal-500"
+            />
+            <button
+              type="button"
+              onclick="toggleShowApiKey()"
+              id="toggle-show-key-btn"
+              class="absolute right-3 px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-xs font-extrabold text-slate-600 hover:bg-slate-100 cursor-pointer"
+            >
+              Hiện
+            </button>
+          </div>
+        </div>
+
+        <!-- Model Selection -->
+        <div>
+          <label class="block text-xs font-extrabold text-slate-700 uppercase mb-1">
+            Chọn Phiên Bản Mô Hình Gemini:
+          </label>
+          <select
+            id="apikey-model-select"
+            class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-3 text-sm font-extrabold text-slate-800 focus:outline-none focus:border-teal-500 cursor-pointer"
+          >
+            <option value="gemini-2.5-flash">gemini-2.5-flash (Khuyên dùng - Nhanh & Ổn định nhất)</option>
+            <option value="gemini-3-flash-preview">gemini-3-flash-preview (Mặc định cho Canvas Preview)</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash (Tương thích rộng)</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash (Bản tiêu chuẩn)</option>
+          </select>
+        </div>
+
+        <!-- Test Connection Feedback Box -->
+        <div id="apikey-test-feedback" class="hidden p-3 rounded-2xl text-xs font-bold"></div>
+      </div>
+
+      <!-- Modal Footer Actions -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+        <div class="flex gap-2">
+          <button
+            id="test-apikey-btn"
+            onclick="handleTestApiKeyConnection()"
+            class="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-xs sm:text-sm transition cursor-pointer"
+          >
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span id="test-apikey-btn-text">Kiểm Tra Kết Nối</span>
+          </button>
+          <button
+            onclick="handleClearApiKey()"
+            class="px-3.5 py-2.5 rounded-2xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-extrabold text-xs sm:text-sm transition cursor-pointer"
+          >
+            Xóa Key
+          </button>
+        </div>
+
+        <button
+          onclick="handleSaveApiKeySettings()"
+          class="flex items-center gap-1.5 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-extrabold text-xs sm:text-sm shadow-md transition cursor-pointer"
+        >
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>Lưu Thiết Lập</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       APPLICATION LOGIC & FIREBASE CLOUD STORAGE
+  ========================================== -->
+  <script type="module">
+    let initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, doc, setDoc, collection, onSnapshot, addDoc, deleteDoc;
+
+    // ==========================================
+    // RICH BUILT-IN LESSON BANK (7 FULL LESSONS FOR INSTANT / OFFLINE FALLBACK)
+    // ==========================================
+    const BUILTIN_LESSONS_BANK = {
+      coffee: {
+        id: 'default-coffee-shop',
+        topic: 'Gọi đồ uống ở quán Cà phê (At a Cozy Coffee Shop)',
+        situation: 'Bạn bước vào một quán cà phê nhỏ ở New York vào buổi sáng và trò chuyện tự nhiên với bạn pha chế (Barista).',
+        level: 'Intermediate - Tự nhiên',
+        characters: {
+          A: { name: 'Leo (Barista)', avatar: '🦊', role: 'Nhân viên pha chế thân thiện' },
+          B: { name: 'Maya (Customer)', avatar: '🐰', role: 'Khách hàng quen thuộc' }
+        },
+        dialogue: [
+          {
+            speaker: 'A',
+            english: "Morning! What can I get started for you today?",
+            linking: "Morning! What c'n‿I get‿started for ya today?",
+            phonetic: "/ˈmɔːrnɪŋ! wʌt kən‿aɪ ɡɛt ˈstɑːrdɪd fər jə təˈdeɪ/",
+            vietnamese: "Chào buổi sáng! Hôm nay mình làm món gì cho bạn mở hàng đây?",
+            tip: "Người bản xứ thường lướt chữ 'can I' thành 'c'n‿I' và giảm âm 'you' thành 'ya'."
+          },
+          {
+            speaker: 'B',
+            english: "Hey there! I'm kind of running on fumes. Can I grab a large iced latte?",
+            linking: "Hey there! I'm kinda running‿on fumes. C'n‿I grab‿a large‿iced latte?",
+            phonetic: "/heɪ ðɛr! aɪm ˈkaɪndə ˈrʌnɪŋ‿ɑn fjuːmz. kən‿aɪ ɡræb‿ə lɑːrdʒ‿aɪst ˈlɑːteɪ/",
+            vietnamese: "Chào đằng ấy! Hôm nay mình kiệt sức quá rồi. Cho mình lấy một ly latte đá cỡ lớn nhé?",
+            tip: "'Kind of' nối thành 'kinda', 'grab a' nối phụ âm b sang nguyên âm a thành 'grab‿a'."
+          },
+          {
+            speaker: 'A',
+            english: "You got it! Do you want to add a shot of vanilla or keep it classic?",
+            linking: "You got‿it! D'you wanna add‿a shot‿of vanilla or keep‿it classic?",
+            phonetic: "/ju ˈɡɑːdɪt! dju ˈwɑːnə æd‿ə ʃɑːd‿əv vəˈnɪlə ɔːr kiːp‿ɪt ˈklæsɪk/",
+            tip: "Âm /t/ trong 'got it' và 'shot of' nằm giữa 2 nguyên âm nên đọc thành âm Flap T (nghe nhẹ như âm đ/r: 'go-dit', 'sho-dov').",
+            vietnamese: "Có ngay! Bạn có muốn thêm một chút siro vani hay giữ vị truyền thống?"
+          },
+          {
+            speaker: 'B',
+            english: "Let's keep it classic today. Oh, and I'll take a blueberry muffin to go!",
+            linking: "Let's keep‿it classic today. Oh, and‿I'll take‿a blueberry muffin tə go!",
+            phonetic: "/lɛts kiːp‿ɪt ˈklæsɪk təˈdeɪ. oʊ, ənd‿aɪl teɪk‿ə ˈbluːˌbɛri ˈmʌfɪn tə ɡoʊ/",
+            vietnamese: "Hôm nay cứ vị truyền thống thôi. À, cho mình lấy thêm một bánh muffin việt quất mang đi nữa nhé!",
+            tip: "'Keep it' nối âm /p/ sang /ɪ/, 'take a' nối /k/ sang /ə/ nghe cực kỳ mượt mà."
+          },
+          {
+            speaker: 'A',
+            english: "Awesome, I'll have that right out for you in a sec!",
+            linking: "Awesome, I'll have that right‿out for ya in‿a sec!",
+            phonetic: "/ˈɔːsəm, aɪl hæv ðæt ˈraɪd‿aʊt fər jə ɪn‿ə sɛk/",
+            vietnamese: "Tuyệt vời, mình sẽ làm xong ngay cho bạn trong tích tắc!",
+            tip: "'Right out' có Flap T nối thành 'righ-dout', 'in a sec' (in a second) nối thành 'i-nə sec'."
+          }
+        ],
+        linkingSecrets: [
+          {
+            phrase: "What can I -> What c'n‿I",
+            type: "Giảm âm & Nối âm (Reduction & Linking)",
+            standardPronunciation: "/wʌt kæn aɪ/",
+            nativePronunciation: "Wʌt - kə - naɪ",
+            explanation: "Từ 'can' trong câu hỏi không nhấn trọng âm nên giảm thành /kən/, sau đó âm /n/ nối thẳng sang đại từ 'I' thành 'c'n‿I'.",
+            example: "What c'n‿I do for you?"
+          },
+          {
+            phrase: "Kind of -> Kinda",
+            type: "Biến âm thông dụng (Informal Contraction)",
+            standardPronunciation: "/kaɪnd ʌv/",
+            nativePronunciation: "Kaɪn - də",
+            explanation: "Trong giao tiếp hàng ngày, 'kind of', 'sort of', 'want to', 'going to' hầu như luôn được rút gọn thành 'kinda', 'sorta', 'wanna', 'gonna'.",
+            example: "I'm kinda tired today."
+          },
+          {
+            phrase: "Got it -> Got‿it (Flap T)",
+            type: "Biến âm T thành Đ/R nhẹ (Flap T)",
+            standardPronunciation: "/ɡɒt ɪt/",
+            nativePronunciation: "Gɑ - dɪt",
+            explanation: "Khi âm /t/ đứng giữa hai nguyên âm (như got‿it, right‿out, shot‿of), người Mỹ lướt đầu lưỡi rất nhanh tạo ra âm nghe gần giống chữ 'Đ' nhẹ trong tiếng Việt.",
+            example: "You got‿it! Let's check‿it‿out."
+          },
+          {
+            phrase: "Grab a -> Grab‿a",
+            type: "Nối phụ âm + nguyên âm (C-V Linking)",
+            standardPronunciation: "/ɡræb ə/",
+            nativePronunciation: "Græ - bə",
+            explanation: "Khi từ trước kết thúc bằng phụ âm (/b/) và từ sau bắt đầu bằng nguyên âm (/ə/), hãy đọc dính liền như một từ hai âm tiết.",
+            example: "Let's grab‿a bite to eat!"
+          }
+        ],
+        nativeExpressions: [
+          {
+            native: "I'm running on fumes",
+            textbook: "I am very tired and have no energy",
+            meaning: "Mình đang cạn sạch năng lượng / kiệt sức rồi (như xe chạy bằng chút hơi xăng cuối cùng).",
+            context: "Dùng khi bạn làm việc nhiều hoặc thiếu ngủ vào buổi sáng/chiều.",
+            example: "After three hours of sleep, I'm totally running on fumes."
+          },
+          {
+            native: "Can I grab a...",
+            textbook: "Please give me a... / May I order a...",
+            meaning: "Cho mình lấy một... (Cách gọi món tự nhiên nhất ở quán cafe/nhà hàng nhanh).",
+            context: "Thay vì nói 'I want to buy' nghe hơi cứng nhắc, người bản xứ rất thích dùng từ 'grab' hoặc 'get'.",
+            example: "Hey, can I grab an iced americano to go?"
+          },
+          {
+            native: "You got it!",
+            textbook: "Yes, certainly / I will do it for you",
+            meaning: "Có ngay! / Nhất trí luôn!",
+            context: "Câu đáp lại cực kỳ thân thiện và năng lượng khi ai đó nhờ vả hoặc gọi món.",
+            example: "A: Can you pass me the napkin? — B: You got it!"
+          },
+          {
+            native: "In a sec (In a second)",
+            textbook: "Wait a short moment",
+            meaning: "Trong tích tắc / Chờ một xíu nhé!",
+            context: "Người bản xứ thường rút gọn 'second' thành 'sec' trong giao tiếp thân mật.",
+            example: "Hang on, I'll be with you in a sec!"
+          }
+        ]
+      },
+      neighbors: {
+        id: 'builtin-neighbors',
+        topic: 'Chào hỏi hàng xóm cuối tuần (Weekend Small Talk with a Neighbor)',
+        situation: 'Bạn tình cờ gặp người hàng xóm thân thiện ở sảnh thang máy vào sáng thứ Bảy nắng đẹp.',
+        level: 'Beginner / Intermediate - Thân mật',
+        characters: {
+          A: { name: 'Sam (Neighbor)', avatar: '🐶', role: 'Hàng xóm vui tính tầng trên' },
+          B: { name: 'Linh (You)', avatar: '🐱', role: 'Cư dân mới chuyển đến' }
+        },
+        dialogue: [
+          {
+            speaker: 'A',
+            english: "Hey! Beautiful weather we're having today, isn't it?",
+            linking: "Hey! Beautiful weather we're having today, isn't‿it?",
+            phonetic: "/heɪ! ˈbjuːtɪfəl ˈwɛðər wɪr ˈhævɪŋ təˈdeɪ, ˈɪzənt‿ɪt/",
+            vietnamese: "Chào bạn! Thời tiết hôm nay đẹp tuyệt vời nhỉ?",
+            tip: "Cụm đuôi câu hỏi 'isn't it' luôn được nối âm /t/ sang /ɪ/ thành 'i-zən-dit'."
+          },
+          {
+            speaker: 'B',
+            english: "It really is! I'm finally getting out of the house for a walk.",
+            linking: "It really‿is! I'm finally getting‿out‿of the house for‿a walk.",
+            phonetic: "/ɪt ˈrɪli‿ɪz! aɪm ˈfaɪnəli ˈɡɛdɪŋ‿aʊd‿əv ðə haʊs fər‿ə wɔːk/",
+            vietnamese: "Đúng thật đấy! Cuối cùng mình cũng bước chân ra khỏi nhà đi dạo một chút.",
+            tip: "'Getting out of' nối liên hoàn với Flap T nghe như 'ge-ding-au-dəv'."
+          },
+          {
+            speaker: 'A',
+            english: "Good for you! Are you up to anything fun this weekend?",
+            linking: "Good for ya! Are ya up‿to anything fun this weekend?",
+            phonetic: "/ɡʊd fər jə! ɑːr jə ʌp‿tə ˈɛniˌθɪŋ fʌn ðɪs ˈwiːkˌɛnd/",
+            vietnamese: "Tuyệt quá! Cuối tuần này bạn có dự định gì vui không?",
+            tip: "'Up to' đọc lướt thành 'up‿tə', mang nghĩa 'có kế hoạch làm gì đó'."
+          },
+          {
+            speaker: 'B',
+            english: "Nothing much, just taking it easy and catching up on some reading.",
+            linking: "Nothing much, just taking‿it‿easy and catching‿up‿on some reading.",
+            phonetic: "/ˈnʌθɪŋ mʌtʃ, dʒʌst ˈteɪkɪŋ‿ɪd‿ˈiːzi ənd ˈkætʃɪŋ‿ʌp‿ɑn sʌm ˈriːdɪŋ/",
+            vietnamese: "Cũng không có gì nhiều, mình chỉ nghỉ ngơi thư giãn và đọc nốt mấy cuốn sách thôi.",
+            tip: "'Taking it easy' nối âm /ŋ/ sang /ɪ/ và Flap T sang 'easy' thành 'tei-king-i-dee-zy'."
+          },
+          {
+            speaker: 'A',
+            english: "Sounds like a plan! Have a good one, see you around!",
+            linking: "Sounds like‿a plan! Have‿a good one, see ya‿around!",
+            phonetic: "/saʊndz laɪk‿ə plæn! hæv‿ə ɡʊd wʌn, siː jə‿əˈraʊnd/",
+            vietnamese: "Nghe hợp lý đấy! Chúc một ngày tốt lành nhé, hẹn gặp lại sau!",
+            tip: "'Have a' nối thành 'ha-və', 'see you around' lướt nhẹ thành 'see ya‿around'."
+          }
+        ],
+        linkingSecrets: [
+          {
+            phrase: "Getting out of -> Getting‿out‿of",
+            type: "Chuỗi nối âm Flap T (Chain Linking)",
+            standardPronunciation: "/ˈɡɛtɪŋ aʊt ʌv/",
+            nativePronunciation: "Ge - ding - au - dəv",
+            explanation: "Cả cụm 3 từ được đọc liền mạch không ngắt nghỉ nhờ nối âm /ŋ/ và biến âm /t/ thành âm Đ nhẹ.",
+            example: "We're getting‿out‿of here early."
+          },
+          {
+            phrase: "Taking it easy -> Taking‿it‿easy",
+            type: "Nối phụ âm + Flap T",
+            standardPronunciation: "/ˈteɪkɪŋ ɪt ˈiːzi/",
+            nativePronunciation: "Tei - king - i - dee - zy",
+            explanation: "Từ 'it' kẹp giữa 'taking' và 'easy' được lướt cực nhanh khiến câu nói mềm mại như tiếng nhạc.",
+            example: "I'm just taking‿it‿easy today."
+          },
+          {
+            phrase: "Isn't it -> Isn't‿it",
+            type: "Nối âm câu hỏi đuôi (Tag Question)",
+            standardPronunciation: "/ˈɪznt ɪt/",
+            nativePronunciation: "I - zən - dit",
+            explanation: "Trong câu hỏi đuôi, người Mỹ thường bỏ nhẹ âm t hoặc đọc lướt thành Flap T nối sang 'it'.",
+            example: "Nice day, isn't‿it?"
+          },
+          {
+            phrase: "Have a -> Have‿a",
+            type: "Nối âm V sang nguyên âm A",
+            standardPronunciation: "/hæv ə/",
+            nativePronunciation: "Hæ - və",
+            explanation: "Âm cuối /v/ của 'have' nối thẳng sang nguyên âm /ə/ tạo thành 'hæ-və'.",
+            example: "Have‿a great weekend!"
+          }
+        ],
+        nativeExpressions: [
+          {
+            native: "Are you up to anything fun?",
+            textbook: "Do you have any plans?",
+            meaning: "Bạn có dự định/kế hoạch gì vui không?",
+            context: "Cụm 'be up to something' cực kỳ phổ biến khi hỏi thăm bạn bè, đồng nghiệp, hàng xóm.",
+            example: "What are you up to tonight?"
+          },
+          {
+            native: "Taking it easy",
+            textbook: "Relaxing and not doing much work",
+            meaning: "Thư giãn, nghỉ ngơi nhẹ nhàng, không vội vã.",
+            context: "Dùng khi muốn nói bạn dành thời gian xả hơi cuối tuần.",
+            example: "After a busy week, I'm just taking it easy on Sunday."
+          },
+          {
+            native: "Catching up on...",
+            textbook: "Doing something I did not have time to do earlier",
+            meaning: "Làm bù / hoàn thành nốt việc gì đó (ngủ bù, đọc sách, xem phim).",
+            context: "Rất hay đi với 'catch up on sleep', 'catch up on reading', 'catch up on work'.",
+            example: "I need to catch up on some sleep this weekend!"
+          },
+          {
+            native: "Have a good one!",
+            textbook: "Have a good day!",
+            meaning: "Chúc một ngày tốt lành nhé!",
+            context: "Câu chào tạm biệt thân thiện dùng được vào bất kỳ thời điểm nào trong ngày.",
+            example: "Thanks for stopping by, have a good one!"
+          }
+        ]
+      },
+      streetfood: {
+        id: 'builtin-streetfood',
+        topic: 'Khám phá Ẩm thực Đường phố (At a Bustling Night Market)',
+        situation: 'Bạn ghé quầy bánh Taco và đồ nướng thơm phức ở khu chợ đêm và hỏi món đặc trưng nhất.',
+        level: 'Intermediate - Năng động',
+        characters: {
+          A: { name: 'Carlos (Chef)', avatar: '🐻', role: 'Đầu bếp quầy ẩm thực' },
+          B: { name: 'Minh (Foodie)', avatar: '🐼', role: 'Thực khách mê khám phá' }
+        },
+        dialogue: [
+          {
+            speaker: 'A',
+            english: "Step right up! Everything is made fresh to order. What are you craving?",
+            linking: "Step right‿up! Everything‿is made fresh to‿order. What‿are ya craving?",
+            phonetic: "/stɛp raɪd‿ʌp! ˈɛvriθɪŋ‿ɪz meɪd frɛʃ tu‿ˈɔːrdər. wʌd‿ər jə ˈkreɪvɪŋ/",
+            vietnamese: "Mời ghé vào nào! Mọi món đều làm nóng tại chỗ. Bạn đang thèm món gì nào?",
+            tip: "'Right up' nối Flap T thành 'righ-dup', 'What are you' đọc lướt thành 'Wha-dər-ya'."
+          },
+          {
+            speaker: 'B',
+            english: "That smells amazing! What is your go-to dish here?",
+            linking: "That smells‿amazing! What's your go-to dish here?",
+            phonetic: "/ðæt smɛlz‿əˈmeɪzɪŋ! wʌts jʊr ˈɡoʊˌtuː dɪʃ hɪr/",
+            vietnamese: "Thơm nức mũi luôn! Món tủ bán chạy nhất ở quầy mình là gì vậy ạ?",
+            tip: "'Smells amazing' nối âm /z/ sang /ə/ thành 'smell-zə-mazing'."
+          },
+          {
+            speaker: 'A',
+            english: "You can't go wrong with our crispy beef tacos. They sell like hotcakes!",
+            linking: "You can't go wrong with‿our crispy beef tacos. They sell like hotcakes!",
+            phonetic: "/ju kænt ɡoʊ rɔːŋ wɪð‿aʊər ˈkrɪspi biːf ˈtɑːkoʊz. ðeɪ sɛl laɪk ˈhɑːtkeɪks/",
+            vietnamese: "Bạn chọn bánh taco bò giòn của tụi mình là chuẩn bài luôn. Món đó bán đắt như tôm tươi!",
+            tip: "Trong từ phủ định 'can't go', người Mỹ chặn hơi âm /t/ ở cổ họng (Stop T) và nhấn mạnh chữ 'can't'."
+          },
+          {
+            speaker: 'B',
+            english: "I'm sold! Let me get an order of those, and go easy on the spicy sauce.",
+            linking: "I'm sold! Lemme get‿an‿order of those, and go‿easy on the spicy sauce.",
+            phonetic: "/aɪm soʊld! ˈlɛmi ɡɛd‿ən‿ˈɔːrdər əv ðoʊz, ənd ɡoʊ‿ˈiːzi ɑn ðə ˈspaɪsi sɔːs/",
+            vietnamese: "Chốt đơn luôn! Cho mình một phần đó nhé, và cho ít sốt cay thôi ạ.",
+            tip: "'Let me' biến âm thành 'Lemme', 'get an order' nối liên hoàn thành 'ge-də-nor-der'."
+          },
+          {
+            speaker: 'A',
+            english: "Coming right up! Feel free to grab some napkins over there.",
+            linking: "Coming right‿up! Feel free tə grab some napkins‿over there.",
+            phonetic: "/ˈkʌmɪŋ raɪd‿ʌp! fiːl friː tə ɡræb sʌm ˈnæpkɪnz‿ˈoʊvər ðɛr/",
+            vietnamese: "Có ngay đây! Bạn cứ tự nhiên lấy giấy ăn ở phía đằng kia nhé.",
+            tip: "'Coming right up' nối Flap T thành 'Co-ming righ-dup!'."
+          }
+        ],
+        linkingSecrets: [
+          {
+            phrase: "Let me -> Lemme",
+            type: "Đồng hóa âm (Assimilation)",
+            standardPronunciation: "/lɛt miː/",
+            nativePronunciation: "Lɛ - mi",
+            explanation: "Trong giao tiếp nhanh, 'let me' và 'give me' thường được người bản xứ lướt thành 'lemme' và 'gimme'.",
+            example: "Lemme check my schedule real quick."
+          },
+          {
+            phrase: "Get an order -> Get‿an‿order",
+            type: "Nối chuỗi Flap T + Âm mũi N",
+            standardPronunciation: "/ɡɛt æn ˈɔːrdər/",
+            nativePronunciation: "Gɛ - də - nɔːr - dər",
+            explanation: "Âm /t/ nối sang 'an' thành 'ge-dən', rồi âm /n/ nối tiếp sang 'order' thành 'norder'.",
+            example: "Can I get‿an‿order of fries?"
+          },
+          {
+            phrase: "Right up -> Right‿up",
+            type: "Nối âm Flap T thông dụng",
+            standardPronunciation: "/raɪt ʌp/",
+            nativePronunciation: "Raɪ - dʌp",
+            explanation: "Cụm 'Coming right‿up' hay 'Step right‿up' luôn dùng Flap T nghe rất giòn và nhiệt tình.",
+            example: "Your coffee is coming right‿up!"
+          },
+          {
+            phrase: "Smells amazing -> Smells‿amazing",
+            type: "Nối phụ âm Z sang nguyên âm A",
+            standardPronunciation: "/smɛlz əˈmeɪzɪŋ/",
+            nativePronunciation: "Smɛl - zə - meɪ - zɪŋ",
+            explanation: "Đừng quên âm cuối 's' phát âm là /z/ trong 'smells' sẽ nối mượt sang chữ 'amazing'.",
+            example: "Dinner smells‿amazing tonight!"
+          }
+        ],
+        nativeExpressions: [
+          {
+            native: "What's your go-to dish?",
+            textbook: "What is the best or most popular food here?",
+            meaning: "Món tủ / món ruột được yêu thích nhất ở đây là gì?",
+            context: "'Go-to' dùng để chỉ lựa chọn số 1 đáng tin cậy (go-to restaurant, go-to song).",
+            example: "Pho is my go-to comfort food on rainy days."
+          },
+          {
+            native: "You can't go wrong with...",
+            textbook: "It is a very good choice",
+            meaning: "Chọn cái này là chuẩn không cần chỉnh / không bao giờ thất vọng!",
+            context: "Dùng khi bạn muốn gợi ý một món ăn hoặc sản phẩm cực kỳ chất lượng.",
+            example: "You can't go wrong with their signature milk tea."
+          },
+          {
+            native: "I'm sold!",
+            textbook: "You have convinced me, I will buy it",
+            meaning: "Mình bị thuyết phục hoàn toàn rồi! / Chốt luôn!",
+            context: "Câu nói ngắn gọn, hào hứng khi nghe ai đó giới thiệu điều gì quá hấp dẫn.",
+            example: "Free shipping and 20% off? I'm sold!"
+          },
+          {
+            native: "Go easy on the...",
+            textbook: "Please do not put too much...",
+            meaning: "Cho ít / nhẹ tay phần... thôi nhé (ít cay, ít đá, ít đường).",
+            context: "Cực kỳ hữu ích khi đi ăn uống và muốn điều chỉnh gia vị.",
+            example: "Can you go easy on the ice, please?"
+          }
+        ]
+      },
+      office: {
+        id: 'builtin-office',
+        topic: 'Tán gẫu sáng thứ Hai ở Công sở (Monday Morning Catch-up)',
+        situation: 'Bạn gặp đồng nghiệp ở khu vực pha trà/cà phê văn phòng vào sáng đầu tuần.',
+        level: 'Intermediate - Công sở tự nhiên',
+        characters: {
+          A: { name: 'Chloe (Coworker)', avatar: '🐹', role: 'Đồng nghiệp phòng Marketing' },
+          B: { name: 'Tuan (You)', avatar: '🦁', role: 'Chuyên viên dự án' }
+        },
+        dialogue: [
+          {
+            speaker: 'A',
+            english: "Happy Monday! How was your weekend? Did it fly by for you too?",
+            linking: "Happy Monday! How was your weekend? Did‿it fly by for ya too?",
+            phonetic: "/ˈhæpi ˈmʌndeɪ! haʊ wəz jʊr ˈwiːkɛnd? dɪd‿ɪt flaɪ baɪ fər jə tuː/",
+            vietnamese: "Chào thứ Hai vui vẻ! Cuối tuần của bạn thế nào? Có phải nó cũng trôi vèo qua luôn không?",
+            tip: "'Did it' nối âm /d/ sang /ɪ/ thành 'di-dit' rất nhanh."
+          },
+          {
+            speaker: 'B',
+            english: "Tell me about it! I blinked and suddenly it is Monday morning.",
+            linking: "Tell me‿about‿it! I blinked‿and suddenly it's Monday morning.",
+            phonetic: "/tɛl mi‿əˈbaʊd‿ɪt! aɪ blɪŋkt‿ənd ˈsʌdənli ɪts ˈmʌndeɪ ˈmɔːrnɪŋ/",
+            vietnamese: "Công nhận luôn! Mình vừa chớp mắt một cái mà đã tới sáng thứ Hai rồi.",
+            tip: "'Tell me about it' nối thành 'Tell me‿ə-bau-dit', mang nghĩa 'Công nhận / Chuẩn luôn!'."
+          },
+          {
+            speaker: 'A',
+            english: "Haha, same here! By the way, are we still on for the team meeting at ten?",
+            linking: "Haha, same here! By the way, are we still‿on for the team meeting‿at ten?",
+            phonetic: "/hɑːhɑː, seɪm hɪr! baɪ ðə weɪ, ɑːr wi stɪl‿ɑn fər ðə tiːm ˈmiːdɪŋ‿æt tɛn/",
+            vietnamese: "Haha, mình cũng thế! Nhân tiện, 10 giờ sáng nay nhóm mình vẫn họp đúng lịch chứ?",
+            tip: "'Still on' nối âm /l/ sang /ɑ/ thành 'sti-lon'."
+          },
+          {
+            speaker: 'B',
+            english: "Yep, we are! Let's touch base right before the call to go over the slides.",
+            linking: "Yep, we‿are! Let's touch base right before the call tə go‿over the slides.",
+            phonetic: "/jɛp, wi‿ɑːr! lɛts tʌtʃ beɪs raɪt bɪˈfɔːr ðə kɔːl tə ɡoʊ‿ˈoʊvər ðə slaɪdz/",
+            vietnamese: "Đúng rồi đó! Tụi mình trao đổi nhanh ngay trước cuộc gọi để duyệt lại slide nhé.",
+            tip: "'Go over' nối thông qua âm lướt /w/ nhẹ giữa hai nguyên âm: 'go-wover'."
+          },
+          {
+            speaker: 'A',
+            english: "Sounds good! I'll swing by your desk in twenty minutes.",
+            linking: "Sounds good! I'll swing by your desk‿in twenty minutes.",
+            phonetic: "/saʊndz ɡʊd! aɪl swɪŋ baɪ jʊr dɛsk‿ɪn ˈtwɛni ˈmɪnɪts/",
+            vietnamese: "Nhất trí! Mình sẽ ghé qua bàn làm việc của bạn sau 20 phút nữa nhé.",
+            tip: "Người Mỹ thường lược bỏ âm /t/ thứ hai trong từ 'twenty' và đọc là 'twen-ny'."
+          }
+        ],
+        linkingSecrets: [
+          {
+            phrase: "Tell me about it -> Tell me‿about‿it",
+            type: "Nối nguyên âm + Flap T",
+            standardPronunciation: "/tɛl miː əˈbaʊt ɪt/",
+            nativePronunciation: "Tɛl - mi - jə - baʊ - dɪt",
+            explanation: "Giữa 'me' và 'about' có âm lướt /j/ nhẹ, còn 'about it' dùng Flap T thành 'a-bau-dit'.",
+            example: "A: Traffic was terrible today! — B: Tell me‿about‿it!"
+          },
+          {
+            phrase: "Twenty -> Twenny",
+            type: "Nuốt âm T sau N (NT Reduction)",
+            standardPronunciation: "/ˈtwɛnti/",
+            nativePronunciation: "Twɛ - ni",
+            explanation: "Trong tiếng Anh Mỹ, cụm /nt/ giữa từ (như twenty, internet, interview, center) thường được lược bỏ âm /t/.",
+            example: "I'll be there in twenny minutes."
+          },
+          {
+            phrase: "Go over -> Go‿over",
+            type: "Nối nguyên âm + nguyên âm bằng âm /w/",
+            standardPronunciation: "/ɡoʊ ˈoʊvər/",
+            nativePronunciation: "Goʊ - woʊ - vər",
+            explanation: "Khi từ trước kết thúc bằng âm tròn môi (/oʊ/, /uː/) và từ sau bắt đầu bằng nguyên âm, tự nhiên sẽ có âm /w/ nhẹ nối ở giữa.",
+            example: "Let's go‿over the plan together."
+          },
+          {
+            phrase: "Did it -> Did‿it",
+            type: "Nối phụ âm D sang nguyên âm I",
+            standardPronunciation: "/dɪd ɪt/",
+            nativePronunciation: "Dɪ - dɪt",
+            explanation: "Âm cuối /d/ nối liền sang 'it' tạo thành nhịp đôi nhanh gọn.",
+            example: "How did‿it go yesterday?"
+          }
+        ],
+        nativeExpressions: [
+          {
+            native: "Tell me about it!",
+            textbook: "I completely agree with you, I experienced the same thing",
+            meaning: "Công nhận luôn! / Khỏi phải nói, mình hiểu quá mà!",
+            context: "Đừng dịch nghĩa đen là 'Hãy kể cho tôi nghe', đây là câu cảm thán đồng cảm cực kỳ tự nhiên.",
+            example: "A: This week has been so hectic! — B: Tell me about it!"
+          },
+          {
+            native: "Are we still on for...?",
+            textbook: "Is our appointment still confirmed?",
+            meaning: "Chúng ta vẫn giữ lịch hẹn... chứ?",
+            context: "Cách hỏi xác nhận lịch hẹn ngắn gọn và lịch sự nhất.",
+            example: "Hey, are we still on for lunch at noon?"
+          },
+          {
+            native: "Touch base",
+            textbook: "Briefly talk or contact someone to update information",
+            meaning: "Trao đổi nhanh / cập nhật tình hình ngắn gọn.",
+            context: "Cụm từ 'vàng' trong giao tiếp công sở quốc tế.",
+            example: "Let's touch base tomorrow morning about the project."
+          },
+          {
+            native: "Swing by",
+            textbook: "Visit a place briefly",
+            meaning: "Ghé ngang qua một lát.",
+            context: "Dùng khi bạn tạt qua bàn làm việc, nhà bạn bè hoặc cửa hàng trong chốc lát.",
+            example: "I'll swing by your office after lunch."
+          }
+        ]
+      },
+      travel: {
+        id: 'builtin-travel',
+        topic: 'Hỏi đường & Quầy thủ tục Sân bay (At the International Airport)',
+        situation: 'Bạn đang làm thủ tục gửi hành lý và hỏi cổng lên máy bay tại sân bay quốc tế.',
+        level: 'Intermediate - Du lịch thực tế',
+        characters: {
+          A: { name: 'Emma (Staff)', avatar: '🐨', role: 'Nhân viên hãng hàng không' },
+          B: { name: 'Alex (Traveler)', avatar: '🐯', role: 'Hành khách đi du lịch' }
+        },
+        dialogue: [
+          {
+            speaker: 'A',
+            english: "Hi there! Where are you flying to today? May I see your passport?",
+            linking: "Hi there! Where‿are ya flying to today? May‿I see your passport?",
+            phonetic: "/haɪ ðɛr! wɛr‿ər jə ˈflaɪɪŋ tə təˈdeɪ? meɪ‿aɪ siː jʊr ˈpæspɔːrt/",
+            vietnamese: "Xin chào! Hôm nay bạn bay đi đâu nhỉ? Cho mình xem hộ chiếu của bạn nhé?",
+            tip: "'Where are you' được rút gọn mượt mà thành 'Where-ər-ya'."
+          },
+          {
+            speaker: 'B',
+            english: "Here you go! I'm heading to San Francisco. Could I get a window seat?",
+            linking: "Here ya go! I'm heading tə San Francisco. Could‿I get‿a window seat?",
+            phonetic: "/hɪr jə ɡoʊ! aɪm ˈhɛdɪŋ tə sæn frænˈsɪskoʊ. kʊd‿aɪ ɡɛd‿ə ˈwɪndoʊ siːt/",
+            vietnamese: "Gửi bạn nhé! Mình bay đi San Francisco. Cho mình xin một ghế cạnh cửa sổ được không ạ?",
+            tip: "'Could I get a' nối liên hoàn thành 'Cou-dai ge-də'."
+          },
+          {
+            speaker: 'A',
+            english: "Let me check... Lucky you, there is one window seat left! Are you checking any bags?",
+            linking: "Lemme check... Lucky you, there's one window seat left! Are ya checking‿any bags?",
+            phonetic: "/ˈlɛmi tʃɛk... ˈlʌki juː, ðɛrz wʌn ˈwɪndoʊ siːt lɛft! ɑːr jə ˈtʃɛkɪŋ‿ˈɛni bæɡz/",
+            vietnamese: "Để mình kiểm tra nhé... Bạn may mắn thật, còn đúng 1 ghế cửa sổ! Bạn có gửi hành lý ký gửi không?",
+            tip: "'Checking any' nối âm /ŋ/ sang /ɛ/ rất êm."
+          },
+          {
+            speaker: 'B',
+            english: "Just this suitcase, and I'm carrying on my backpack.",
+            linking: "Just this suitcase, and‿I'm carrying‿on my backpack.",
+            phonetic: "/dʒʌst ðɪs ˈsuːtkeɪs, ənd‿aɪm ˈkæriɪŋ‿ɑn maɪ ˈbækˌpæk/",
+            vietnamese: "Chỉ có chiếc vali này thôi ạ, còn ba lô thì mình xách tay lên máy bay.",
+            tip: "Khi 'Just this' đi cạnh nhau, âm /t/ của 'just' được lược bỏ để đọc nối sang 'this' dễ dàng hơn."
+          },
+          {
+            speaker: 'A',
+            english: "All set! You are boarding at Gate B12. Have a safe flight!",
+            linking: "All set! You're boarding‿at Gate B-twelve. Have‿a safe flight!",
+            phonetic: "/ɔːl sɛt! jʊr ˈbɔːrdɪŋ‿æt ɡeɪt biː twɛlv. hæv‿ə seɪf flaɪt/",
+            vietnamese: "Xong xuôi cả rồi! Bạn lên máy bay ở Cổng B12 nhé. Chúc bạn một chuyến bay thượng lộ bình an!",
+            tip: "'Have a safe flight' nối âm /v/ sang /ə/ và kéo nhẹ âm /f/ của 'safe' sang 'flight'."
+          }
+        ],
+        linkingSecrets: [
+          {
+            phrase: "Could I get a -> Could‿I get‿a",
+            type: "Chuỗi nối âm lịch sự khi yêu cầu",
+            standardPronunciation: "/kʊd aɪ ɡɛt ə/",
+            nativePronunciation: "Kʊ - daɪ - ɡɛ - də",
+            explanation: "Cấu trúc yêu cầu lịch sự 'Could I get a...' nối âm /d/ sang /aɪ/ và Flap T sang /ə/.",
+            example: "Could‿I get‿a glass of water?"
+          },
+          {
+            phrase: "Just this -> Jus' this",
+            type: "Lược bỏ phụ âm giữa (Elision)",
+            standardPronunciation: "/dʒʌst ðɪs/",
+            nativePronunciation: "Dʒʌs - ðɪs",
+            explanation: "Khi âm /t/ kẹp giữa hai phụ âm khác (như just this, last night, next week), người bản xứ bỏ luôn âm /t/ để không bị vấp lưỡi.",
+            example: "It happened las' night."
+          },
+          {
+            phrase: "Here you go -> Here ya go",
+            type: "Giảm âm đại từ 'You' -> 'Ya'",
+            standardPronunciation: "/hɪr juː ɡoʊ/",
+            nativePronunciation: "Hɪr - jə - ɡoʊ",
+            explanation: "Khi đưa đồ cho ai đó, 'Here you go' được nói lướt cực kỳ thân thiện thành 'Here ya go'.",
+            example: "Here ya go, keep the change!"
+          },
+          {
+            phrase: "Safe flight -> Safe‿flight",
+            type: "Đồng âm phụ âm nối tiếp (Gemination)",
+            standardPronunciation: "/seɪf flaɪt/",
+            nativePronunciation: "Seɪf:laɪt",
+            explanation: "Từ 'safe' kết thúc bằng /f/ và 'flight' bắt đầu bằng /f/, hãy giữ luồng hơi /f/ liền mạch thay vì tách làm hai lần.",
+            example: "Have‿a safe‿flight home!"
+          }
+        ],
+        nativeExpressions: [
+          {
+            native: "I'm heading to...",
+            textbook: "I am traveling to / going to...",
+            meaning: "Mình đang trên đường đi tới... / bay tới...",
+            context: "Động từ 'head to' thông dụng hơn 'go to' rất nhiều khi nói về điểm đến.",
+            example: "We're heading to Da Lat for the holidays."
+          },
+          {
+            native: "Checking bags vs Carrying on",
+            textbook: "Registering luggage vs Taking luggage onto the plane",
+            meaning: "Gửi hành lý ký gửi vs Xách tay lên máy bay.",
+            context: "Cặp cụm từ bắt buộc phải biết khi làm thủ tục ở sân bay.",
+            example: "I never check bags, I always carry on."
+          },
+          {
+            native: "All set!",
+            textbook: "Everything is finished and ready",
+            meaning: "Xong xuôi cả rồi! / Sẵn sàng hết rồi!",
+            context: "Dùng khi hoàn tất thủ tục, thanh toán hoặc chuẩn bị xong.",
+            example: "Are you all set for the trip tomorrow?"
+          },
+          {
+            native: "Lucky you!",
+            textbook: "You are very fortunate",
+            meaning: "Bạn may mắn thật đấy! / Nhất bạn rồi nhé!",
+            context: "Lời khen vui vẻ khi ai đó gặp điều thuận lợi.",
+            example: "You got upgraded to business class? Lucky you!"
+          }
+        ]
+      },
+      friends: {
+        id: 'builtin-friends',
+        topic: 'Rủ bạn thân đi chơi cuối tuần (Making Weekend Plans)',
+        situation: 'Bạn gọi điện rủ người bạn thân đi ăn tối và xem bộ phim mới ra rạp vào tối thứ Sáu.',
+        level: 'Intermediate - Trẻ trung, Sôi nổi',
+        characters: {
+          A: { name: 'Ben (Bestie)', avatar: '🐸', role: 'Bạn thân chí cốt' },
+          B: { name: 'Hana (You)', avatar: '🐥', role: 'Người khởi xướng kèo đi chơi' }
+        },
+        dialogue: [
+          {
+            speaker: 'A',
+            english: "Hey! Long time no see! What have you been up to lately?",
+            linking: "Hey! Long time no see! What've ya been‿up to lately?",
+            phonetic: "/heɪ! lɔːŋ taɪm noʊ siː! ˈwʌdəv jə bɪn‿ʌp tə ˈleɪtli/",
+            vietnamese: "Này! Lâu quá không gặp! Dạo này cậu bận rộn làm gì thế?",
+            tip: "'What have you' rút gọn thành 'What've ya' đọc nhanh như 'Wha-dəv-ya'."
+          },
+          {
+            speaker: 'B',
+            english: "Work has been crazy, so I really need to blow off some steam. Are you free Friday night?",
+            linking: "Work's been crazy, so‿I really need tə blow‿off some steam. Are ya free Friday night?",
+            phonetic: "/wɜːrks bɪn ˈkreɪzi, soʊ‿aɪ ˈrɪli niːd tə bloʊ‿ɔːf sʌm stiːm. ɑːr jə friː ˈfraɪdeɪ naɪt/",
+            vietnamese: "Công việc dạo này quay cuồng luôn, nên mình rất cần xả stress. Tối thứ Sáu này cậu rảnh không?",
+            tip: "'Blow off' nối qua âm lướt /w/ thành 'blow-woff'."
+          },
+          {
+            speaker: 'A',
+            english: "I'm totally down! What do you have in mind?",
+            linking: "I'm totally down! Whaddaya have‿in mind?",
+            phonetic: "/aɪm ˈtoʊdəli daʊn! ˈwʌdəjə hæv‿ɪn maɪnd/",
+            vietnamese: "Mình hưởng ứng nhiệt liệt luôn! Cậu đang tính đi đâu thế?",
+            tip: "Cụm huyền thoại 'What do you' được người Mỹ đọc lướt thành 'Whaddaya' (/ˈwʌdəjə/)."
+          },
+          {
+            speaker: 'B',
+            english: "Let's grab some Korean BBQ and then catch a movie. My treat!",
+            linking: "Let's grab some Korean BBQ and then catch‿a movie. My treat!",
+            phonetic: "/lɛts ɡræb sʌm kəˈriən ˌbɑːrbɪˈkjuː ənd ðɛn kætʃ‿ə ˈmuːvi. maɪ triːt/",
+            vietnamese: "Tụi mình đi ăn thịt nướng Hàn Quốc rồi đi xem phim đi. Bữa này mình khao!",
+            tip: "'Catch a' nối âm /tʃ/ sang /ə/ thành 'ca-chə movie'."
+          },
+          {
+            speaker: 'A',
+            english: "No way, let's split it! Count me in, I'll pick you up at seven!",
+            linking: "No way, let's split‿it! Count me‿in, I'll pick ya‿up‿at seven!",
+            phonetic: "/noʊ weɪ, lɛts ˈsplɪdɪt! kaʊnt mi‿ɪn, aɪl pɪk jə‿ʌp‿æt ˈsɛvən/",
+            vietnamese: "Đừng mà, cứ chia đôi đi! Cho mình tham gia với nhé, 7 giờ tối mình qua đón cậu!",
+            tip: "'Split it' nối Flap T thành 'spli-dit', 'pick you up' thành 'pick-ya-up'."
+          }
+        ],
+        linkingSecrets: [
+          {
+            phrase: "What do you -> Whaddaya",
+            type: "Siêu rút gọn giao tiếp (Ultra Reduction)",
+            standardPronunciation: "/wʌt duː juː/",
+            nativePronunciation: "Wʌ - də - jə",
+            explanation: "Khi nói tự nhiên, 'What do you think?' hay 'What do you want?' luôn biến thành 'Whaddaya think?'.",
+            example: "Whaddaya wanna eat tonight?"
+          },
+          {
+            phrase: "Split it -> Split‿it",
+            type: "Biến âm Flap T",
+            standardPronunciation: "/splɪt ɪt/",
+            nativePronunciation: "Splɪ - dɪt",
+            explanation: "Âm /t/ của 'split' nối sang 'it' thành âm Đ nhẹ: 'spli-dit'.",
+            example: "The bill is $40, let's split‿it!"
+          },
+          {
+            phrase: "Catch a -> Catch‿a",
+            type: "Nối âm CH sang nguyên âm A",
+            standardPronunciation: "/kætʃ ə/",
+            nativePronunciation: "Kæ - tʃə",
+            explanation: "Âm cuối /tʃ/ của 'catch' nối sang 'a' nghe như 'ca-chə'.",
+            example: "Let's catch‿a cab to the theater."
+          },
+          {
+            phrase: "Count me in -> Count me‿in",
+            type: "Nối nguyên âm bằng âm lướt /j/",
+            standardPronunciation: "/kaʊnt miː ɪn/",
+            nativePronunciation: "Kaʊn - mi - jɪn",
+            explanation: "Âm /t/ trong 'count' dừng hơi nhẹ, còn 'me in' nối mượt với nhau.",
+            example: "A beach trip? Count me‿in!"
+          }
+        ],
+        nativeExpressions: [
+          {
+            native: "Blow off some steam",
+            textbook: "Release stress and relax after working hard",
+            meaning: "Xả hơi / Xả stress sau những giờ làm việc căng thẳng.",
+            context: "Hình ảnh chiếc nồi áp suất xả hơi nước để giảm áp lực.",
+            example: "I go to the gym to blow off some steam."
+          },
+          {
+            native: "I'm totally down! / Count me in!",
+            textbook: "I would like to join you",
+            meaning: "Mình tham gia liền! / Cho mình một suất nhé!",
+            context: "Hai cách đồng ý lời rủ rê cực kỳ trẻ trung và nhiệt tình.",
+            example: "Are you down for some boba tea?"
+          },
+          {
+            native: "My treat! / It's on me!",
+            textbook: "I will pay for you",
+            meaning: "Bữa này mình khao / Để mình trả cho!",
+            context: "Dùng khi bạn muốn mời bạn bè ăn uống.",
+            example: "Don't worry about the tickets, it's my treat!"
+          },
+          {
+            native: "Let's split it!",
+            textbook: "Let us share the cost equally",
+            meaning: "Mình chia đôi tiền nhé (Campuchia nhé)!",
+            context: "Cách nói lịch sự, thoải mái khi đi ăn cùng bạn bè.",
+            example: "Let's just split it fifty-fifty."
+          }
+        ]
+      },
+      shopping: {
+        id: 'builtin-shopping',
+        topic: 'Thử đồ & Mua sắm Quần áo (At a Fashion Boutique)',
+        situation: 'Bạn đi mua một chiếc áo khoác mới, hỏi thử size và hỏi chương trình giảm giá tại cửa hàng.',
+        level: 'Intermediate - Mua sắm thực tế',
+        characters: {
+          A: { name: 'Sophie (Stylist)', avatar: '🦄', role: 'Nhân viên tư vấn thời trang' },
+          B: { name: 'Mia (Shopper)', avatar: '🐹', role: 'Khách hàng mua sắm' }
+        },
+        dialogue: [
+          {
+            speaker: 'A',
+            english: "Hi! Let me know if you need help finding your size, or if you're just browsing!",
+            linking: "Hi! Lemme know if ya need help finding your size, or‿if you're just browsing!",
+            phonetic: "/haɪ! ˈlɛmi noʊ ɪf jə niːd hɛlp ˈfaɪndɪŋ jʊr saɪz, ɔːr‿ɪf jʊr dʒʌst ˈbraʊzɪŋ/",
+            vietnamese: "Chào bạn! Cứ bảo mình nếu bạn cần tìm size, hoặc cứ thoải mái xem đồ nhé!",
+            tip: "'Or if' nối âm /r/ sang /ɪ/ thành 'o-rif'."
+          },
+          {
+            speaker: 'B',
+            english: "Thanks! This denim jacket caught my eye. Do you have it in a medium?",
+            linking: "Thanks! This denim jacket caught my‿eye. D'you have‿it in‿a medium?",
+            phonetic: "/θæŋks! ðɪs ˈdɛnɪm ˈdʒækɪt kɔːt maɪ‿aɪ. dju ˈhævɪt ɪn‿ə ˈmiːdiəm/",
+            vietnamese: "Cảm ơn bạn! Chiếc áo khoác jean này làm mình chú ý ngay. Bên mình còn size M không?",
+            tip: "'Have it in a' nối liên hoàn thành 'ha-vi-di-nə medium'."
+          },
+          {
+            speaker: 'A',
+            english: "Here is a medium! The fitting rooms are right back there if you want to try it on.",
+            linking: "Here's‿a medium! The fitting rooms‿are right back there if ya wanna try‿it‿on.",
+            phonetic: "/hɪrz‿ə ˈmiːdiəm! ðə ˈfɪdɪŋ ruːmz‿ər raɪt bæk ðɛr ɪf jə ˈwɑːnə traɪ‿ɪd‿ɑn/",
+            vietnamese: "Size M đây nhé! Phòng thử đồ ở ngay phía sau nếu bạn muốn mặc thử.",
+            tip: "'Try it on' nối nguyên âm và Flap T thành 'try-yi-don'."
+          },
+          {
+            speaker: 'B',
+            english: "It fits like a glove! By the way, is this rack on sale today?",
+            linking: "It fits like‿a glove! By the way, is this rack‿on sale today?",
+            phonetic: "/ɪt fɪts laɪk‿ə ɡlʌv! baɪ ðə weɪ, ɪz ðɪs ræk‿ɑn seɪl təˈdeɪ/",
+            vietnamese: "Mặc vừa như in luôn! À nhân tiện, kệ đồ này hôm nay có đang giảm giá không bạn?",
+            tip: "'Fits like a' nối âm /k/ sang /ə/ thành 'fits lai-kə glove'."
+          },
+          {
+            speaker: 'A',
+            english: "Yes! Everything on that rack is thirty percent off. It's a total steal!",
+            linking: "Yes! Everything‿on that rack‿is thirty percent‿off. It's‿a total steal!",
+            phonetic: "/jɛs! ˈɛvriθɪŋ‿ɑn ðæt ræk‿ɪz ˈθɜːrdi pərˈsɛnt‿ɔːf. ɪts‿ə ˈtoʊdəl stiːl/",
+            vietnamese: "Có đấy ạ! Toàn bộ kệ đó đang giảm 30%. Giá hời cực kỳ luôn!",
+            tip: "'Thirty' và 'total' đều có Flap T nhẹ nghe như 'thir-dy' và 'to-dəl'."
+          }
+        ],
+        linkingSecrets: [
+          {
+            phrase: "Try it on -> Try‿it‿on",
+            type: "Nối nguyên âm + Flap T",
+            standardPronunciation: "/traɪ ɪt ɑn/",
+            nativePronunciation: "Traɪ - jɪ - dɑn",
+            explanation: "Từ 'it' nằm giữa 'try' và 'on' được nối liền mạch tạo thành nhịp 3 âm tiết mượt mà.",
+            example: "Can I try‿it‿on before buying?"
+          },
+          {
+            phrase: "Have it in a -> Have‿it‿in‿a",
+            type: "Chuỗi nối âm 4 từ liên tiếp",
+            standardPronunciation: "/hæv ɪt ɪn ə/",
+            nativePronunciation: "Hæ - vɪ - dɪ - nə",
+            explanation: "Cả 4 từ ngắn kết hợp thành một chuỗi âm thanh duy nhất khi hỏi tìm kích cỡ hay màu sắc.",
+            example: "D'you have‿it‿in‿a smaller size?"
+          },
+          {
+            phrase: "Percent off -> Percent‿off",
+            type: "Nối âm khi nói về giảm giá",
+            standardPronunciation: "/pərˈsɛnt ɔːf/",
+            nativePronunciation: "Pər - sɛn - dɔːf",
+            explanation: "Khi nói '20 percent off' hay '50 percent off', âm /t/ nối sang 'off' nghe rất tự nhiên.",
+            example: "These shoes are fifty percent‿off!"
+          },
+          {
+            phrase: "Like a -> Like‿a",
+            type: "Nối phụ âm K sang nguyên âm A",
+            standardPronunciation: "/laɪk ə/",
+            nativePronunciation: "Laɪ - kə",
+            explanation: "Cụm 'like a' xuất hiện trong hàng trăm thành ngữ và luôn đọc là 'lai-kə'.",
+            example: "It fits like‿a glove!"
+          }
+        ],
+        nativeExpressions: [
+          {
+            native: "I'm just browsing",
+            textbook: "I am only looking and not ready to buy yet",
+            meaning: "Mình chỉ đang xem dạo một chút thôi (chưa cần tư vấn ngay).",
+            context: "Câu trả lời lịch sự nhất khi nhân viên cửa hàng hỏi 'Can I help you?'.",
+            example: "Thanks, I'm just browsing for now!"
+          },
+          {
+            native: "Caught my eye",
+            textbook: "Attracted my attention",
+            meaning: "Làm mình chú ý ngay / Bắt mắt mình ngay từ cái nhìn đầu tiên.",
+            context: "Dùng khi thấy một món đồ, bức tranh hoặc thiết kế đẹp.",
+            example: "That vintage bag in the window really caught my eye."
+          },
+          {
+            native: "Fits like a glove",
+            textbook: "It is the exact right size for me",
+            meaning: "Mặc vừa khít như in!",
+            context: "Thành ngữ khen quần áo, giày dép vừa vặn hoàn hảo.",
+            example: "I tried the medium dress and it fits like a glove!"
+          },
+          {
+            native: "It's a total steal!",
+            textbook: "It is very cheap compared to its high quality",
+            meaning: "Giá quá hời luôn! / Rẻ như cho!",
+            context: "'A steal' dùng để chỉ một món hàng mua được với giá siêu tốt.",
+            example: "Twenty dollars for a real leather jacket? That's a steal!"
+          }
+        ]
+      }
+    };
+
+    const DEFAULT_LESSON = BUILTIN_LESSONS_BANK.coffee;
+
+    const PRESET_TOPICS = [
+      { id: 'coffee', label: '☕ Quán Cà Phê', prompt: 'Ordering drinks and pastries at a cozy morning coffee shop' },
+      { id: 'neighbors', label: '🏡 Chào Hỏi Hàng Xóm', prompt: 'Friendly small talk with a neighbor in the elevator or garden on a sunny weekend' },
+      { id: 'streetfood', label: '🌮 Ẩm Thực Đường Phố', prompt: 'Ordering delicious street food at a bustling night market and asking for recommendations' },
+      { id: 'office', label: '💼 Tán Gẫu Công Sở', prompt: 'Casual Monday morning catch-up with a friendly coworker by the water cooler' },
+      { id: 'travel', label: '✈️ Sân Bay & Du Lịch', prompt: 'Asking for gate directions and chatting while waiting for a flight at the airport' },
+      { id: 'friends', label: '🎉 Hẹn Hò Bạn Bè', prompt: 'Making weekend plans with a close friend to hang out and watch a movie' },
+      { id: 'shopping', label: '🛍️ Mua Sắm Quần Áo', prompt: 'Asking for sizes, trying on clothes, and asking for discounts at a boutique store' },
+      { id: 'hotel', label: '🏨 Nhận Phòng Khách Sạn', prompt: 'Checking in at a hotel and asking about breakfast and wifi' },
+      { id: 'doctor', label: '🩺 Khám Bác Sĩ', prompt: 'Describing symptoms to a doctor at a clinic' },
+      { id: 'restaurant', label: '🍽️ Nhà Hàng', prompt: 'Booking a table and ordering a full meal at a restaurant' },
+      { id: 'interview', label: '🤝 Phỏng Vấn Xin Việc', prompt: 'A job interview about experience and strengths' },
+      { id: 'taxi', label: '🚕 Gọi Taxi / Grab', prompt: 'Taking a taxi or rideshare and chatting with the driver' },
+      { id: 'phonecall', label: '📞 Gọi Điện Thoại', prompt: 'Making a phone call and leaving a message' },
+      { id: 'meeting', label: '📊 Họp Nhóm', prompt: 'Taking part in a team meeting and sharing updates' },
+      { id: 'gym', label: '🏋️ Phòng Gym', prompt: 'Signing up at a gym and asking a trainer for advice' }
+    ];
+
+    const BADGES_CATALOG = [
+      { id: 'first_step', name: 'Bước Đầu Tự Tin', icon: '🐣', desc: 'Hoàn thành câu luyện nói đầu tiên', reqXp: 10 },
+      { id: 'linking_pro', name: 'Cao Thủ Nối Âm', icon: '🔗', desc: 'Đạt từ 80 XP trở lên khi luyện nói', reqXp: 80 },
+      { id: 'streak_star', name: 'Ong Chăm Chỉ', icon: '🐝', desc: 'Điểm danh nhận thưởng mỗi ngày', reqXp: 150 },
+      { id: 'native_vibe', name: 'Chuẩn Bản Xứ', icon: '🦄', desc: 'Tích lũy 300 XP học tập', reqXp: 300 },
+      { id: 'super_speaker', name: 'Đại Sứ Giao Tiếp', icon: '👑', desc: 'Tích lũy 600 XP xuất sắc', reqXp: 600 }
+    ];
+
+    const MOOD_OPTIONS = ['🤩 Hào hứng', '😊 Tự tin', '💪 Quyết tâm'];
+
+    // ==========================================
+    // APPLICATION STATE
+    // ==========================================
+    const state = {
+      activeTab: 'learn',
+      learnSubTab: 'dialogue',
+      speechRate: 1.0,
+      playingText: null,
+      isPlayingAll: false,
+      currentLesson: DEFAULT_LESSON,
+      selectedTopicId: 'coffee',
+      selectedTopicPrompt: PRESET_TOPICS[0].prompt,
+      isGeneratingLesson: false,
+      roleplayFilter: 'ALL',
+      selectedPracticeItem: {
+        english: DEFAULT_LESSON.dialogue[1].english,
+        linking: DEFAULT_LESSON.dialogue[1].linking,
+        vietnamese: DEFAULT_LESSON.dialogue[1].vietnamese,
+        tip: DEFAULT_LESSON.dialogue[1].tip,
+        speakerName: DEFAULT_LESSON.characters.B.name,
+        avatar: DEFAULT_LESSON.characters.B.avatar
+      },
+      isListening: false,
+      isEvaluating: false,
+      evaluationResult: null,
+      selectedMood: '🤩 Hào hứng',
+      // AI Connection Settings
+      customApiKey: '',
+      selectedModel: 'gemini-2.5-flash',
+      aiConnectedStatus: 'smart_hybrid', // 'connected' | 'smart_hybrid'
+      user: null,
+      userStats: {
+        xp: 120,
+        streak: 3,
+        lastCheckInDate: '',
+        checkedInDays: [1, 2, 3],
+        lessonsCompleted: 2
+      },
+      journalEntries: [
+        {
+          id: 'sample-1',
+          date: new Date().toLocaleDateString('vi-VN'),
+          topic: 'Gọi đồ uống ở quán Cà phê',
+          sentence: "Hey there! I'm kind of running on fumes.",
+          score: 92,
+          mood: '🤩 Hào hứng',
+          note: 'Học được cụm "running on fumes" (kiệt sức) và nối âm "kinda" rất tự nhiên!'
+        }
+      ]
+    };
+
+    let recognitionInstance = null;
+    let db = null;
+    let auth = null;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'sunnyspeak-english-app';
+
+    // ==========================================
+    // FIREBASE INITIALIZATION & REALTIME SYNC
+    // ==========================================
+    async function initFirebase() {
+      try {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          ({ initializeApp } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js'));
+          ({ getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js'));
+          ({ getFirestore, doc, setDoc, collection, onSnapshot, addDoc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js'));
+          const firebaseConfig = JSON.parse(__firebase_config);
+          const app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
+          db = getFirestore(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+
+          onAuthStateChanged(auth, (currentUser) => {
+            state.user = currentUser;
+            if (currentUser && db) {
+              setupFirestoreListeners(currentUser.uid);
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Cloud sync fallback mode:', err);
+      }
+    }
+
+    function setupFirestoreListeners(uid) {
+      const statsDocRef = doc(db, 'artifacts', appId, 'users', uid, 'profile', 'stats');
+      onSnapshot(
+        statsDocRef,
+        (snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            state.userStats = { ...state.userStats, ...data };
+            if (data.customApiKey && !state.customApiKey) {
+              state.customApiKey = data.customApiKey;
+              state.aiConnectedStatus = 'connected';
+            }
+            if (data.selectedModel) {
+              state.selectedModel = data.selectedModel;
+            }
+            renderHeaderStats();
+            renderBadgesAndJournal();
+          } else {
+            setDoc(statsDocRef, state.userStats).catch(() => {});
+          }
+        },
+        (err) => console.warn('Stats listener warning:', err)
+      );
+
+      const journalColRef = collection(db, 'artifacts', appId, 'users', uid, 'journal');
+      onSnapshot(
+        journalColRef,
+        (snap) => {
+          if (!snap.empty) {
+            const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            state.journalEntries = items;
+            renderHeaderStats();
+            renderBadgesAndJournal();
+          }
+        },
+        (err) => console.warn('Journal listener warning:', err)
+      );
+    }
+
+    const ROADMAP = [["Chào hỏi & giới thiệu", "Greeting and introducing yourself to someone new", "nối phụ âm + nguyên âm"], ["Gọi đồ uống", "Ordering drinks at a coffee shop", "Flap T"], ["Hỏi đường", "Asking for and giving directions in a city", "giảm âm can/to/for"], ["Mua sắm", "Shopping for clothes, asking about size and price", "nối it/a/on"], ["Gọi món nhà hàng", "Ordering a meal at a restaurant", "wanna/gonna/gotta"], ["Nói về gia đình", "Talking about family and friends", "you → ya"], ["Thói quen hằng ngày", "Describing a daily routine", "nuốt âm /h/ (him, her, have)"], ["Thời tiết & kế hoạch", "Small talk about weather and weekend plans", "ngữ điệu câu hỏi đuôi"], ["Hẹn lịch", "Making and confirming appointments", "đọc số & giờ (thirteen/thirty)"], ["Gọi taxi/Grab", "Taking a taxi or rideshare", "lemme/gimme/gotcha"], ["Chào hàng xóm", "Small talk with a neighbor", "nhịp nhấn câu (stress timing)"], ["Khách sạn", "Checking in at a hotel", "câu yêu cầu lịch sự could/would"], ["Sân bay", "Check-in and security at the airport", "chuỗi nối 3 từ"], ["Khám bác sĩ", "Describing symptoms at a doctor's office", "cụm phụ âm"], ["Gọi điện thoại", "Making a phone call and leaving a message", "giảm âm and/of/at"], ["Kể chuyện cuối tuần", "Telling a story about your weekend", "đuôi -ed quá khứ"], ["Rủ bạn đi chơi", "Making plans with friends", "whaddaya/dontcha/didja"], ["Đổi trả hàng", "Returning an item and asking for a refund", "Stop T (can't, didn't)"], ["Thuê nhà", "Viewing an apartment with a landlord", "nhấn từ nội dung"], ["Nêu ý kiến", "Giving opinions and politely agreeing or disagreeing", "ngữ điệu đồng tình/phản đối"], ["Phỏng vấn xin việc", "A job interview about experience and strengths", "nối âm trong câu dài"], ["Họp nhóm", "Taking part in a team meeting", "ngắt nhóm ý (thought groups)"], ["Thuyết trình ngắn", "Opening a short presentation", "nhấn mạnh & ngắt nghỉ"], ["Đàm phán", "Negotiating price or deadlines", "rút gọn I'd/we'd/would've"], ["Phàn nàn lịch sự", "Making a polite complaint at a restaurant or hotel", "ngữ điệu lịch sự"], ["Networking", "Networking at a conference", "nối chuỗi khi tự giới thiệu"], ["Giải thích sự cố kỹ thuật", "Explaining a problem to tech support", "âm yếu schwa"], ["Tranh luận nhẹ", "A friendly debate about a news topic", "nhấn tương phản"], ["Kể chuyện vui", "Telling a funny story with natural reactions", "ngữ điệu cảm thán"], ["Ôn tập tổng hợp", "A free-flowing conversation with a new friend, reviewing everything", "tổng hợp mọi kỹ thuật"]];
+    const phaseOf = (n) => n <= 10 ? { name: 'Nền tảng', level: 'A2', len: 'max 12 words per sentence' } : n <= 20 ? { name: 'Giao tiếp tự tin', level: 'B1', len: 'max 16 words per sentence' } : { name: 'Nâng cao & công việc', level: 'B2', len: 'max 22 words per sentence' };
+    const isLearned = (e) => (state.userStats.learned || []).includes(e);
+
+    function renderRoadmap() {
+      const el = document.getElementById('roadmap-card');
+      if (!el) return;
+      const done = state.userStats.roadmapDone || [];
+      let next = ROADMAP.findIndex((_, i) => !done.includes(i + 1));
+      if (next < 0) next = ROADMAP.length - 1;
+      const cur = ROADMAP[next], ph = phaseOf(next + 1);
+      const noKey = !(state.customApiKey || '').trim() && typeof __app_id === 'undefined';
+      el.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <p class="text-sm font-semibold text-indigo-700">Lộ trình 30 ngày · Giai đoạn ${ph.name} (${ph.level})</p>
+            <h2 class="text-xl font-bold text-slate-800">Ngày ${next + 1}: ${escapeHtml(cur[0])}</h2>
+            <p class="text-sm text-slate-600">Trọng tâm nối âm: ${escapeHtml(cur[2])} · Đã hoàn thành ${done.length}/30 ngày</p>
+            ${noKey ? '<p class="text-sm text-amber-700 font-semibold mt-1">Nhập Gemini API Key để AI soạn bài riêng cho từng ngày.</p>' : ''}
+          </div>
+          <button onclick="startRoadmapDay(${next + 1})" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">Học bài hôm nay</button>
+        </div>
+        <div class="grid grid-cols-6 sm:grid-cols-10 gap-2">
+          ${ROADMAP.map((d, i) => `<button onclick="startRoadmapDay(${i + 1})" title="${escapeHtml(d[0])}" class="py-2 rounded-xl text-sm font-semibold border-2 cursor-pointer ${done.includes(i + 1) ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : i === next ? 'bg-amber-100 border-amber-400 text-amber-900' : 'bg-white border-slate-200 text-slate-700'} ${state.currentDay === i + 1 ? 'ring-2 ring-teal-500' : ''}">${done.includes(i + 1) ? '✓' : i + 1}</button>`).join('')}
+        </div>`;
+    }
+
+    function loadLesson(l, n) {
+      state.currentLesson = normalizeLesson(l); state.currentDay = n || null;
+      const f = l.dialogue[0], ch = l.characters?.[f.speaker] || {};
+      state.selectedPracticeItem = { english: f.english, linking: f.linking, vietnamese: f.vietnamese, tip: f.tip, speakerName: ch.name || 'Speaker', avatar: ch.avatar || '🌟' };
+      state.evaluationResult = null;
+      renderLessonOverview(); renderLearnSubTabContent(); renderPracticeView(); saveLocal();
+    }
+
+    window.startRoadmapDay = (n) => {
+      const d = ROADMAP[n - 1];
+      if (!d || state.isGeneratingLesson) return;
+      try {
+        const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}')[n];
+        if (c) { loadLesson(c, n); showToast(`Đã mở lại bài Ngày ${n}.`); return; }
+      } catch (e) {}
+      const ph = phaseOf(n);
+      state.pendingDay = n;
+      state.pendingFocus = ` This is Day ${n} of a 30-day speaking roadmap, target level CEFR ${ph.level}. Main connected-speech focus: ${d[2]} (build the linkingSecrets around it). Sentence length: ${ph.len}.`;
+      handleGenerateNewLesson(d[1], null);
+    };
+
+    function checkDayDone() {
+      if (!state.currentDay) return;
+      const L = state.currentLesson.dialogue || [], done = state.userStats.roadmapDone || [];
+      if (L.length && L.every((l) => isLearned(l.english)) && !done.includes(state.currentDay)) {
+        updateStats({ roadmapDone: [...done, state.currentDay], xp: state.userStats.xp + 50 });
+        showToast(`🎉 Hoàn thành Ngày ${state.currentDay} của lộ trình! +50 XP`);
+      }
+    }
+    function refreshLearned() { renderLearnSubTabContent(); renderPracticeView(); renderRoadmap(); renderLessonOverview(); }
+    window.toggleLearned = async (idx) => {
+      const e = state.currentLesson.dialogue?.[idx]?.english;
+      if (!e) return;
+      const set = new Set(state.userStats.learned || []);
+      set.has(e) ? set.delete(e) : set.add(e);
+      await updateStats({ learned: [...set] });
+      checkDayDone(); refreshLearned();
+    };
+    function autoLearn(score) {
+      const e = state.selectedPracticeItem.english;
+      if (score >= 70 && !isLearned(e) && state.currentLesson.dialogue.some((l) => l.english === e)) {
+        updateStats({ learned: [...(state.userStats.learned || []), e] }).then(() => { checkDayDone(); refreshLearned(); });
+      }
+    }
+
+    const VI_BUILTIN = {
+      "Morning! What can I get started for you today?": "Mo-ning! Quát cần-nai gét xtác-tịt phờ-ya tờ-đây?",
+      "Hey there! I'm kind of running on fumes. Can I grab a large iced latte?": "Hây đe! Am cai-đờ rơ-ning on phiumz. Kần-nai grép-bờ la-giờ ai-xt la-tây?",
+      "You got it! Do you want to add a shot of vanilla or keep it classic?": "Du gá-đít! Đu-diu qua-nơ ét-ờ sá-đờv vờ-ni-lờ o kíp-pít clé-xích?",
+      "Let's keep it classic today. Oh, and I'll take a blueberry muffin to go!": "Lét kíp-pít clé-xích tờ-đây. Âu, ần ai-ồ tây-cờ blu-be-ri ma-phin tờ gâu!",
+      "Awesome, I'll have that right out for you in a sec!": "Ó-xậm, ai-ồ hép đát rai-đaut phờ-ya i-nờ xéc!"
+    };
+    const pronPending = new Set();
+    const readPronCache = () => { try { return JSON.parse(localStorage.getItem('ss_pron') || '{}'); } catch (e) { return {}; } };
+
+    async function loadPron() {
+      const ipaEl = document.getElementById('practice-target-ipa');
+      const viEl = document.getElementById('practice-target-vipron');
+      if (!ipaEl || !viEl) return;
+      const item = state.selectedPracticeItem, e = item.english;
+      const line = (state.currentLesson.dialogue || []).find((l) => l.english === e) || {};
+      const get = () => { const c = readPronCache()[e] || {}; return { ipa: line.phonetic || c.ipa || '', vi: line.viPron || VI_BUILTIN[e] || c.vi || '' }; };
+      const show = (p, msg) => { ipaEl.textContent = p.ipa || msg || ''; viEl.textContent = p.vi || msg || ''; };
+      let p = get();
+      if (p.ipa && p.vi) { show(p); return; }
+      const canAI = (state.customApiKey || '').trim() || typeof __app_id !== 'undefined';
+      if (!canAI) { show(p, 'Nhập Gemini API Key để xem phiên âm của câu này.'); return; }
+      show(p, '⏳ AI đang soạn phiên âm...');
+      if (pronPending.has(e)) return;
+      pronPending.add(e);
+      try {
+        const r = await callGeminiAPI({
+          contents: [{ parts: [{ text: `English sentence: "${e}"\nNative linking: "${item.linking}"\nGive (1) ipa: American English IPA of the whole sentence between slashes; (2) vi: how a Vietnamese learner reads it aloud using Vietnamese-style syllable spelling with hyphens between syllables, e.g. "Hello" -> "Hé-lô", reflecting the linking.` }] }],
+          generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { ipa: { type: 'STRING' }, vi: { type: 'STRING' } }, required: ['ipa', 'vi'] } }
+        });
+        const c = readPronCache(); c[e] = { ipa: r.ipa, vi: r.vi };
+        try { localStorage.setItem('ss_pron', JSON.stringify(c)); } catch (x) {}
+      } catch (err) {
+        if (state.selectedPracticeItem.english === e) show(get(), 'Chưa lấy được phiên âm. Kiểm tra API Key và mạng.');
+        pronPending.delete(e); return;
+      }
+      pronPending.delete(e);
+      if (state.selectedPracticeItem.english === e) show(get());
+    }
+
+    function normalizeLesson(l) {
+      const def = { A: '🦊', B: '🐰' };
+      ['A', 'B'].forEach((k) => {
+        const c = l && l.characters && l.characters[k];
+        if (c && (!c.avatar || /https?:|\/|\./.test(c.avatar) || [...c.avatar].length > 4)) c.avatar = def[k];
+      });
+      return l;
+    }
+
+    function saveLocal() {
+      try { localStorage.setItem('ss_data', JSON.stringify({ s: state.userStats, j: state.journalEntries, m: state.selectedModel, l: state.currentLesson, d: state.currentDay })); } catch (e) {}
+    }
+    function loadLocal() {
+      try {
+        const d = JSON.parse(localStorage.getItem('ss_data') || 'null');
+        if (!d) return;
+        state.userStats = { ...state.userStats, ...d.s };
+        if (d.j) state.journalEntries = d.j;
+        if (d.m) state.selectedModel = d.m;
+        if (d.l && d.l.dialogue && d.l.dialogue.length) {
+          state.currentLesson = normalizeLesson(d.l); state.currentDay = d.d || null;
+          const f = d.l.dialogue[0], ch = d.l.characters?.[f.speaker] || {};
+          state.selectedPracticeItem = { english: f.english, linking: f.linking, vietnamese: f.vietnamese, tip: f.tip, speakerName: ch.name || 'Speaker', avatar: ch.avatar || '🌟' };
+        }
+        if (state.userStats.customApiKey) { state.customApiKey = state.userStats.customApiKey; state.aiConnectedStatus = 'connected'; }
+      } catch (e) {}
+    }
+
+    async function updateStats(newPartialStats) {
+      state.userStats = { ...state.userStats, ...newPartialStats };
+      saveLocal();
+      renderHeaderStats();
+      renderBadgesAndJournal();
+      if (state.user && db) {
+        try {
+          const statsDocRef = doc(db, 'artifacts', appId, 'users', state.user.uid, 'profile', 'stats');
+          await setDoc(statsDocRef, state.userStats, { merge: true });
+        } catch (e) {
+          console.warn('Failed to save stats:', e);
+        }
+      }
+    }
+
+    // ==========================================
+    // UTILITIES: HTML ESCAPE, LINKING FORMATTER & TOAST
+    // ==========================================
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatLinkingHtml(text) {
+      if (!text) return '';
+      const escaped = escapeHtml(text);
+      return escaped
+        .split('‿')
+        .join('<span class="linking-arc" title="Nối âm mượt giữa 2 từ">‿</span>');
+    }
+
+    let toastTimeout = null;
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const isError = type === 'error';
+      container.innerHTML = `
+        <div class="flex items-center gap-3 px-5 py-3.5 rounded-3xl shadow-xl border-2 animate-pop ${
+          isError
+            ? 'bg-rose-50 border-rose-300 text-rose-800'
+            : 'bg-emerald-50 border-emerald-300 text-emerald-900'
+        }">
+          <span class="text-2xl">${isError ? '🥺' : '✨'}</span>
+          <p class="font-bold text-sm">${escapeHtml(msg)}</p>
+        </div>
+      `;
+      container.classList.remove('hidden');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        container.classList.add('hidden');
+      }, 7000);
+    }
+
+    // ==========================================
+    // MULTI-STRATEGY GEMINI API CALLER & FALLBACK ENGINE
+    // ==========================================
+    async function callGeminiAPI(payload) {
+      const userKey = (state.customApiKey || '').trim();
+
+      // Build candidate endpoints to try in order
+      const candidateAttempts = [];
+      if (userKey) {
+        candidateAttempts.push({ model: state.selectedModel || 'gemini-2.5-flash', key: userKey });
+        if (state.selectedModel !== 'gemini-2.5-flash') {
+          candidateAttempts.push({ model: 'gemini-2.5-flash', key: userKey });
+        }
+        if (state.selectedModel !== 'gemini-2.0-flash') {
+          candidateAttempts.push({ model: 'gemini-2.0-flash', key: userKey });
+        }
+      } else if (typeof __app_id !== 'undefined') {
+        // Canvas preview environment auto-injected key attempt
+        const apiKey = "";
+        candidateAttempts.push({ model: 'gemini-3-flash-preview', key: apiKey });
+        candidateAttempts.push({ model: 'gemini-2.5-flash', key: apiKey });
+      }
+
+      let lastErr = null;
+      for (const attemptCfg of candidateAttempts) {
+        try {
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${attemptCfg.model}:generateContent?key=${attemptCfg.key}`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const result = await response.json();
+          const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!text) throw new Error('Empty response');
+
+          // Clean possible markdown code fences around JSON
+          const cleanedJson = text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+          const parsed = JSON.parse(cleanedJson);
+          state.aiConnectedStatus = 'connected';
+          renderHeaderStats();
+          return parsed;
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+
+      throw lastErr || new Error('All Gemini endpoints unreachable');
+    }
+
+    // ==========================================
+    // SMART LOCAL LESSON GENERATOR (NEVER FAILS)
+    // ==========================================
+    function getSmartLocalLesson(topicQuery, presetId) {
+      if (presetId && BUILTIN_LESSONS_BANK[presetId]) {
+        return BUILTIN_LESSONS_BANK[presetId];
+      }
+
+      const lower = (topicQuery || '').toLowerCase();
+      if (lower.includes('hàng xóm') || lower.includes('neighbor') || lower.includes('thang máy')) {
+        return BUILTIN_LESSONS_BANK.neighbors;
+      }
+      if (lower.includes('ẩm thực') || lower.includes('chợ') || lower.includes('ăn') || lower.includes('food') || lower.includes('market') || lower.includes('nhà hàng')) {
+        return BUILTIN_LESSONS_BANK.streetfood;
+      }
+      if (lower.includes('công sở') || lower.includes('văn phòng') || lower.includes('đồng nghiệp') || lower.includes('office') || lower.includes('work') || lower.includes('đối tác')) {
+        return BUILTIN_LESSONS_BANK.office;
+      }
+      if (lower.includes('sân bay') || lower.includes('du lịch') || lower.includes('đường') || lower.includes('travel') || lower.includes('airport') || lower.includes('hotel')) {
+        return BUILTIN_LESSONS_BANK.travel;
+      }
+      if (lower.includes('bạn') || lower.includes('phim') || lower.includes('hẹn') || lower.includes('friend') || lower.includes('movie')) {
+        return BUILTIN_LESSONS_BANK.friends;
+      }
+      if (lower.includes('mua') || lower.includes('áo') || lower.includes('giá') || lower.includes('shop') || lower.includes('mặc cả')) {
+        return BUILTIN_LESSONS_BANK.shopping;
+      }
+
+      // Dynamic custom topic adaptation if user typed a brand-new custom topic offline
+      if (topicQuery && topicQuery.trim().length > 2) {
+        const cleanTitle = topicQuery.trim();
+        return {
+          id: 'custom-smart-' + Date.now(),
+          topic: `Giao tiếp Tự nhiên: ${cleanTitle}`,
+          situation: `Bạn đang trò chuyện trực tiếp cùng người bản xứ trong tình huống "${cleanTitle}" với phong thái tự tin, thân thiện.`,
+          level: 'Intermediate - Bản xứ ứng dụng',
+          characters: {
+            A: { name: 'Jordan (Local)', avatar: '🦊', role: 'Người bản xứ nhiệt tình' },
+            B: { name: 'Bạn (Speaker)', avatar: '🐰', role: 'Người giao tiếp tự tin' }
+          },
+          dialogue: [
+            {
+              speaker: 'A',
+              english: `Hey there! It's great to see you here for ${cleanTitle}. How's everything going?`,
+              linking: `Hey there! It's great tə see ya here for ${cleanTitle}. How's‿everything going?`,
+              phonetic: "/heɪ ðɛr! ɪts ɡreɪt tə siː jə hɪr. haʊz‿ˈɛvriθɪŋ ˈɡoʊɪŋ/",
+              vietnamese: `Chào bạn! Rất vui được gặp bạn ở đây trong dịp ${cleanTitle}. Mọi việc thế nào rồi?`,
+              tip: "'How is everything' nối âm /z/ sang /ɛ/ thành 'How-zɛ-vry-thing'."
+            },
+            {
+              speaker: 'B',
+              english: "Pretty good, thanks! I'm actually trying to figure out the best way to get started.",
+              linking: "Pretty good, thanks! I'm‿actually trying tə figure‿out the best way tə get‿started.",
+              phonetic: "/ˈprɪdi ɡʊd, θæŋks! aɪm‿ˈæktʃuəli ˈtraɪɪŋ tə ˈfɪɡjər‿aʊt ðə bɛst weɪ tə ɡɛt ˈstɑːrdɪd/",
+              vietnamese: "Khá ổn, cảm ơn bạn! Thực ra mình đang tìm cách tốt nhất để bắt đầu đây.",
+              tip: "'Pretty' có Flap T đọc nhẹ là 'pri-dy', 'figure out' nối âm /r/ sang /aʊ/ thành 'fi-gyə-raut'."
+            },
+            {
+              speaker: 'A',
+              english: "No worries at all! I can walk you through it step by step.",
+              linking: "No worries‿at‿all! I c'n walk ya through‿it step by step.",
+              phonetic: "/noʊ ˈwɜːriz‿əd‿ɔːl! aɪ kən wɔːk jə θruː‿ɪt stɛp baɪ stɛp/",
+              vietnamese: "Đừng lo lắng chút nào nhé! Mình có thể hướng dẫn bạn từng bước một.",
+              tip: "'At all' nối Flap T sang nguyên âm thành 'ə-dɔːl'."
+            },
+            {
+              speaker: 'B',
+              english: "That would be a huge help! I really appreciate you taking the time.",
+              linking: "That'd be‿a huge help! I really‿appreciate ya taking the time.",
+              phonetic: "/ˈðædəd biː‿ə hjuːdʒ hɛlp! aɪ ˈrɪli‿əˈpriːʃieɪt jə ˈteɪkɪŋ ðə taɪm/",
+              vietnamese: "Thế thì giúp đỡ cho mình lớn quá! Mình rất cảm kích vì bạn đã dành thời gian.",
+              tip: "'That would' rút gọn thành 'That'd' (/ˈðædəd/) nghe cực kỳ bản xứ."
+            },
+            {
+              speaker: 'A',
+              english: "Anytime! Let's jump right in and make the most of it!",
+              linking: "Anytime! Let's jump right‿in and make the most‿of‿it!",
+              phonetic: "/ˈɛniˌtaɪm! lɛts dʒʌmp raɪd‿ɪn ənd meɪk ðə moʊst‿əv‿ɪt/",
+              vietnamese: "Có gì đâu, bất cứ lúc nào nhé! Tụi mình bắt tay vào ngay và tận hưởng tối đa nào!",
+              tip: "'Right in' và 'most of it' đều nối âm liên hoàn mượt mà."
+            }
+          ],
+          linkingSecrets: BUILTIN_LESSONS_BANK.coffee.linkingSecrets,
+          nativeExpressions: BUILTIN_LESSONS_BANK.neighbors.nativeExpressions
+        };
+      }
+
+      // Rotate to a different built-in lesson so clicking "Generate" always feels fresh
+      const keys = Object.keys(BUILTIN_LESSONS_BANK);
+      const nextIdx = (keys.indexOf(state.selectedTopicId) + 1) % keys.length;
+      state.selectedTopicId = keys[nextIdx];
+      return BUILTIN_LESSONS_BANK[state.selectedTopicId];
+    }
+
+    // ==========================================
+    // SMART LOCAL PRONUNCIATION EVALUATOR (DETAILED & ACCURATE)
+    // ==========================================
+    function evaluateSpeechLocally(targetSentence, linkingGuide, spokenTranscript, tipText) {
+      const targetWords = targetSentence.trim().split(/\s+/);
+      const cleanSpokenWords = spokenTranscript
+        .toLowerCase()
+        .replace(/[^a-z0-9'\s]/g, '')
+        .split(/\s+/)
+        .filter(Boolean);
+
+      let matchedCount = 0;
+      let almostCount = 0;
+
+      const wordBreakdown = targetWords.map((rawWord) => {
+        const cleanTarget = rawWord.toLowerCase().replace(/[^a-z0-9']/g, '');
+        if (!cleanTarget) {
+          return { word: rawWord, status: 'good', advice: 'Tốt!' };
+        }
+
+        const exactMatch = cleanSpokenWords.includes(cleanTarget);
+        const partialMatch =
+          !exactMatch &&
+          cleanSpokenWords.some(
+            (sw) =>
+              (sw.length >= 3 && cleanTarget.startsWith(sw.slice(0, 3))) ||
+              cleanTarget.includes(sw) ||
+              sw.includes(cleanTarget)
+          );
+
+        if (exactMatch) {
+          matchedCount++;
+          return {
+            word: rawWord,
+            status: 'good',
+            advice: `Phát âm từ "${rawWord}" rất rõ ràng và chuẩn xác!`
+          };
+        } else if (partialMatch) {
+          almostCount++;
+          return {
+            word: rawWord,
+            status: 'almost',
+            advice: `Từ "${rawWord}" gần chuẩn rồi, chú ý bật rõ âm cuối hơn một chút nhé.`
+          };
+        } else {
+          return {
+            word: rawWord,
+            status: 'missed',
+            advice: `Hãy bấm vào từ "${rawWord}" để nghe lại và đọc rõ trọng âm từ này nhé.`
+          };
+        }
+      });
+
+      const total = Math.max(1, targetWords.length);
+      const rawRatio = (matchedCount + almostCount * 0.6) / total;
+      const accuracyScore = Math.min(100, Math.max(60, Math.round(rawRatio * 100)));
+      const linkingScore = Math.min(100, Math.max(65, accuracyScore + (matchedCount === total ? 2 : 4)));
+      const fluencyScore = Math.min(100, Math.max(68, Math.round((accuracyScore + linkingScore) / 2)));
+      const overallScore = Math.round((accuracyScore * 0.45) + (linkingScore * 0.3) + (fluencyScore * 0.25));
+
+      let praiseVi = 'Tuyệt vời! Bạn phát âm rất tự nhiên, đúng nhịp điệu của người bản xứ!';
+      if (overallScore < 80) {
+        praiseVi = 'Khởi đầu rất tốt! Bạn đã nắm được mạch câu, chỉ cần trau chuốt thêm vài âm cuối nhé!';
+      } else if (overallScore < 92) {
+        praiseVi = 'Giọng đọc rất sáng và giàu năng lượng! Độ trôi chảy của bạn rất đáng khen!';
+      }
+
+      return {
+        overallScore,
+        accuracyScore,
+        linkingScore,
+        fluencyScore,
+        wordBreakdown,
+        praiseVi,
+        linkingFeedbackVi: `Bí quyết lướt âm câu này: Hãy đọc dính liền các chỗ nối âm "${linkingGuide}" thay vì ngắt rời từng từ.`,
+        nativeTipVi:
+          tipText ||
+          'Hãy nhấn nhẹ vào các danh từ, động từ chính và hạ giọng lướt nhanh ở các từ nối (for, to, of, a) để giống người bản xứ 100% nhé!'
+      };
+    }
+
+    // ==========================================
+    // WEB SPEECH API (TEXT TO SPEECH)
+    // ==========================================
+    let EN_VOICES = [];
+    const voiceRank = (v) => (/en[-_]US/i.test(v.lang) ? 10 : 0) + (/natural|online|neural|google|aria|jenny|guy|samantha|ava|allison|zoe|siri/i.test(v.name) ? 5 : 0);
+    const savedVoice = () => { try { return localStorage.getItem('ss_voice') || ''; } catch (e) { return ''; } };
+    function loadVoices() {
+      EN_VOICES = (window.speechSynthesis?.getVoices() || []).filter((v) => /^en[-_]/i.test(v.lang) && !/albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|kathy|ralph|eddy|flo\b|grandma|grandpa|reed|rocko|sandy|shelley|espeak|compact/i.test(v.name)).sort((a, b) => voiceRank(b) - voiceRank(a));
+      const sel = document.getElementById('voice-select');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">Giọng Anh-Mỹ tự động</option>' + EN_VOICES.map((v) => `<option value="${escapeHtml(v.name)}">${escapeHtml(v.name)} (${v.lang})</option>`).join('');
+      sel.value = savedVoice();
+    }
+    // Luôn gán voice tiếng Anh một cách tường minh, không để trình duyệt dùng giọng mặc định tiếng Việt
+    function applyVoice(u, sp) {
+      if (!EN_VOICES.length) loadVoices();
+      const v = EN_VOICES.find((x) => x.name === savedVoice()) ||
+        (sp === 'B' && EN_VOICES[1] && EN_VOICES[1].lang === EN_VOICES[0].lang ? EN_VOICES[1] : EN_VOICES[0]);
+      u.lang = v ? v.lang : 'en-US';
+      if (v) u.voice = v;
+      else if (!window._warnedVoice) {
+        window._warnedVoice = 1;
+        showToast('Máy chưa có giọng tiếng Anh. Hãy cài giọng English (US) trong cài đặt Giọng nói của hệ điều hành, hoặc dùng Chrome/Edge.', 'error');
+      }
+    }
+    window.setVoice = (name) => {
+      try { localStorage.setItem('ss_voice', name); } catch (e) {}
+      speakText('Hey there! Nice to meet you.', 1.0);
+    };
+
+    function speakText(text, customRate = state.speechRate, pitch = 1.05) {
+      if (!('speechSynthesis' in window)) {
+        showToast('Trình duyệt của bạn chưa hỗ trợ đọc âm thanh tự động.', 'info');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      state.isPlayingAll = false;
+      updatePlayAllButtonUI();
+
+      const cleanText = text.replace(/‿/g, ' ');
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = 'en-US';
+      utterance.rate = customRate;
+      utterance.pitch = 1;
+
+      applyVoice(utterance, pitch > 1.1 ? 'B' : 'A');
+
+      utterance.onstart = () => {
+        state.playingText = text;
+        if (state.activeTab === 'learn' && state.learnSubTab === 'dialogue') {
+          renderLearnSubTabContent();
+        }
+      };
+      utterance.onend = () => {
+        state.playingText = null;
+        if (state.activeTab === 'learn' && state.learnSubTab === 'dialogue') {
+          renderLearnSubTabContent();
+        }
+      };
+      utterance.onerror = () => {
+        state.playingText = null;
+      };
+
+      setTimeout(() => window.speechSynthesis.speak(utterance), 120);
+    }
+
+    function playFullDialogue() {
+      if (!('speechSynthesis' in window)) return;
+      if (state.isPlayingAll) {
+        window.speechSynthesis.cancel();
+        state.isPlayingAll = false;
+        state.playingText = null;
+        updatePlayAllButtonUI();
+        renderLearnSubTabContent();
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      state.isPlayingAll = true;
+      updatePlayAllButtonUI();
+
+      const lines = state.currentLesson.dialogue || [];
+      let index = 0;
+
+      const playNext = () => {
+        if (!state.isPlayingAll || index >= lines.length) {
+          state.isPlayingAll = false;
+          state.playingText = null;
+          updatePlayAllButtonUI();
+          renderLearnSubTabContent();
+          return;
+        }
+        const line = lines[index];
+        const utterance = new SpeechSynthesisUtterance(line.english);
+        utterance.lang = 'en-US';
+        utterance.rate = state.speechRate;
+        utterance.pitch = 1;
+        applyVoice(utterance, line.speaker);
+
+        utterance.onstart = () => {
+          state.playingText = line.english;
+          renderLearnSubTabContent();
+        };
+        utterance.onend = () => {
+          index++;
+          setTimeout(playNext, 350);
+        };
+        utterance.onerror = () => {
+          state.isPlayingAll = false;
+          state.playingText = null;
+          updatePlayAllButtonUI();
+          renderLearnSubTabContent();
+        };
+        window.speechSynthesis.speak(utterance);
+      };
+
+      playNext();
+    }
+
+    function updatePlayAllButtonUI() {
+      const btn = document.getElementById('play-all-dialogue-btn');
+      const txt = document.getElementById('play-all-dialogue-text');
+      if (!btn || !txt) return;
+
+      if (state.isPlayingAll) {
+        btn.className =
+          'flex items-center gap-2 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition cursor-pointer bg-rose-500 text-white animate-pulse';
+        txt.textContent = 'Đang phát hội thoại (Bấm để dừng)';
+      } else {
+        btn.className =
+          'flex items-center gap-2 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition cursor-pointer bg-teal-500 hover:bg-teal-600 text-white shadow-sm';
+        txt.textContent = 'Nghe Toàn Bộ Hội Thoại';
+      }
+    }
+
+    // ==========================================
+    // SPEECH RECOGNITION (MIC RECORDING)
+    // ==========================================
+    async function audioToWavBase64(blob) {
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      const buf = await ac.decodeAudioData(await blob.arrayBuffer());
+      ac.close();
+      const len = Math.max(1, Math.ceil(buf.duration * 16000));
+      const oc = new OfflineAudioContext(1, len, 16000);
+      const src = oc.createBufferSource();
+      src.buffer = buf; src.connect(oc.destination); src.start();
+      const pcm = (await oc.startRendering()).getChannelData(0);
+      const dv = new DataView(new ArrayBuffer(44 + len * 2));
+      const w = (o, t) => [...t].forEach((c, i) => dv.setUint8(o + i, c.charCodeAt(0)));
+      w(0, 'RIFF'); dv.setUint32(4, 36 + len * 2, true); w(8, 'WAVEfmt ');
+      dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+      dv.setUint32(24, 16000, true); dv.setUint32(28, 32000, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true);
+      w(36, 'data'); dv.setUint32(40, len * 2, true);
+      for (let i = 0; i < len; i++) { const x = Math.max(-1, Math.min(1, pcm[i])); dv.setInt16(44 + i * 2, x < 0 ? x * 32768 : x * 32767, true); }
+      const bytes = new Uint8Array(dv.buffer);
+      let bin = '';
+      for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+      return btoa(bin);
+    }
+
+    function micError(code) {
+      const blocked = 'Trình duyệt đang chặn Micro. Bấm biểu tượng ổ khóa cạnh thanh địa chỉ → cho phép Microphone → tải lại trang.';
+      const map = {
+        NotAllowedError: blocked, 'not-allowed': blocked, 'service-not-allowed': blocked, SecurityError: blocked,
+        NotFoundError: 'Không tìm thấy micro. Hãy cắm/bật micro rồi thử lại.', 'audio-capture': 'Không truy cập được micro. Có thể ứng dụng khác đang dùng nó.',
+        NotReadableError: 'Micro đang được ứng dụng khác sử dụng.', 'no-speech': 'Chưa nghe thấy giọng nói, hãy thử đọc to hơn.',
+        network: 'Không kết nối được máy chủ nhận dạng của Google. Kiểm tra mạng rồi thử lại.'
+      };
+      let msg = map[code] || `Lỗi micro (${code}).`;
+      if (location.protocol === 'file:') msg += ' Bạn đang mở file trực tiếp (file://): hãy mở qua https hoặc localhost để trình duyệt nhớ quyền Micro.';
+      if (window.self !== window.top) msg += ' Trang đang nằm trong khung nhúng (iframe) nên mic bị chặn: hãy mở ở tab riêng.';
+      showToast(msg, 'error');
+    }
+
+    let mediaRec = null, mediaStream = null, recChunks = [], recTimer = null;
+
+    function stopListening() {
+      clearTimeout(recTimer);
+      if (mediaRec && mediaRec.state === 'recording') mediaRec.stop();
+      else if (recognitionInstance) recognitionInstance.stop();
+      state.isListening = false;
+      updateMicUI();
+    }
+
+    async function recordAndSendToGoogle() {
+      try {
+        // Dùng lại luồng micro đã được cấp quyền, chỉ xin quyền 1 lần mỗi lần mở trang
+        if (!mediaStream || !mediaStream.getTracks().some((t) => t.readyState === 'live')) {
+          mediaStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+        }
+        mediaStream.getTracks().forEach((t) => (t.enabled = true));
+      } catch (e) { micError(e.name); return; }
+      const input = document.getElementById('spoken-transcript-input');
+      const audioEl = document.getElementById('my-audio');
+      recChunks = []; state.lastAudio = null; state.evaluationResult = null; renderEvaluationResult();
+      input.value = '';
+      mediaRec = new MediaRecorder(mediaStream);
+      mediaRec.ondataavailable = (e) => { if (e.data.size) recChunks.push(e.data); };
+      mediaRec.onstop = async () => {
+        mediaStream.getTracks().forEach((t) => (t.enabled = false));
+        state.isListening = false; updateMicUI();
+        const blob = new Blob(recChunks, { type: mediaRec.mimeType || 'audio/webm' });
+        audioEl.src = URL.createObjectURL(blob); audioEl.classList.remove('hidden');
+        const oldPh = input.placeholder;
+        input.placeholder = '⏳ Google Gemini đang nhận dạng giọng nói của bạn...';
+        try {
+          const b64 = await audioToWavBase64(blob);
+          state.lastAudio = b64; state.lastAudioFor = state.selectedPracticeItem.english;
+          const r = await callGeminiAPI({
+            contents: [{ parts: [
+              { text: 'Transcribe EXACTLY what the speaker says in English, word for word. Do not correct grammar or mispronunciations and do not add words. If silent or unintelligible, return an empty string.' },
+              { inlineData: { mimeType: 'audio/wav', data: b64 } }
+            ] }],
+            generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { transcript: { type: 'STRING' } }, required: ['transcript'] } }
+          });
+          input.value = (r.transcript || '').trim();
+          if (!input.value) showToast('Chưa nghe rõ giọng bạn. Hãy thử đọc lại gần micro hơn.', 'error');
+          else showToast('Đã nhận dạng xong! Bấm "AI Chấm Điểm Ngay" nhé.');
+        } catch (e) {
+          showToast(`Không gửi được âm thanh lên Google (${e.message}). Kiểm tra API Key và mạng, hoặc gõ câu bạn vừa đọc vào ô bên dưới.`, 'error');
+        } finally { input.placeholder = oldPh; }
+      };
+      mediaRec.start();
+      state.isListening = true; updateMicUI();
+      recTimer = setTimeout(stopListening, 20000);
+    }
+
+    function startWebSpeech() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) {
+        showToast('Trình duyệt này không hỗ trợ nhận dạng giọng nói. Hãy dùng Chrome/Edge, hoặc nhập Gemini API Key để ghi âm gửi lên Google.', 'error');
+        return;
+      }
+      const rec = new SR();
+      rec.lang = 'en-US'; rec.interimResults = true; rec.continuous = false;
+      rec.onstart = () => {
+        state.isListening = true; state.lastAudio = null;
+        document.getElementById('spoken-transcript-input').value = '';
+        state.evaluationResult = null; renderEvaluationResult(); updateMicUI();
+      };
+      rec.onresult = (ev) => {
+        let t = '';
+        for (let i = 0; i < ev.results.length; i++) t += ev.results[i][0].transcript;
+        document.getElementById('spoken-transcript-input').value = t;
+      };
+      rec.onerror = (ev) => { state.isListening = false; updateMicUI(); micError(ev.error); };
+      rec.onend = () => { state.isListening = false; updateMicUI(); };
+      recognitionInstance = rec;
+      try { rec.start(); } catch (e) { micError(e.name || 'not-allowed'); }
+    }
+
+    function toggleListening() {
+      if (state.isListening) { stopListening(); return; }
+      const hasKey = (state.customApiKey || '').trim().length > 5;
+      if (hasKey && navigator.mediaDevices?.getUserMedia && window.MediaRecorder) recordAndSendToGoogle();
+      else startWebSpeech();
+    }
+
+    function updateMicUI() {
+      const btn = document.getElementById('mic-record-btn');
+      const title = document.getElementById('mic-status-title');
+      if (!btn || !title) return;
+
+      if (state.isListening) {
+        btn.className =
+          'w-16 h-16 rounded-3xl flex items-center justify-center shadow-lg transition transform active:scale-95 cursor-pointer bg-rose-600 text-white animate-pulse ring-4 ring-rose-200 shrink-0';
+        btn.innerHTML = '<i data-lucide="mic-off" class="w-8 h-8"></i>';
+        title.textContent = '🎙️ Đang lắng nghe bạn đọc...';
+      } else {
+        btn.className =
+          'w-16 h-16 rounded-3xl flex items-center justify-center shadow-lg transition transform active:scale-95 cursor-pointer bg-gradient-to-tr from-rose-500 to-orange-400 text-white hover:opacity-95 shrink-0';
+        btn.innerHTML = '<i data-lucide="mic" class="w-8 h-8"></i>';
+        title.textContent = 'Bấm Micro để đọc to câu trên';
+      }
+      lucide.createIcons();
+    }
+
+    function simulateVoiceAttempt(quality = 'perfect') {
+      state.evaluationResult = null;
+      renderEvaluationResult();
+      const target = state.selectedPracticeItem.english;
+      const inputEl = document.getElementById('spoken-transcript-input');
+      if (quality === 'perfect') {
+        inputEl.value = target;
+        showToast('Đã thu nhận giọng đọc mẫu chuẩn xác! Hãy bấm "AI Chấm Điểm Ngay" nhé.');
+      } else {
+        const words = target.split(' ');
+        const slightlyModified = words
+          .map((w, idx) => (idx === 2 ? 'um' : w))
+          .join(' ');
+        inputEl.value = slightlyModified;
+        showToast('Đã giả lập bản thu âm có một vài từ lướt chưa rõ để thử nghiệm chấm điểm!');
+      }
+    }
+
+    // ==========================================
+    // GENERATE NEW DAILY LESSON (AI + INSTANT BUILT-IN FALLBACK)
+    // ==========================================
+    async function handleGenerateNewLesson(customPromptOverride = null, presetId = null) {
+      if (state.isGeneratingLesson) return;
+      const customInputVal = document.getElementById('custom-topic-input')?.value.trim();
+      const topicToUse = customPromptOverride || customInputVal || state.selectedTopicPrompt;
+
+      state.isGeneratingLesson = true;
+      state.currentDay = state.pendingDay || null; state.pendingDay = null;
+      const focusNote = state.pendingFocus || ''; state.pendingFocus = '';
+      window.speechSynthesis?.cancel();
+      updateGenerateLessonButtonUI();
+
+      const systemPrompt = `You are a cheerful, expert native American English speaking coach creating daily interactive lessons for Vietnamese learners.
+Generate a realistic, natural everyday conversation with rich connected speech (linking, flap T, reductions like wanna/gonna/kinda, elision) and vivid native expressions.
+Make sure all Vietnamese explanations are warm, cute, encouraging, and easy to understand. Use the '‿' symbol in the 'linking' field to clearly show where words link together. In 'viPron', write how a Vietnamese learner can read the sentence aloud using Vietnamese-style syllable spelling with hyphens between syllables (e.g. Hello -> Hé-lô), following the linking and reductions. Each character's 'avatar' must be exactly ONE emoji character, never a URL or text.`;
+
+      const userQuery = `Create a fresh daily English speaking lesson for the situation/topic: "${topicToUse}". Today is ${getTodayIso()}; vary character names, settings and phrasing.${focusNote}
+Include 5 natural dialogue turns between Character A and Character B, 4 connected speech/linking secrets from the dialogue, and 4 native expressions compared with textbook English.`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: 'OBJECT',
+            properties: {
+              topic: { type: 'STRING' },
+              situation: { type: 'STRING' },
+              level: { type: 'STRING' },
+              characters: {
+                type: 'OBJECT',
+                properties: {
+                  A: {
+                    type: 'OBJECT',
+                    properties: {
+                      name: { type: 'STRING' },
+                      avatar: { type: 'STRING' },
+                      role: { type: 'STRING' }
+                    },
+                    required: ['name', 'avatar', 'role']
+                  },
+                  B: {
+                    type: 'OBJECT',
+                    properties: {
+                      name: { type: 'STRING' },
+                      avatar: { type: 'STRING' },
+                      role: { type: 'STRING' }
+                    },
+                    required: ['name', 'avatar', 'role']
+                  }
+                },
+                required: ['A', 'B']
+              },
+              dialogue: {
+                type: 'ARRAY',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    speaker: { type: 'STRING' },
+                    english: { type: 'STRING' },
+                    linking: { type: 'STRING' },
+                    phonetic: { type: 'STRING' },
+                    viPron: { type: 'STRING' },
+                    vietnamese: { type: 'STRING' },
+                    tip: { type: 'STRING' }
+                  },
+                  required: ['speaker', 'english', 'linking', 'phonetic', 'viPron', 'vietnamese', 'tip']
+                }
+              },
+              linkingSecrets: {
+                type: 'ARRAY',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    phrase: { type: 'STRING' },
+                    type: { type: 'STRING' },
+                    standardPronunciation: { type: 'STRING' },
+                    nativePronunciation: { type: 'STRING' },
+                    explanation: { type: 'STRING' },
+                    example: { type: 'STRING' }
+                  },
+                  required: ['phrase', 'type', 'standardPronunciation', 'nativePronunciation', 'explanation', 'example']
+                }
+              },
+              nativeExpressions: {
+                type: 'ARRAY',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    native: { type: 'STRING' },
+                    textbook: { type: 'STRING' },
+                    meaning: { type: 'STRING' },
+                    context: { type: 'STRING' },
+                    example: { type: 'STRING' }
+                  },
+                  required: ['native', 'textbook', 'meaning', 'context', 'example']
+                }
+              }
+            },
+            required: ['topic', 'situation', 'level', 'characters', 'dialogue', 'linkingSecrets', 'nativeExpressions']
+          }
+        }
+      };
+
+      let nextLesson = null;
+      let usedLiveAI = false;
+
+      try {
+        nextLesson = normalizeLesson(await callGeminiAPI(payload));
+        usedLiveAI = true;
+      } catch (err) {
+        // Seamless fallback to rich built-in lesson bank so user NEVER gets an error
+        nextLesson = getSmartLocalLesson(customInputVal || topicToUse, presetId);
+      }
+
+      try {
+        state.currentLesson = nextLesson;
+        if (state.currentDay) { try { const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}'); c[state.currentDay] = nextLesson; localStorage.setItem('ss_lessons', JSON.stringify(c)); } catch (e) {} }
+        if (nextLesson.dialogue && nextLesson.dialogue.length > 0) {
+          const firstLine = nextLesson.dialogue[0];
+          const charInfo = nextLesson.characters[firstLine.speaker] || { name: 'Speaker', avatar: '🌟' };
+          state.selectedPracticeItem = {
+            english: firstLine.english,
+            linking: firstLine.linking,
+            vietnamese: firstLine.vietnamese,
+            tip: firstLine.tip,
+            speakerName: charInfo.name,
+            avatar: charInfo.avatar
+          };
+        }
+        state.evaluationResult = null;
+        const transcriptEl = document.getElementById('spoken-transcript-input');
+        if (transcriptEl) transcriptEl.value = '';
+
+        await updateStats({
+          xp: state.userStats.xp + 15,
+          lessonsCompleted: (state.userStats.lessonsCompleted || 1) + 1
+        });
+
+        renderLessonOverview();
+        renderLearnSubTabContent();
+        renderPracticeView();
+
+        if (usedLiveAI) {
+          showToast('✨ Gemini AI đã biên soạn bài học mới tinh cho bạn! (+15 XP)');
+        } else {
+          showToast('✨ Đã tải bài học bản xứ mới thành công! (+15 XP)');
+        }
+      } finally {
+        state.isGeneratingLesson = false;
+        updateGenerateLessonButtonUI();
+      }
+    }
+
+    function updateGenerateLessonButtonUI() {
+      const btn = document.getElementById('generate-lesson-btn');
+      if (!btn) return;
+      btn.disabled = state.isGeneratingLesson;
+      if (state.isGeneratingLesson) {
+        btn.innerHTML = `
+          <i data-lucide="refresh-cw" class="w-5 h-5 animate-spin"></i>
+          <span>Đang chuẩn bị bài mới...</span>
+        `;
+      } else {
+        btn.innerHTML = `
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+          <span>Tạo Bài Học Mới Bằng AI</span>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // PRONUNCIATION SCORING (AI + SMART LOCAL EVALUATOR)
+    // ==========================================
+    async function handleEvaluateSpeech() {
+      const spokenTranscript = document.getElementById('spoken-transcript-input')?.value.trim() || '';
+      if (!spokenTranscript) {
+        showToast('Hãy bấm biểu tượng Micro để đọc câu hoặc chọn Giả lập giọng đọc trước khi chấm điểm nhé!', 'info');
+        return;
+      }
+
+      if (state.isEvaluating) return;
+      state.isEvaluating = true;
+      updateEvaluateButtonUI();
+
+      const systemPrompt = `You are an encouraging, friendly English pronunciation & connected speech coach for Vietnamese learners.
+Compare the Target Sentence with the Learner's Spoken Transcript.
+Evaluate accuracy, naturalness, and linking sounds.
+Even if punctuation is missing in the spoken transcript, do not penalize punctuation.
+Return constructive, warm feedback in Vietnamese.`;
+
+      const userQuery = `Target Sentence: "${state.selectedPracticeItem.english}"
+Target Linking Guide: "${state.selectedPracticeItem.linking}"
+Learner's Spoken Transcript: "${spokenTranscript}"
+
+Evaluate the learner's attempt and return a structured JSON score breakdown.`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: 'OBJECT',
+            properties: {
+              overallScore: { type: 'INTEGER' },
+              accuracyScore: { type: 'INTEGER' },
+              linkingScore: { type: 'INTEGER' },
+              fluencyScore: { type: 'INTEGER' },
+              wordBreakdown: {
+                type: 'ARRAY',
+                items: {
+                  type: 'OBJECT',
+                  properties: {
+                    word: { type: 'STRING' },
+                    status: { type: 'STRING', enum: ['good', 'almost', 'missed'] },
+                    advice: { type: 'STRING' }
+                  },
+                  required: ['word', 'status', 'advice']
+                }
+              },
+              praiseVi: { type: 'STRING' },
+              linkingFeedbackVi: { type: 'STRING' },
+              nativeTipVi: { type: 'STRING' }
+            },
+            required: [
+              'overallScore',
+              'accuracyScore',
+              'linkingScore',
+              'fluencyScore',
+              'wordBreakdown',
+              'praiseVi',
+              'linkingFeedbackVi',
+              'nativeTipVi'
+            ]
+          }
+        }
+      };
+
+      try {
+        if (state.lastAudio && state.lastAudioFor === state.selectedPracticeItem.english) {
+          payload.contents[0].parts.push({ inlineData: { mimeType: 'audio/wav', data: state.lastAudio } });
+          payload.contents[0].parts[0].text += "\n(The learner's real recording is attached. Judge actual pronunciation, stress, intonation and linking from the audio, not only the transcript.)";
+        }
+        const result = await callGeminiAPI(payload);
+        state.evaluationResult = result;
+        autoLearn(result.overallScore);
+        const earnedXp = Math.max(10, Math.round(result.overallScore / 4));
+        await updateStats({ xp: state.userStats.xp + earnedXp });
+        renderEvaluationResult();
+        showToast(`🎉 AI đã chấm điểm: ${result.overallScore}/100! Bạn nhận được +${earnedXp} XP!`);
+      } catch (err) {
+        const localEval = evaluateSpeechLocally(
+          state.selectedPracticeItem.english,
+          state.selectedPracticeItem.linking,
+          spokenTranscript,
+          state.selectedPracticeItem.tip
+        );
+        state.evaluationResult = localEval;
+        autoLearn(localEval.overallScore);
+        const earnedXp = Math.max(10, Math.round(localEval.overallScore / 4));
+        await updateStats({ xp: state.userStats.xp + earnedXp });
+        renderEvaluationResult();
+        showToast(`🎉 Đã chấm điểm phát âm: ${localEval.overallScore}/100! Bạn nhận được +${earnedXp} XP!`);
+      } finally {
+        state.isEvaluating = false;
+        updateEvaluateButtonUI();
+      }
+    }
+
+    function updateEvaluateButtonUI() {
+      const btn = document.getElementById('evaluate-speech-btn');
+      if (!btn) return;
+      btn.disabled = state.isEvaluating;
+      if (state.isEvaluating) {
+        btn.innerHTML = `
+          <i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i>
+          <span>AI Đang Chấm...</span>
+        `;
+      } else {
+        btn.innerHTML = `
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>AI Chấm Điểm Ngay</span>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // API KEY MODAL HANDLERS & CONNECTION TESTER
+    // ==========================================
+    function renderApiKeyModalStatus() {
+      const banner = document.getElementById('apikey-modal-status-banner');
+      const title = document.getElementById('apikey-modal-status-title');
+      const desc = document.getElementById('apikey-modal-status-desc');
+      if (!banner || !title || !desc) return;
+
+      if (state.customApiKey && state.customApiKey.trim().length > 5) {
+        banner.className = 'p-3.5 rounded-2xl border-2 bg-emerald-50 border-emerald-200 flex items-start gap-3';
+        title.className = 'font-extrabold text-emerald-900';
+        title.textContent = `✅ Đã cấu hình Gemini API Key (${state.selectedModel})`;
+        desc.className = 'text-emerald-800 font-medium';
+        desc.textContent = 'Ứng dụng sẽ ưu tiên gọi trực tiếp Google Gemini AI bằng khóa của bạn và tự động dự phòng thông minh nếu mạng chập chờn.';
+      } else {
+        banner.className = 'p-3.5 rounded-2xl border-2 bg-amber-50 border-amber-200 flex items-start gap-3';
+        title.className = 'font-extrabold text-amber-900';
+        title.textContent = 'Chế độ: Tự động kết hợp AI & Kho Bài Học Bản Xứ Có Sẵn';
+        desc.className = 'text-amber-800 font-medium';
+        desc.textContent = 'Ngay cả khi bạn chưa nhập API Key, SunnySpeak vẫn có sẵn kho 7 chủ đề hội thoại bản xứ và bộ chấm điểm phát âm thông minh hoạt động 100%!';
+      }
+    }
+
+    async function handleTestApiKeyConnection() {
+      const keyInput = document.getElementById('apikey-input-field')?.value.trim() || '';
+      const modelSelect = document.getElementById('apikey-model-select')?.value || 'gemini-2.5-flash';
+      const feedbackEl = document.getElementById('apikey-test-feedback');
+      const testBtnText = document.getElementById('test-apikey-btn-text');
+
+      if (!keyInput) {
+        feedbackEl.classList.remove('hidden');
+        feedbackEl.className = 'p-3 rounded-2xl text-xs font-extrabold bg-amber-50 text-amber-900 border border-amber-200';
+        feedbackEl.textContent = '⚠️ Bạn chưa dán mã API Key vào ô bên trên. Hãy dán mã AIzaSy... rồi bấm Kiểm tra nhé!';
+        return;
+      }
+
+      testBtnText.textContent = 'Đang kiểm tra...';
+      feedbackEl.classList.remove('hidden');
+      feedbackEl.className = 'p-3 rounded-2xl text-xs font-extrabold bg-sky-50 text-sky-900 border border-sky-200';
+      feedbackEl.textContent = `⏳ Đang kết nối thử tới model "${modelSelect}"...`;
+
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelSelect}:generateContent?key=${keyInput}`;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: 'Say OK' }] }]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Mã lỗi HTTP ${response.status}`);
+        }
+
+        state.customApiKey = keyInput;
+        state.selectedModel = modelSelect;
+        state.aiConnectedStatus = 'connected';
+        await updateStats({ customApiKey: keyInput, selectedModel: modelSelect });
+        renderApiKeyModalStatus();
+
+        feedbackEl.className = 'p-3 rounded-2xl text-xs font-extrabold bg-emerald-50 text-emerald-900 border border-emerald-300';
+        feedbackEl.textContent = `🎉 Kết nối thành công với ${modelSelect}! Đã tự động lưu khóa API của bạn.`;
+      } catch (err) {
+        feedbackEl.className = 'p-3 rounded-2xl text-xs font-extrabold bg-rose-50 text-rose-900 border border-rose-300';
+        feedbackEl.textContent = `❌ Không thể kết nối (${err.message}). Hãy kiểm tra lại mã API Key hoặc đổi sang model "gemini-2.5-flash" nhé!`;
+      } finally {
+        testBtnText.textContent = 'Kiểm Tra Kết Nối';
+      }
+    }
+
+    async function handleSaveApiKeySettings() {
+      const keyInput = document.getElementById('apikey-input-field')?.value.trim() || '';
+      const modelSelect = document.getElementById('apikey-model-select')?.value || 'gemini-2.5-flash';
+
+      state.customApiKey = keyInput;
+      state.selectedModel = modelSelect;
+      state.aiConnectedStatus = keyInput ? 'connected' : 'smart_hybrid';
+
+      await updateStats({
+        customApiKey: keyInput,
+        selectedModel: modelSelect
+      });
+
+      window.closeApiKeyModal();
+      if (keyInput) {
+        showToast(`🔑 Đã lưu Gemini API Key & chọn model ${modelSelect}!`);
+      } else {
+        showToast('✨ Đã chuyển sang Chế độ Kho Bài Học Thông Minh tích hợp sẵn!');
+      }
+    }
+
+    async function handleClearApiKey() {
+      const inputEl = document.getElementById('apikey-input-field');
+      if (inputEl) inputEl.value = '';
+      state.customApiKey = '';
+      state.aiConnectedStatus = 'smart_hybrid';
+      const feedbackEl = document.getElementById('apikey-test-feedback');
+      if (feedbackEl) feedbackEl.classList.add('hidden');
+
+      await updateStats({ customApiKey: '' });
+      renderApiKeyModalStatus();
+      showToast('Đã xóa API Key cá nhân và bật chế độ bài học tích hợp sẵn.');
+    }
+
+    // ==========================================
+    // DAILY CHECK-IN & JOURNAL HANDLERS
+    // ==========================================
+    function getTodayIso() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    async function handleDailyCheckIn() {
+      const todayStr = getTodayIso();
+      if (state.userStats.lastCheckInDate === todayStr) {
+        showToast('Hôm nay bạn đã điểm danh nhận quà rồi! Hẹn gặp lại ngày mai nhé 🌞', 'info');
+        return;
+      }
+
+      const nextStreak = (state.userStats.streak || 0) + 1;
+      const nextDaySlot = ((nextStreak - 1) % 7) + 1;
+      const updatedDays = Array.from(new Set([...(state.userStats.checkedInDays || []), nextDaySlot]));
+      const bonusXp = nextDaySlot === 7 ? 100 : 30;
+
+      await updateStats({
+        xp: state.userStats.xp + bonusXp,
+        streak: nextStreak,
+        lastCheckInDate: todayStr,
+        checkedInDays: updatedDays
+      });
+
+      renderCheckInModal();
+      showToast(`🎁 Điểm danh thành công ngày thứ ${nextStreak}! Nhận ngay +${bonusXp} XP!`);
+    }
+
+    async function handleSaveToJournal(inputId = 'eval-journal-note-input') {
+      const inputEl = document.getElementById(inputId);
+      const customNote = inputEl ? inputEl.value.trim() : '';
+
+      const newEntry = {
+        date: new Date().toLocaleDateString('vi-VN'),
+        timestamp: Date.now(),
+        topic: state.currentLesson.topic,
+        sentence: state.selectedPracticeItem.english,
+        score: state.evaluationResult ? state.evaluationResult.overallScore : 90,
+        mood: state.selectedMood,
+        note: customNote || `Đã luyện đọc câu: "${state.selectedPracticeItem.linking}"`
+      };
+
+      if (state.user && db) {
+        try {
+          const journalColRef = collection(db, 'artifacts', appId, 'users', state.user.uid, 'journal');
+          await addDoc(journalColRef, newEntry);
+        } catch (e) {
+          state.journalEntries = [{ id: 'local-' + Date.now(), ...newEntry }, ...state.journalEntries];
+        }
+      } else {
+        state.journalEntries = [{ id: 'local-' + Date.now(), ...newEntry }, ...state.journalEntries];
+      }
+
+      if (inputEl) inputEl.value = '';
+      await updateStats({ xp: state.userStats.xp + 10 });
+      renderBadgesAndJournal();
+      showToast('📓 Đã lưu vào Nhật ký học tập của bạn! (+10 XP)');
+    }
+
+    async function handleDeleteJournalEntry(id) {
+      state.journalEntries = state.journalEntries.filter((item) => String(item.id) !== String(id));
+      saveLocal();
+      renderHeaderStats();
+      renderBadgesAndJournal();
+
+      if (state.user && db && !String(id).startsWith('sample-') && !String(id).startsWith('local-')) {
+        try {
+          await deleteDoc(doc(db, 'artifacts', appId, 'users', state.user.uid, 'journal', String(id)));
+        } catch (e) {
+          console.warn('Delete journal error:', e);
+        }
+      }
+      showToast('Đã xóa ghi chú khỏi nhật ký.');
+    }
+
+    // ==========================================
+    // RENDERING FUNCTIONS
+    // ==========================================
+    function renderHeaderStats() {
+      const todayStr = getTodayIso();
+      const isCheckedInToday = state.userStats.lastCheckInDate === todayStr;
+
+      document.getElementById('header-streak').textContent = `${state.userStats.streak} Ngày`;
+      document.getElementById('header-xp').textContent = `${state.userStats.xp} XP`;
+      document.getElementById('tab-journal-label').textContent = `3. Nhật Ký Học Tập & Huy Hiệu (${state.journalEntries.length})`;
+
+      // Update API Key Status Indicator in Header
+      const dotEl = document.getElementById('apikey-status-dot');
+      const apiTextEl = document.getElementById('header-apikey-text');
+      if (dotEl && apiTextEl) {
+        if (state.customApiKey || state.aiConnectedStatus === 'connected') {
+          dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100';
+          apiTextEl.textContent = '🔑 AI Đã Kết Nối';
+        } else {
+          dotEl.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 ring-4 ring-amber-100';
+          apiTextEl.textContent = '🔑 Cài đặt API Key';
+        }
+      }
+
+      const checkInBtn = document.getElementById('header-checkin-btn');
+      const checkInTxt = document.getElementById('header-checkin-text');
+      if (isCheckedInToday) {
+        checkInBtn.className =
+          'flex items-center gap-2 px-3.5 py-2 rounded-2xl font-extrabold text-sm shadow-sm transition transform active:scale-95 cursor-pointer bg-emerald-100 text-emerald-800 border-2 border-emerald-200';
+        checkInTxt.textContent = 'Đã Điểm Danh';
+      } else {
+        checkInBtn.className =
+          'flex items-center gap-2 px-3.5 py-2 rounded-2xl font-extrabold text-sm shadow-sm transition transform active:scale-95 cursor-pointer bg-gradient-to-r from-rose-400 to-orange-400 text-white hover:opacity-95 animate-pulse';
+        checkInTxt.textContent = 'Điểm Danh Nhận Quà';
+      }
+    }
+
+    function renderPresetTopics() {
+      const container = document.getElementById('preset-topics-container');
+      if (!container) return;
+      container.innerHTML = PRESET_TOPICS.map((t) => {
+        const isSelected = state.selectedTopicPrompt === t.prompt;
+        return `
+          <button
+            onclick="selectPresetTopic('${escapeHtml(t.id)}', '${escapeHtml(t.prompt)}')"
+            class="px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-extrabold transition cursor-pointer border-2 ${
+              isSelected
+                ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                : 'bg-white text-slate-700 border-teal-100 hover:border-teal-300 hover:bg-teal-50/50'
+            }"
+          >
+            ${escapeHtml(t.label)}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderLessonOverview() {
+      const lesson = state.currentLesson;
+      const headerEl = document.getElementById('lesson-overview-header');
+      if (!headerEl) return;
+
+      headerEl.innerHTML = `
+        <div class="space-y-1.5">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-extrabold text-xs">
+              🌟 Chủ đề hôm nay
+            </span>
+            <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 font-extrabold text-xs">
+              ${escapeHtml(lesson.level)}
+            </span>
+          </div>
+          <h3 class="text-2xl font-black text-slate-800">${escapeHtml(lesson.topic)}</h3>
+          <p class="text-sm text-slate-600 font-semibold">${escapeHtml(lesson.situation)}</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2 bg-sky-50 px-3.5 py-2 rounded-2xl border border-sky-200">
+            <span class="text-2xl">${escapeHtml(lesson.characters?.A?.avatar || '🦊')}</span>
+            <div class="text-xs">
+              <p class="font-extrabold text-sky-900">${escapeHtml(lesson.characters?.A?.name)}</p>
+              <p class="text-sky-600 font-semibold">${escapeHtml(lesson.characters?.A?.role)}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 bg-rose-50 px-3.5 py-2 rounded-2xl border border-rose-200">
+            <span class="text-2xl">${escapeHtml(lesson.characters?.B?.avatar || '🐰')}</span>
+            <div class="text-xs">
+              <p class="font-extrabold text-rose-900">${escapeHtml(lesson.characters?.B?.name)}</p>
+              <p class="text-rose-600 font-semibold">${escapeHtml(lesson.characters?.B?.role)}</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('subtab-label-dialogue').textContent = `Hội Thoại (đã học ${(lesson.dialogue || []).filter((l) => isLearned(l.english)).length}/${lesson.dialogue?.length || 0})`;
+      document.getElementById('subtab-label-linking').textContent = `Bí Kíp Nối Âm & Nuốt Âm (${lesson.linkingSecrets?.length || 0})`;
+      renderRoadmap();
+      document.getElementById('subtab-label-native').textContent = `Cách Nói Người Bản Xứ (${lesson.nativeExpressions?.length || 0})`;
+    }
+
+    function renderLearnSubTabContent() {
+      const container = document.getElementById('learn-subtab-content');
+      if (!container) return;
+      const lesson = state.currentLesson;
+
+      if (state.learnSubTab === 'dialogue') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 dialogue-grid">
+            ${(lesson.dialogue || [])
+              .map((line, idx) => {
+                const isSpeakerA = line.speaker === 'A';
+                const char = isSpeakerA ? lesson.characters?.A : lesson.characters?.B;
+                const isPlaying = state.playingText === line.english;
+                return `
+                  <div class="h-full p-5 rounded-3xl border-2 transition shadow-sm ${
+                    isSpeakerA
+                      ? 'bg-sky-50/70 border-sky-200 hover:border-sky-300'
+                      : 'bg-rose-50/70 border-rose-200 hover:border-rose-300'
+                  } ${isPlaying ? 'ring-4 ring-amber-300' : ''}">
+                    <div class="flex flex-col gap-4 h-full">
+                      <div class="flex items-start gap-3.5 flex-1">
+                        <div class="w-12 h-12 rounded-2xl bg-white border-2 border-amber-200 flex items-center justify-center text-2xl shrink-0 shadow-sm">
+                          ${escapeHtml(char?.avatar || (isSpeakerA ? '🦊' : '🐰'))}
+                        </div>
+                        <div class="space-y-2 flex-1">
+                          <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-xs uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white text-slate-700 border border-slate-200">
+                              ${escapeHtml(char?.name || 'Speaker ' + line.speaker)}
+                            </span>
+                            <span class="text-xs text-slate-400 font-bold">Câu #${idx + 1}</span>
+                            <button onclick="toggleLearned(${idx})" class="ml-auto px-3 py-1 rounded-full text-sm font-semibold border-2 ${isLearned(line.english) ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-white border-slate-300 text-slate-600'}">${isLearned(line.english) ? '✅ Đã học' : '⬜ Đánh dấu đã học'}</button>
+                          </div>
+
+                          <p class="text-lg sm:text-xl font-black text-slate-900 leading-snug">
+                            ${escapeHtml(line.english)}
+                          </p>
+
+                          <div class="bg-white/95 border border-amber-200 rounded-2xl p-3 space-y-1">
+                            <div class="flex items-center gap-1.5 text-xs font-extrabold text-amber-800">
+                              <span>🔗 Cách đọc nối âm tự nhiên:</span>
+                            </div>
+                            <p class="text-base font-extrabold text-teal-900">
+                              ${formatLinkingHtml(line.linking)}
+                            </p>
+                            <p class="text-xs font-mono text-slate-500">${escapeHtml(line.phonetic)}</p>
+                            ${(line.viPron || VI_BUILTIN[line.english]) ? `<p class="text-lg font-extrabold text-rose-700">${escapeHtml(line.viPron || VI_BUILTIN[line.english])}</p>` : ''}
+                          </div>
+
+                          <p class="text-sm font-bold text-slate-700">
+                            🇻🇳 <span class="italic">${escapeHtml(line.vietnamese)}</span>
+                          </p>
+
+                          ${
+                            line.tip
+                              ? `<div class="flex items-start gap-2 text-xs bg-amber-100/70 text-amber-950 px-3 py-2 rounded-xl font-semibold">
+                                  <span class="shrink-0">💡</span>
+                                  <span>${escapeHtml(line.tip)}</span>
+                                </div>`
+                              : ''
+                          }
+                        </div>
+                      </div>
+
+                      <div class="flex flex-wrap gap-2 pt-1 mt-auto">
+                        <button
+                          onclick="speakDialogueLine(${idx}, 1.0)"
+                          class="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-white hover:bg-teal-50 text-teal-700 border-2 border-teal-200 font-extrabold text-xs shadow-sm transition cursor-pointer"
+                        >
+                          <i data-lucide="volume-2" class="w-4 h-4 text-teal-600"></i>
+                          <span>Nghe 1.0x</span>
+                        </button>
+
+                        <button
+                          onclick="speakDialogueLine(${idx}, 0.75)"
+                          class="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-white hover:bg-amber-50 text-amber-800 border-2 border-amber-200 font-extrabold text-xs shadow-sm transition cursor-pointer"
+                        >
+                          <i data-lucide="volume-1" class="w-4 h-4 text-amber-600"></i>
+                          <span>Chậm 0.75x</span>
+                        </button>
+
+                        <button
+                          onclick="practiceDialogueLine(${idx})"
+                          class="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 to-orange-400 hover:opacity-95 text-white font-extrabold text-xs shadow-sm transition cursor-pointer"
+                        >
+                          <i data-lucide="mic" class="w-4 h-4"></i>
+                          <span>Luyện Đọc & Chấm Điểm</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              })
+              .join('')}
+          </div>
+        `;
+      } else if (state.learnSubTab === 'linking') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${(lesson.linkingSecrets || [])
+              .map(
+                (item, idx) => `
+                  <div class="bg-white border-2 border-teal-200 rounded-3xl p-5 space-y-3 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="px-3 py-1 rounded-full bg-teal-100 text-teal-800 font-extrabold text-xs">
+                        ${escapeHtml(item.type)}
+                      </span>
+                      <button
+                        onclick="speakLinkingExample(${idx})"
+                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-xs transition cursor-pointer"
+                      >
+                        <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                        <span>Nghe mẫu</span>
+                      </button>
+                    </div>
+
+                    <h4 class="text-xl font-black text-slate-900">
+                      ${formatLinkingHtml(item.phrase)}
+                    </h4>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                      <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
+                        <p class="text-[11px] font-extrabold text-slate-500 uppercase">Đọc rời từng chữ</p>
+                        <p class="text-sm font-bold text-slate-700 mt-0.5">${escapeHtml(item.standardPronunciation)}</p>
+                      </div>
+                      <div class="bg-emerald-50 p-2.5 rounded-2xl border border-emerald-200">
+                        <p class="text-[11px] font-extrabold text-emerald-700 uppercase">Người bản xứ lướt âm</p>
+                        <p class="text-sm font-black text-emerald-900 mt-0.5">${escapeHtml(item.nativePronunciation)}</p>
+                      </div>
+                    </div>
+
+                    <p class="text-sm text-slate-600 font-medium leading-relaxed">${escapeHtml(item.explanation)}</p>
+
+                    <div class="flex items-center justify-between bg-amber-50/80 border border-amber-200 px-3.5 py-2.5 rounded-2xl">
+                      <div>
+                        <span class="text-xs font-extrabold text-amber-800 block">Câu ví dụ thực hành:</span>
+                        <span class="text-sm font-black text-slate-800">"${formatLinkingHtml(item.example)}"</span>
+                      </div>
+                      <button
+                        onclick="practiceLinkingSecret(${idx})"
+                        class="px-3 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-xs cursor-pointer shrink-0"
+                      >
+                        Thử đọc ngay
+                      </button>
+                    </div>
+                  </div>
+                `
+              )
+              .join('')}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${(lesson.nativeExpressions || [])
+              .map(
+                (exp, idx) => `
+                  <div class="bg-white border-2 border-rose-200 rounded-3xl p-5 space-y-3 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">
+                          ✨ Nói tự nhiên như người bản xứ
+                        </span>
+                        <h4 class="text-xl font-black text-slate-900 mt-2">"${escapeHtml(exp.native)}"</h4>
+                      </div>
+                      <button
+                        onclick="speakNativeExpression(${idx})"
+                        class="p-2.5 rounded-2xl bg-rose-100 hover:bg-rose-200 text-rose-700 transition cursor-pointer"
+                        title="Nghe phát âm"
+                      >
+                        <i data-lucide="volume-2" class="w-5 h-5"></i>
+                      </button>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs space-y-1">
+                      <p class="text-slate-500 font-bold">
+                        📚 <span class="line-through">Sách giáo khoa hay viết:</span> "${escapeHtml(exp.textbook)}"
+                      </p>
+                      <p class="text-emerald-700 font-extrabold">
+                        💬 Ý nghĩa thực tế: ${escapeHtml(exp.meaning)}
+                      </p>
+                    </div>
+
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium">
+                      <strong>🎯 Ngữ cảnh dùng:</strong> ${escapeHtml(exp.context)}
+                    </p>
+
+                    <div class="flex items-center justify-between gap-2 bg-teal-50/70 border border-teal-200 p-3 rounded-2xl">
+                      <div class="text-xs">
+                        <span class="font-extrabold text-teal-800 block">Ví dụ giao tiếp:</span>
+                        <span class="font-black text-slate-800 text-sm">"${escapeHtml(exp.example)}"</span>
+                      </div>
+                      <button
+                        onclick="practiceNativeExpression(${idx})"
+                        class="px-3 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shrink-0 cursor-pointer"
+                      >
+                        Luyện câu này
+                      </button>
+                    </div>
+                  </div>
+                `
+              )
+              .join('')}
+          </div>
+        `;
+      }
+
+      lucide.createIcons();
+    }
+
+    function renderPracticeView() {
+      const lesson = state.currentLesson;
+      const listContainer = document.getElementById('practice-sentence-list');
+      if (!listContainer) return;
+
+      // Update Roleplay Filter Buttons
+      ['ALL', 'A', 'B'].forEach((role) => {
+        const btn = document.getElementById(`filter-role-${role}`);
+        if (!btn) return;
+        if (role === 'A') btn.textContent = `Vai A (${lesson.characters?.A?.avatar || '🦊'})`;
+        if (role === 'B') btn.textContent = `Vai B (${lesson.characters?.B?.avatar || '🐰'})`;
+
+        if (state.roleplayFilter === role) {
+          btn.className =
+            role === 'ALL'
+              ? 'px-2.5 py-1 rounded-lg cursor-pointer bg-white text-slate-900 shadow-sm'
+              : role === 'A'
+              ? 'px-2.5 py-1 rounded-lg cursor-pointer bg-sky-500 text-white shadow-sm'
+              : 'px-2.5 py-1 rounded-lg cursor-pointer bg-rose-500 text-white shadow-sm';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg cursor-pointer text-slate-600';
+        }
+      });
+
+      const filteredLines = (lesson.dialogue || []).filter(
+        (line) => state.roleplayFilter === 'ALL' || line.speaker === state.roleplayFilter
+      );
+
+      listContainer.innerHTML = filteredLines
+        .map((line) => {
+          const originalIdx = lesson.dialogue.indexOf(line);
+          const char = line.speaker === 'A' ? lesson.characters?.A : lesson.characters?.B;
+          const isSelected = state.selectedPracticeItem.english === line.english;
+          return `
+            <div
+              onclick="selectPracticeDialogueLine(${originalIdx})"
+              class="p-5 rounded-2xl border-2 transition cursor-pointer ${
+                isSelected
+                  ? 'bg-rose-50 border-rose-400 shadow-sm'
+                  : (isLearned(line.english) ? 'bg-emerald-50/70 border-emerald-300' : 'bg-slate-50/70 border-slate-200 hover:border-amber-300 hover:bg-amber-50/40')
+              }"
+            >
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-extrabold text-slate-500 mb-2">
+                <span class="flex items-center gap-1.5 text-slate-700">
+                  <span>${escapeHtml(char?.avatar)}</span>
+                  <span>${escapeHtml(char?.name)}</span>
+                </span>
+                ${isSelected ? '<span class="text-rose-600 font-semibold mr-2">● Đang chọn</span>' : ''}<button onclick="event.stopPropagation();toggleLearned(${originalIdx})" class="px-2.5 py-0.5 rounded-full text-sm font-semibold border-2 ${isLearned(line.english) ? 'bg-emerald-100 border-emerald-400 text-emerald-800' : 'bg-white border-slate-300 text-slate-600'}">${isLearned(line.english) ? '✅ Đã học' : '⬜ Chưa học'}</button>
+              </div>
+              <p class="font-bold text-lg text-slate-900 leading-relaxed">${escapeHtml(line.english)}</p>
+              <p class="text-base text-teal-800 font-medium mt-2 leading-relaxed">${formatLinkingHtml(line.linking)}</p>
+            </div>
+          `;
+        })
+        .join('');
+
+      // Render Target Card
+      document.getElementById('practice-target-avatar').textContent = state.selectedPracticeItem.avatar || '🌟';
+      document.getElementById('practice-target-speaker').textContent = state.selectedPracticeItem.speakerName || 'Nhân vật';
+      document.getElementById('practice-target-english').textContent = `"${state.selectedPracticeItem.english}"`;
+      document.getElementById('practice-target-linking').innerHTML = formatLinkingHtml(state.selectedPracticeItem.linking);
+      document.getElementById('practice-target-vi').textContent = `🇻🇳 Nghĩa: ${state.selectedPracticeItem.vietnamese}`;
+      loadPron();
+
+      renderEvaluationResult();
+      lucide.createIcons();
+    }
+
+    function renderEvaluationResult() {
+      const container = document.getElementById('evaluation-result-container');
+      if (!container) return;
+
+      if (!state.evaluationResult) {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+
+      const res = state.evaluationResult;
+      container.classList.remove('hidden');
+      container.innerHTML = `
+        <div class="bg-white border-2 border-emerald-300 rounded-3xl p-6 shadow-md space-y-5 animate-pop">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+              <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex flex-col items-center justify-center shadow-md shrink-0">
+                <span class="text-2xl font-black">${res.overallScore}</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-wider">Điểm AI</span>
+              </div>
+              <div>
+                <span class="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs mb-1">
+                  🎉 Nhận xét từ Gia sư Gemini AI
+                </span>
+                <h4 class="text-lg font-black text-slate-800">${escapeHtml(res.praiseVi)}</h4>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <div class="bg-sky-50 border border-sky-200 px-3 py-2 rounded-2xl text-center">
+                <span class="text-xs text-sky-700 font-extrabold block">Độ chính xác</span>
+                <span class="text-base font-black text-sky-900">${res.accuracyScore}%</span>
+              </div>
+              <div class="bg-amber-50 border border-amber-200 px-3 py-2 rounded-2xl text-center">
+                <span class="text-xs text-amber-800 font-extrabold block">Nối âm</span>
+                <span class="text-base font-black text-amber-900">${res.linkingScore}%</span>
+              </div>
+              <div class="bg-rose-50 border border-rose-200 px-3 py-2 rounded-2xl text-center">
+                <span class="text-xs text-rose-700 font-extrabold block">Trôi chảy</span>
+                <span class="text-base font-black text-rose-900">${res.fluencyScore}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs font-extrabold uppercase text-slate-500 mb-2">
+              Chi tiết từng từ (Bấm vào từ bất kỳ để nghe lại phát âm chuẩn):
+            </p>
+            <div class="flex flex-wrap gap-2">
+              ${(res.wordBreakdown || [])
+                .map((item, idx) => {
+                  const badgeColors =
+                    item.status === 'good'
+                      ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                      : item.status === 'almost'
+                      ? 'bg-amber-50 border-amber-300 text-amber-900'
+                      : 'bg-rose-50 border-rose-300 text-rose-900';
+                  const symbol = item.status === 'good' ? '✓' : item.status === 'almost' ? '~' : '!';
+                  return `
+                    <button
+                      onclick="speakSingleWord(${idx})"
+                      class="px-3 py-1.5 rounded-2xl border-2 font-extrabold text-sm transition cursor-pointer hover:scale-105 ${badgeColors}"
+                      title="${escapeHtml(item.advice)}"
+                    >
+                      <span>${escapeHtml(item.word)}</span>
+                      <span class="ml-1.5 text-xs">${symbol}</span>
+                    </button>
+                  `;
+                })
+                .join('')}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-teal-50/70 border border-teal-200 p-3.5 rounded-2xl text-xs sm:text-sm space-y-1">
+              <p class="font-extrabold text-teal-900">🔗 Góp ý nối âm & lướt âm:</p>
+              <p class="text-slate-700 font-medium">${escapeHtml(res.linkingFeedbackVi)}</p>
+            </div>
+            <div class="bg-amber-50/70 border border-amber-200 p-3.5 rounded-2xl text-xs sm:text-sm space-y-1">
+              <p class="font-extrabold text-amber-900">💡 Mẹo ngữ điệu bản xứ:</p>
+              <p class="text-slate-700 font-medium">${escapeHtml(res.nativeTipVi)}</p>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-extrabold text-slate-700 uppercase">
+                📓 Lưu kết quả này vào Nhật Ký Học Tập (+10 XP)
+              </span>
+              <div class="flex items-center gap-1.5">
+                ${MOOD_OPTIONS.map(
+                  (m) => `
+                    <button
+                      onclick="selectMood('${escapeHtml(m)}')"
+                      class="px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition ${
+                        state.selectedMood === m
+                          ? 'bg-amber-400 text-slate-900'
+                          : 'bg-white text-slate-600 border border-slate-200'
+                      }"
+                    >
+                      ${escapeHtml(m)}
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input
+                id="eval-journal-note-input"
+                type="text"
+                placeholder="Ghi chú thêm từ vựng hoặc mẹo nối âm bạn tâm đắc..."
+                class="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-semibold focus:outline-none focus:border-teal-400"
+              />
+              <button
+                onclick="handleSaveToJournal('eval-journal-note-input')"
+                class="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs sm:text-sm cursor-pointer shrink-0 shadow-sm"
+              >
+                <i data-lucide="bookmark" class="w-4 h-4"></i>
+                <span>Lưu Vào Nhật Ký</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function renderBadgesAndJournal() {
+      const xpEl = document.getElementById('badges-xp-badge');
+      if (xpEl) xpEl.textContent = `${state.userStats.xp} XP Hiện Có`;
+
+      const badgesContainer = document.getElementById('badges-list-container');
+      if (badgesContainer) {
+        badgesContainer.innerHTML = BADGES_CATALOG.map((badge) => {
+          const isUnlocked = state.userStats.xp >= badge.reqXp;
+          return `
+            <div class="flex items-center gap-3.5 p-3.5 rounded-2xl border-2 transition ${
+              isUnlocked
+                ? 'bg-gradient-to-r from-amber-50 to-rose-50 border-amber-300'
+                : 'bg-slate-50 border-slate-200 opacity-60'
+            }">
+              <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-amber-100 shrink-0">
+                ${badge.icon}
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="font-extrabold text-sm text-slate-800">${escapeHtml(badge.name)}</p>
+                  <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full ${
+                    isUnlocked ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
+                  }">
+                    ${isUnlocked ? 'Đã mở khóa ✓' : `Cần ${badge.reqXp} XP`}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 font-medium mt-0.5">${escapeHtml(badge.desc)}</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const moodSelector = document.getElementById('journal-mood-selector');
+      if (moodSelector) {
+        moodSelector.innerHTML = MOOD_OPTIONS.map(
+          (m) => `
+            <button
+              onclick="selectMood('${escapeHtml(m)}')"
+              class="px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition ${
+                state.selectedMood === m
+                  ? 'bg-amber-400 text-slate-900'
+                  : 'bg-white text-slate-600 border border-slate-200'
+              }"
+            >
+              ${escapeHtml(m)}
+            </button>
+          `
+        ).join('');
+      }
+
+      const entriesContainer = document.getElementById('journal-entries-container');
+      if (entriesContainer) {
+        if (state.journalEntries.length === 0) {
+          entriesContainer.innerHTML = `
+            <div class="text-center py-8 text-slate-400 font-semibold text-sm">
+              Chưa có ghi chú nào trong nhật ký. Hãy luyện đọc một câu và lưu lại nhé! 🌟
+            </div>
+          `;
+        } else {
+          entriesContainer.innerHTML = state.journalEntries
+            .map(
+              (entry, idx) => `
+                <div class="p-4 rounded-2xl bg-[#FFFDF9] border-2 border-amber-100 hover:border-amber-300 transition space-y-2">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900">
+                        📅 ${escapeHtml(entry.date)}
+                      </span>
+                      <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+                        ${escapeHtml(entry.mood)}
+                      </span>
+                      ${
+                        entry.score
+                          ? `<span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
+                              🎯 Điểm AI: ${entry.score}/100
+                            </span>`
+                          : ''
+                      }
+                    </div>
+                    <button
+                      onclick="handleDeleteJournalEntry('${escapeHtml(entry.id)}')"
+                      class="text-slate-400 hover:text-rose-500 p-1 cursor-pointer"
+                      title="Xóa ghi chú"
+                    >
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+
+                  <p class="text-xs font-extrabold text-teal-700 uppercase">${escapeHtml(entry.topic)}</p>
+                  <div class="flex items-center justify-between gap-2 bg-white p-2.5 rounded-xl border border-slate-100">
+                    <p class="font-extrabold text-sm text-slate-900">"${escapeHtml(entry.sentence)}"</p>
+                    <button
+                      onclick="speakJournalEntry(${idx})"
+                      class="p-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 cursor-pointer shrink-0"
+                    >
+                      <i data-lucide="volume-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                  <p class="text-xs sm:text-sm text-slate-600 font-medium">📝 ${escapeHtml(entry.note)}</p>
+                </div>
+              `
+            )
+            .join('');
+        }
+      }
+      lucide.createIcons();
+    }
+
+    function renderCheckInModal() {
+      const todayStr = getTodayIso();
+      const isCheckedInToday = state.userStats.lastCheckInDate === todayStr;
+      const grid = document.getElementById('checkin-days-grid');
+      if (grid) {
+        grid.innerHTML = [1, 2, 3, 4, 5, 6, 7]
+          .map((day) => {
+            const isClaimed = (state.userStats.checkedInDays || []).includes(day);
+            const isBigChest = day === 7;
+            return `
+              <div class="flex flex-col items-center justify-center p-2.5 rounded-2xl border-2 text-center transition ${
+                isClaimed
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                  : isBigChest
+                  ? 'bg-amber-50 border-amber-300 text-amber-900'
+                  : 'bg-slate-50 border-slate-200 text-slate-600'
+              }">
+                <span class="text-[11px] font-extrabold">Ngày ${day}</span>
+                <span class="text-2xl my-1">${isClaimed ? '✅' : isBigChest ? '👑' : '🍬'}</span>
+                <span class="text-[10px] font-extrabold">${isBigChest ? '+100 XP' : '+30 XP'}</span>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
+      document.getElementById('modal-streak-summary').textContent = `🔥 ${state.userStats.streak} Ngày Liên Tiếp — Tổng ${state.userStats.xp} XP`;
+      const claimBtn = document.getElementById('modal-claim-btn');
+      if (claimBtn) {
+        claimBtn.disabled = isCheckedInToday;
+        if (isCheckedInToday) {
+          claimBtn.className = 'px-5 py-3 rounded-2xl font-extrabold text-sm shadow-sm bg-emerald-200 text-emerald-900 cursor-default shrink-0';
+          claimBtn.textContent = 'Đã Nhận Hôm Nay ✓';
+        } else {
+          claimBtn.className = 'px-5 py-3 rounded-2xl font-extrabold text-sm shadow-md transition cursor-pointer bg-gradient-to-r from-rose-500 to-orange-400 text-white hover:opacity-95 shrink-0';
+          claimBtn.textContent = 'Nhận Thưởng Ngay (+30 XP)';
+        }
+      }
+    }
+
+    // ==========================================
+    // GLOBAL WINDOW EVENT HANDLERS
+    // ==========================================
+    window.switchMainTab = (tab) => {
+      state.activeTab = tab;
+      ['learn', 'practice', 'journal'].forEach((t) => {
+        const viewEl = document.getElementById(`view-${t}`);
+        const btnEl = document.getElementById(`tab-btn-${t}`);
+        if (t === tab) {
+          viewEl.classList.remove('hidden');
+          btnEl.className =
+            t === 'learn'
+              ? 'flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-teal-500 text-white shadow-md shadow-teal-200'
+              : t === 'practice'
+              ? 'flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-rose-500 text-white shadow-md shadow-rose-200'
+              : 'flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-amber-500 text-white shadow-md shadow-amber-200';
+        } else {
+          viewEl.classList.add('hidden');
+          btnEl.className =
+            'flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-slate-100/80 text-slate-600 hover:bg-amber-50 hover:text-slate-900';
+        }
+      });
+
+      if (tab === 'practice') renderPracticeView();
+      if (tab === 'journal') renderBadgesAndJournal();
+      lucide.createIcons();
+    };
+
+    window.switchLearnSubTab = (subTab) => {
+      state.learnSubTab = subTab;
+      ['dialogue', 'linking', 'native'].forEach((st) => {
+        const btn = document.getElementById(`subtab-btn-${st}`);
+        if (!btn) return;
+        if (st === subTab) {
+          btn.className =
+            'flex items-center gap-2 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition cursor-pointer bg-amber-400 text-slate-900 shadow-sm';
+        } else {
+          btn.className =
+            'flex items-center gap-2 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition cursor-pointer bg-amber-50 text-amber-900 hover:bg-amber-100';
+        }
+      });
+
+      const playAllBtn = document.getElementById('play-all-dialogue-btn');
+      if (playAllBtn) {
+        if (subTab === 'dialogue') playAllBtn.classList.remove('hidden');
+        else playAllBtn.classList.add('hidden');
+      }
+
+      renderLearnSubTabContent();
+    };
+
+    window.setGlobalSpeechRate = (rate) => {
+      state.speechRate = rate;
+      const normalBtn = document.getElementById('speed-btn-normal');
+      const slowBtn = document.getElementById('speed-btn-slow');
+      if (rate === 1.0) {
+        normalBtn.className = 'px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition bg-teal-500 text-white';
+        slowBtn.className = 'px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition bg-slate-100 text-slate-600';
+      } else {
+        normalBtn.className = 'px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition bg-slate-100 text-slate-600';
+        slowBtn.className = 'px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition bg-amber-500 text-white';
+      }
+      showToast(`Đã chuyển tốc độ nghe mặc định sang ${rate}x`);
+    };
+
+    window.selectPresetTopic = (topicId, prompt) => {
+      state.selectedTopicId = topicId;
+      state.selectedTopicPrompt = prompt;
+      const customEl = document.getElementById('custom-topic-input');
+      if (customEl) customEl.value = '';
+      renderPresetTopics();
+      handleGenerateNewLesson(prompt, topicId);
+    };
+
+    window.handleGenerateNewLesson = () => handleGenerateNewLesson();
+    window.playFullDialogue = () => playFullDialogue();
+
+    window.speakDialogueLine = (idx, rate) => {
+      const line = state.currentLesson.dialogue?.[idx];
+      if (!line) return;
+      speakText(line.english, rate, line.speaker === 'A' ? 1.0 : 1.15);
+    };
+
+    window.speakLinkingExample = (idx) => {
+      const item = state.currentLesson.linkingSecrets?.[idx];
+      if (item) speakText(item.example, state.speechRate);
+    };
+
+    window.speakNativeExpression = (idx) => {
+      const exp = state.currentLesson.nativeExpressions?.[idx];
+      if (exp) speakText(exp.native, state.speechRate);
+    };
+
+    window.practiceDialogueLine = (idx) => {
+      const line = state.currentLesson.dialogue?.[idx];
+      if (!line) return;
+      const char = line.speaker === 'A' ? state.currentLesson.characters?.A : state.currentLesson.characters?.B;
+      state.selectedPracticeItem = {
+        english: line.english,
+        linking: line.linking,
+        vietnamese: line.vietnamese,
+        tip: line.tip,
+        speakerName: char?.name || `Nhân vật ${line.speaker}`,
+        avatar: char?.avatar || '🌟'
+      };
+      state.evaluationResult = null;
+      const inputEl = document.getElementById('spoken-transcript-input');
+      if (inputEl) inputEl.value = '';
+      window.switchMainTab('practice');
+      speakText(line.english, 1.0);
+    };
+
+    window.practiceLinkingSecret = (idx) => {
+      const item = state.currentLesson.linkingSecrets?.[idx];
+      if (!item) return;
+      state.selectedPracticeItem = {
+        english: item.example.replace(/‿/g, ' '),
+        linking: item.example,
+        vietnamese: item.explanation,
+        tip: `Chú ý cụm nối âm: ${item.phrase}`,
+        speakerName: 'Bí Kíp Nối Âm',
+        avatar: '🔗'
+      };
+      state.evaluationResult = null;
+      const inputEl = document.getElementById('spoken-transcript-input');
+      if (inputEl) inputEl.value = '';
+      window.switchMainTab('practice');
+      speakText(item.example, 1.0);
+    };
+
+    window.practiceNativeExpression = (idx) => {
+      const exp = state.currentLesson.nativeExpressions?.[idx];
+      if (!exp) return;
+      state.selectedPracticeItem = {
+        english: exp.example,
+        linking: exp.example,
+        vietnamese: exp.meaning,
+        tip: exp.context,
+        speakerName: 'Cụm Từ Bản Xứ',
+        avatar: '🦄'
+      };
+      state.evaluationResult = null;
+      const inputEl = document.getElementById('spoken-transcript-input');
+      if (inputEl) inputEl.value = '';
+      window.switchMainTab('practice');
+      speakText(exp.example, 1.0);
+    };
+
+    window.setRoleplayFilter = (role) => {
+      state.roleplayFilter = role;
+      renderPracticeView();
+    };
+
+    window.selectPracticeDialogueLine = (idx) => {
+      const line = state.currentLesson.dialogue?.[idx];
+      if (!line) return;
+      const char = line.speaker === 'A' ? state.currentLesson.characters?.A : state.currentLesson.characters?.B;
+      state.selectedPracticeItem = {
+        english: line.english,
+        linking: line.linking,
+        vietnamese: line.vietnamese,
+        tip: line.tip,
+        speakerName: char?.name || `Nhân vật ${line.speaker}`,
+        avatar: char?.avatar || '🌟'
+      };
+      state.evaluationResult = null;
+      const inputEl = document.getElementById('spoken-transcript-input');
+      if (inputEl) inputEl.value = '';
+      renderPracticeView();
+    };
+
+    window.speakCurrentTarget = (rate) => {
+      speakText(state.selectedPracticeItem.english, rate);
+    };
+
+    window.speakSingleWord = (idx) => {
+      const wordObj = state.evaluationResult?.wordBreakdown?.[idx];
+      if (wordObj) speakText(wordObj.word, 0.85);
+    };
+
+    window.speakJournalEntry = (idx) => {
+      const entry = state.journalEntries?.[idx];
+      if (entry) speakText(entry.sentence, 1.0);
+    };
+
+    window.toggleListening = () => toggleListening();
+    window.simulateVoiceAttempt = (quality) => simulateVoiceAttempt(quality);
+    window.handleEvaluateSpeech = () => handleEvaluateSpeech();
+
+    window.selectMood = (mood) => {
+      state.selectedMood = mood;
+      renderEvaluationResult();
+      renderBadgesAndJournal();
+    };
+
+    window.handleSaveToJournal = (inputId) => handleSaveToJournal(inputId);
+    window.handleDeleteJournalEntry = (id) => handleDeleteJournalEntry(id);
+
+    window.openCheckInModal = () => {
+      renderCheckInModal();
+      const modal = document.getElementById('checkin-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+
+    window.closeCheckInModal = () => {
+      const modal = document.getElementById('checkin-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    };
+
+    window.handleDailyCheckIn = () => handleDailyCheckIn();
+
+    window.openApiKeyModal = () => {
+      const inputEl = document.getElementById('apikey-input-field');
+      const selectEl = document.getElementById('apikey-model-select');
+      const feedbackEl = document.getElementById('apikey-test-feedback');
+      if (inputEl) inputEl.value = state.customApiKey || '';
+      if (selectEl) selectEl.value = state.selectedModel || 'gemini-2.5-flash';
+      if (feedbackEl) feedbackEl.classList.add('hidden');
+      renderApiKeyModalStatus();
+      const modal = document.getElementById('apikey-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    };
+
+    window.closeApiKeyModal = () => {
+      const modal = document.getElementById('apikey-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    };
+
+    window.toggleShowApiKey = () => {
+      const inputEl = document.getElementById('apikey-input-field');
+      const btnEl = document.getElementById('toggle-show-key-btn');
+      if (!inputEl || !btnEl) return;
+      if (inputEl.type === 'password') {
+        inputEl.type = 'text';
+        btnEl.textContent = 'Ẩn';
+      } else {
+        inputEl.type = 'password';
+        btnEl.textContent = 'Hiện';
+      }
+    };
+
+    window.handleTestApiKeyConnection = () => handleTestApiKeyConnection();
+    window.handleSaveApiKeySettings = () => handleSaveApiKeySettings();
+    window.handleClearApiKey = () => handleClearApiKey();
+
+    // ==========================================
+    // INITIALIZE ON WINDOW LOAD
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLocal();
+      loadVoices();
+      if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = loadVoices;
+      renderHeaderStats();
+      renderPresetTopics();
+      renderLessonOverview();
+      renderLearnSubTabContent();
+      renderPracticeView();
+      renderBadgesAndJournal();
+      lucide.createIcons();
+      initFirebase();
+    });
+  </script>
+</body>
+</html>
