@@ -582,10 +582,8 @@
             id="apikey-model-select"
             class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-3 text-sm font-extrabold text-slate-800 focus:outline-none focus:border-teal-500 cursor-pointer"
           >
-            <option value="gemini-2.5-flash">gemini-2.5-flash (Khuyên dùng - Nhanh & Ổn định nhất)</option>
-            <option value="gemini-3-flash-preview">gemini-3-flash-preview (Mặc định cho Canvas Preview)</option>
-            <option value="gemini-2.0-flash">gemini-2.0-flash (Tương thích rộng)</option>
-            <option value="gemini-1.5-flash">gemini-1.5-flash (Bản tiêu chuẩn)</option>
+            <option value="gemini-3.5-flash">gemini-3.5-flash (Khuyên dùng - Nhanh &amp; Ổn định)</option>
+            <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (Nhẹ, nhanh, hạn mức rộng)</option>
           </select>
         </div>
 
@@ -1505,7 +1503,7 @@
       selectedMood: '🤩 Hào hứng',
       // AI Connection Settings
       customApiKey: '',
-      selectedModel: 'gemini-2.5-flash',
+      selectedModel: 'gemini-3.5-flash',
       aiConnectedStatus: 'smart_hybrid', // 'connected' | 'smart_hybrid'
       user: null,
       userStats: {
@@ -1735,7 +1733,7 @@
         if (!d) return;
         state.userStats = { ...state.userStats, ...d.s };
         if (d.j) state.journalEntries = d.j;
-        if (d.m) state.selectedModel = d.m;
+        state.selectedModel = ['gemini-3.5-flash', 'gemini-3.1-flash-lite'].includes(d.m) ? d.m : 'gemini-3.5-flash';
         if (d.l && d.l.dialogue && d.l.dialogue.length) {
           state.currentLesson = normalizeLesson(d.l); state.currentDay = d.d || null;
           const f = d.l.dialogue[0], ch = d.l.characters?.[f.speaker] || {};
@@ -1812,18 +1810,18 @@
       // Build candidate endpoints to try in order
       const candidateAttempts = [];
       if (userKey) {
-        candidateAttempts.push({ model: state.selectedModel || 'gemini-2.5-flash', key: userKey });
-        if (state.selectedModel !== 'gemini-2.5-flash') {
-          candidateAttempts.push({ model: 'gemini-2.5-flash', key: userKey });
+        candidateAttempts.push({ model: state.selectedModel || 'gemini-3.5-flash', key: userKey });
+        if (state.selectedModel !== 'gemini-3.5-flash') {
+          candidateAttempts.push({ model: 'gemini-3.5-flash', key: userKey });
         }
-        if (state.selectedModel !== 'gemini-2.0-flash') {
-          candidateAttempts.push({ model: 'gemini-2.0-flash', key: userKey });
+        if (state.selectedModel !== 'gemini-3.1-flash-lite') {
+          candidateAttempts.push({ model: 'gemini-3.1-flash-lite', key: userKey });
         }
       } else if (typeof __app_id !== 'undefined') {
         // Canvas preview environment auto-injected key attempt
         const apiKey = "";
-        candidateAttempts.push({ model: 'gemini-3-flash-preview', key: apiKey });
-        candidateAttempts.push({ model: 'gemini-2.5-flash', key: apiKey });
+        candidateAttempts.push({ model: 'gemini-3.5-flash', key: apiKey });
+        candidateAttempts.push({ model: 'gemini-3.5-flash', key: apiKey });
       }
 
       let lastErr = null;
@@ -2646,7 +2644,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
 
     async function handleTestApiKeyConnection() {
       const keyInput = document.getElementById('apikey-input-field')?.value.trim() || '';
-      const modelSelect = document.getElementById('apikey-model-select')?.value || 'gemini-2.5-flash';
+      const modelSelect = document.getElementById('apikey-model-select')?.value || 'gemini-3.5-flash';
       const feedbackEl = document.getElementById('apikey-test-feedback');
       const testBtnText = document.getElementById('test-apikey-btn-text');
 
@@ -2686,7 +2684,9 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
         feedbackEl.textContent = `🎉 Kết nối thành công với ${modelSelect}! Đã tự động lưu khóa API của bạn.`;
       } catch (err) {
         feedbackEl.className = 'p-3 rounded-2xl text-xs font-extrabold bg-rose-50 text-rose-900 border border-rose-300';
-        feedbackEl.textContent = `❌ Không thể kết nối (${err.message}). Hãy kiểm tra lại mã API Key hoặc đổi sang model "gemini-2.5-flash" nhé!`;
+        const em = String(err.message);
+        const hint = /404/.test(em) ? 'Model này không còn tồn tại, hãy chọn gemini-3.5-flash.' : /429/.test(em) ? 'Key đã hết hạn mức (quota) hoặc gọi quá nhanh, hãy thử lại sau.' : /40[03]/.test(em) ? 'API Key sai hoặc chưa được cấp quyền.' : 'Kiểm tra lại mạng.';
+        feedbackEl.textContent = `❌ Không thể kết nối (${em}). ${hint}`;
       } finally {
         testBtnText.textContent = 'Kiểm Tra Kết Nối';
       }
@@ -2694,7 +2694,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
 
     async function handleSaveApiKeySettings() {
       const keyInput = document.getElementById('apikey-input-field')?.value.trim() || '';
-      const modelSelect = document.getElementById('apikey-model-select')?.value || 'gemini-2.5-flash';
+      const modelSelect = document.getElementById('apikey-model-select')?.value || 'gemini-3.5-flash';
 
       state.customApiKey = keyInput;
       state.selectedModel = modelSelect;
@@ -3675,7 +3675,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       const selectEl = document.getElementById('apikey-model-select');
       const feedbackEl = document.getElementById('apikey-test-feedback');
       if (inputEl) inputEl.value = state.customApiKey || '';
-      if (selectEl) selectEl.value = state.selectedModel || 'gemini-2.5-flash';
+      if (selectEl) selectEl.value = state.selectedModel || 'gemini-3.5-flash';
       if (feedbackEl) feedbackEl.classList.add('hidden');
       renderApiKeyModalStatus();
       const modal = document.getElementById('apikey-modal');
