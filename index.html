@@ -119,7 +119,7 @@
   
     /* ===== Cố định khung, không xô lệch khi lướt ===== */
     html{height:100%;overflow-x:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%}
-    body{position:relative;width:100%;max-width:100vw;min-height:100%;overflow-x:hidden;overscroll-behavior:none;touch-action:pan-y}
+    body{position:relative;width:100%;max-width:100vw;min-height:100%;overflow-x:clip;overscroll-behavior:none;touch-action:pan-y}
     .flex-1{min-width:0}
     main,section{min-width:0;max-width:100%}
     .dialogue-grid p,#view-learn p{overflow-wrap:break-word}
@@ -140,6 +140,8 @@
       .flex.justify-between:not(.flex-col):not(.flex-nowrap){flex-wrap:wrap;row-gap:.5rem}
       .grid>div,.grid>section{min-width:0}
     }
+      .practice-nav{position:sticky;top:calc(env(safe-area-inset-top) + .5rem);z-index:30;backdrop-filter:blur(6px)}
+    .practice-nav button:disabled{opacity:.4;cursor:not-allowed}
   </style>
 </head>
 <body class="min-h-screen pb-16 selection:bg-amber-200">
@@ -349,6 +351,15 @@
 
       <!-- Right Column: Speaking Studio & AI Evaluation Result -->
       <div class="lg:col-span-7 space-y-5">
+        <div class="practice-nav flex items-center gap-2 bg-white/95 border-2 border-teal-100 rounded-2xl p-2 shadow-md">
+          <button onclick="stepPracticeLine(-1)" class="practice-nav-prev flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold text-base cursor-pointer">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i><span>Câu trước</span>
+          </button>
+          <span class="practice-nav-count whitespace-nowrap px-2 text-base font-bold text-slate-700">1 / 1</span>
+          <button onclick="stepPracticeLine(1)" class="practice-nav-next flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-teal-600 border-2 border-teal-600 text-white font-bold text-base cursor-pointer">
+            <span>Câu tiếp</span><i data-lucide="chevron-right" class="w-5 h-5"></i>
+          </button>
+        </div>
         <!-- Target Sentence Card -->
         <div class="bg-gradient-to-br from-rose-50 via-amber-50 to-teal-50 border-2 border-rose-200 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2">
@@ -1779,6 +1790,36 @@
       });
       return l;
     }
+
+    function practiceIndices() {
+      const f = state.roleplayFilter, d = state.currentLesson.dialogue || [];
+      return d.map((l, i) => i).filter((i) => f !== 'A' && f !== 'B' ? true : d[i].speaker === f);
+    }
+    function currentLineIdx() {
+      const e = state.selectedPracticeItem && state.selectedPracticeItem.english;
+      return (state.currentLesson.dialogue || []).findIndex((l) => l.english === e);
+    }
+    function updatePracticeNav() {
+      const list = practiceIndices(), pos = list.indexOf(currentLineIdx());
+      document.querySelectorAll('.practice-nav-count').forEach((el) => { el.textContent = `${pos >= 0 ? pos + 1 : '–'} / ${list.length}`; });
+      document.querySelectorAll('.practice-nav-prev').forEach((b) => { b.disabled = pos === 0 || !list.length; });
+      document.querySelectorAll('.practice-nav-next').forEach((b) => { b.disabled = (pos >= 0 && pos === list.length - 1) || !list.length; });
+    }
+    window.stepPracticeLine = (dir) => {
+      if (state.isListening) { showToast('Hãy dừng ghi âm trước khi chuyển câu nhé.', 'info'); return; }
+      const list = practiceIndices();
+      if (!list.length) return;
+      const pos = list.indexOf(currentLineIdx());
+      const np = pos < 0 ? (dir > 0 ? 0 : list.length - 1) : pos + dir;
+      if (np < 0 || np >= list.length) return;
+      selectPracticeDialogueLine(list[np]);
+    };
+    document.addEventListener('keydown', (e) => {
+      const v = document.getElementById('view-practice');
+      if (!v || v.classList.contains('hidden') || /INPUT|TEXTAREA|SELECT/.test((e.target.tagName || ''))) return;
+      if (e.key === 'ArrowRight') window.stepPracticeLine(1);
+      if (e.key === 'ArrowLeft') window.stepPracticeLine(-1);
+    });
 
     function saveLocal() {
       try { localStorage.setItem('ss_data', JSON.stringify({ s: state.userStats, j: state.journalEntries, m: state.selectedModel, l: state.currentLesson, d: state.currentDay })); } catch (e) {}
@@ -3253,6 +3294,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       document.getElementById('practice-target-linking').innerHTML = formatLinkingHtml(state.selectedPracticeItem.linking);
       document.getElementById('practice-target-vi').textContent = `🇻🇳 Nghĩa: ${state.selectedPracticeItem.vietnamese}`;
       loadPron();
+      updatePracticeNav();
 
       renderEvaluationResult();
       lucide.createIcons();
