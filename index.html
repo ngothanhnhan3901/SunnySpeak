@@ -1801,6 +1801,19 @@
     }
 
     function normalizeLesson(l) {
+      // Chuẩn hóa người nói: AI đôi khi ghi tên thay vì A/B hoặc gán toàn bộ câu cho một nhân vật
+      const L = (l && l.dialogue) || [];
+      const nameMap = {};
+      ['A', 'B'].forEach((k) => {
+        const n = String((l.characters && l.characters[k] && l.characters[k].name) || '').split(/[\s(]/)[0].toLowerCase();
+        if (n) nameMap[n] = k;
+      });
+      L.forEach((x) => {
+        const raw = String(x.speaker || '').trim(), u = raw.toUpperCase();
+        x.speaker = (u === 'A' || u === 'B') ? u : (nameMap[raw.split(/[\s(:]/)[0].toLowerCase()] || 'A');
+      });
+      const nB = L.filter((x) => x.speaker === 'B').length, nA = L.length - nB;
+      if (L.length >= 4 && Math.min(nA, nB) < L.length * 0.2) L.forEach((x, i) => { x.speaker = i % 2 ? 'B' : 'A'; });
       const def = { A: '🦊', B: '🐰' };
       ['A', 'B'].forEach((k) => {
         const c = l && l.characters && l.characters[k];
@@ -2549,7 +2562,7 @@
 
       const systemPrompt = `You are a cheerful, expert native American English speaking coach creating daily interactive lessons for Vietnamese learners.
 Generate a realistic, natural everyday conversation with rich connected speech (linking, flap T, reductions like wanna/gonna/kinda, elision) and vivid native expressions.
-Make sure all Vietnamese explanations are warm, cute, encouraging, and easy to understand. Use the '‿' symbol in the 'linking' field to clearly show where words link together. In 'viPron', write how a Vietnamese learner can read the sentence aloud using Vietnamese-style syllable spelling with hyphens between syllables (e.g. Hello -> Hé-lô), following the linking and reductions. Each character's 'avatar' must be exactly ONE emoji character, never a URL or text. Each character also needs 'gender' set to exactly 'male' or 'female', consistent with the name and role, and the avatar emoji should match that gender (e.g. 👩 or 👨 style faces, or a fitting character emoji). Use a mix: one male and one female character unless the situation clearly needs otherwise.`;
+Make sure all Vietnamese explanations are warm, cute, encouraging, and easy to understand. Use the '‿' symbol in the 'linking' field to clearly show where words link together. In 'viPron', write how a Vietnamese learner can read the sentence aloud using Vietnamese-style syllable spelling with hyphens between syllables (e.g. Hello -> Hé-lô), following the linking and reductions. In every dialogue turn the 'speaker' field must be exactly the letter 'A' or 'B' (never a name) and the turns must strictly alternate A, B, A, B. Each character's 'avatar' must be exactly ONE emoji character, never a URL or text. Each character also needs 'gender' set to exactly 'male' or 'female', consistent with the name and role, and the avatar emoji should match that gender (e.g. 👩 or 👨 style faces, or a fitting character emoji). Use a mix: one male and one female character unless the situation clearly needs otherwise.`;
 
       const userQuery = `Create a fresh daily English speaking lesson for the situation/topic: "${topicToUse}". Today is ${getTodayIso()}; vary character names, settings and phrasing.${focusNote}
 Include EXACTLY 15 natural dialogue turns between Character A and Character B (one coherent conversation with a clear beginning, middle and end; each turn 1-2 short sentences; alternate speakers), 4 connected speech/linking secrets from the dialogue, and 4 native expressions compared with textbook English.`;
@@ -2669,7 +2682,7 @@ Include EXACTLY 15 natural dialogue turns between Character A and Character B (o
       }
 
       try {
-        state.currentLesson = nextLesson;
+        state.currentLesson = normalizeLesson(nextLesson);
         if (state.currentDay && usedLiveAI) { try { const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}'); c[state.currentDay] = nextLesson; localStorage.setItem('ss_lessons', JSON.stringify(c)); } catch (e) {} }
         if (nextLesson.dialogue && nextLesson.dialogue.length > 0) {
           const firstLine = nextLesson.dialogue[0];
