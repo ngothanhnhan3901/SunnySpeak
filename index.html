@@ -251,8 +251,6 @@
           <!-- Audio Speed Control -->
           <div class="flex flex-wrap items-center gap-2 self-start max-w-full bg-white px-3.5 py-2 rounded-2xl border-2 border-teal-100 shadow-sm">
             <i data-lucide="headphones" class="w-4 h-4 text-teal-600"></i>
-            <select id="voice-select" onchange="setVoice(this.value)" title="Giọng nữ" class="max-w-[210px] text-sm font-semibold bg-slate-50 border-2 border-teal-100 rounded-xl px-2 py-1 cursor-pointer"></select>
-            <select id="voice-select-m" onchange="setVoiceM(this.value)" title="Giọng nam" class="max-w-[210px] text-sm font-semibold bg-slate-50 border-2 border-teal-100 rounded-xl px-2 py-1 cursor-pointer"></select>
             <span class="text-xs font-bold text-slate-600">Tốc độ:</span>
             <button id="speed-btn-normal" onclick="setGlobalSpeechRate(1.0)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition bg-teal-500 text-white">
               1.0x Chuẩn
@@ -261,6 +259,23 @@
               0.75x Chậm
             </button>
           </div>
+        </div>
+
+        <!-- Voice Panel -->
+        <div class="bg-white border-2 border-teal-100 rounded-2xl p-4 space-y-3 mb-4">
+          <p class="text-base font-bold text-slate-800">🎙️ Giọng đọc nhân vật <span id="voice-count" class="text-sm font-medium text-slate-500"></span></p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="block space-y-1.5">
+              <span class="text-sm font-semibold text-slate-700">👩 Giọng nữ</span>
+              <select id="voice-select" onchange="setVoice(this.value)" class="w-full text-base font-semibold bg-slate-50 border-2 border-teal-200 rounded-xl px-3 py-2.5 cursor-pointer"></select>
+            </label>
+            <label class="block space-y-1.5">
+              <span class="text-sm font-semibold text-slate-700">👨 Giọng nam</span>
+              <select id="voice-select-m" onchange="setVoiceM(this.value)" class="w-full text-base font-semibold bg-slate-50 border-2 border-teal-200 rounded-xl px-3 py-2.5 cursor-pointer"></select>
+            </label>
+          </div>
+          <p id="voice-assign" class="text-sm font-medium text-slate-700 leading-relaxed"></p>
+          <p id="voice-hint" class="hidden text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 leading-relaxed"></p>
         </div>
 
         <!-- Preset Topic Pills Container -->
@@ -2163,7 +2178,7 @@
     // WEB SPEECH API (TEXT TO SPEECH)
     // ==========================================
     let EN_VOICES = [];
-    const FEM_RE = /female|samantha|\bava\b|allison|susan|zoe|karen|moira|tessa|fiona|victoria|serena|kate\b|aria|jenny|michelle|emma|\bana\b|sonia|libby|zira|hazel|catherine|linda|heather|joanna|salli|kendra|kimberly|ivy|amy|nicole|olivia|sara\b|google us english/i;
+    const FEM_RE = /female|samantha|\bava\b|allison|susan|zoe|karen|moira|tessa|fiona|victoria|serena|kate\b|aria|jenny|michelle|emma|\bana\b|sonia|libby|zira|hazel|catherine|linda|heather|joanna|salli|kendra|kimberly|ivy|amy|nicole|olivia|sara\b|nicky|martha|rebecca|ellen|isabella|google us english/i;
     const MAL_RE = /\bmale\b|daniel|\balex\b|\btom\b|oliver|aaron|arthur|gordon|\bguy\b|davis|christopher|eric\b|roger|steffan|ryan|mark\b|david|james|richard|george|brian|andrew|liam|ethan|evan|nathan|rishi|\blee\b|joey|matthew|justin|kevin/i;
     const FEM_NAMES = /^(maya|chloe|emma|sarah|lily|anna|mia|sophie|olivia|emily|grace|lucy|kate|nora|ella|zoe|amy|jessica|linda|rachel|mary|jenny|lisa|tina|sofia|ruby|hannah|ivy|nina|julia|sara|chloé|ava|isla|ellie|rosa|lena|maria|nicole|laura|karen|susan|claire|megan|alice|bella|daisy|eva|holly|jade|kim|nancy|paula|rita|sally|vera|wendy)$/i;
     const MAL_NAMES = /^(leo|jax|tom|mike|jack|ben|david|james|john|ryan|max|dan|chris|kevin|noah|liam|ethan|luke|mark|peter|henry|oscar|jake|tony|eric|sam|alex|carlos|diego|frank|george|harry|ivan|jason|kyle|larry|nick|paul|ray|steve|tim|victor|will|zack|adam|brian|charlie|daniel|ed|felix|greg|hugo|ian|joe|ken|marco|neil|owen|pete|sean)$/i;
@@ -2178,6 +2193,7 @@
         sel.innerHTML = `<option value="">${label}</option>` + EN_VOICES.map((v) => `<option value="${escapeHtml(v.name)}">${escapeHtml(v.name)} (${v.lang})</option>`).join('');
         sel.value = lsGet(key);
       });
+      updateVoiceInfo();
     }
     // Giới tính nhân vật: ưu tiên dữ liệu AI, sau đó đoán theo tên, cuối cùng A = nữ, B = nam
     function charGender(sp) {
@@ -2194,10 +2210,31 @@
       const saved = lsGet(gender === 'M' ? 'ss_voice_m' : 'ss_voice_f');
       const chosen = EN_VOICES.find((x) => x.name === saved);
       if (chosen) return chosen;
-      const same = EN_VOICES.filter((x) => voiceGender(x) === gender);
-      if (same.length) return same[0];
-      const other = EN_VOICES.filter((x) => voiceGender(x) && voiceGender(x) !== gender);
-      return EN_VOICES.find((x) => !other.includes(x)) || EN_VOICES[0];
+      const fem = EN_VOICES.filter((x) => voiceGender(x) === 'F');
+      const mal = EN_VOICES.filter((x) => voiceGender(x) === 'M');
+      const unk = EN_VOICES.filter((x) => !voiceGender(x));
+      const f = lsGet('ss_voice_f') && EN_VOICES.find((x) => x.name === lsGet('ss_voice_f')) || fem[0] || unk[0] || mal[0] || EN_VOICES[0];
+      if (gender === 'F') return f;
+      return mal[0] || unk.find((x) => x !== f) || EN_VOICES.find((x) => x !== f) || EN_VOICES[0];
+    }
+    function updateVoiceInfo() {
+      const el = document.getElementById('voice-assign');
+      if (!el) return;
+      el.innerHTML = ['A', 'B'].map((sp) => {
+        const c = (state.currentLesson.characters || {})[sp] || {};
+        const g = charGender(sp), v = pickVoice(g);
+        return `${escapeHtml(c.avatar || '')} ${escapeHtml(c.name || 'Nhân vật ' + sp)} (${g === 'M' ? 'nam' : 'nữ'}): <b>${v ? escapeHtml(v.name) : 'chưa có giọng'}</b>`;
+      }).join('<br>');
+      const cnt = document.getElementById('voice-count');
+      if (cnt) cnt.textContent = `· máy có ${EN_VOICES.length} giọng tiếng Anh`;
+      const hint = document.getElementById('voice-hint');
+      const vf = pickVoice('F'), vm = pickVoice('M');
+      if (hint) {
+        if (EN_VOICES.length < 2 || (vf && vm && vf.name === vm.name)) {
+          hint.textContent = 'Máy chỉ có 1 giọng tiếng Anh nên hai nhân vật nghe giống nhau (app hạ thấp tông giọng nam để phân biệt). Trên iPhone: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → English, rồi tải thêm giọng như Aaron, Nicky, Daniel.';
+          hint.classList.remove('hidden');
+        } else hint.classList.add('hidden');
+      }
     }
     function speakerFor(text, pitch) {
       if (pitch > 1.1) return 'B';
@@ -2211,6 +2248,8 @@
       const gender = window._forceGender || charGender(sp);
       window._forceGender = null;
       const v = pickVoice(gender);
+      const same = v && pickVoice(gender === 'M' ? 'F' : 'M') === v;
+      u.pitch = same ? (gender === 'M' ? 0.82 : 1.06) : 1;
       u.lang = v ? v.lang : 'en-US';
       if (v) u.voice = v;
       else if (!window._warnedVoice) {
@@ -3085,6 +3124,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       document.getElementById('subtab-label-dialogue').textContent = `Hội Thoại (đã học ${(lesson.dialogue || []).filter((l) => isLearned(l.english)).length}/${lesson.dialogue?.length || 0})`;
       document.getElementById('subtab-label-linking').textContent = `Bí Kíp Nối Âm & Nuốt Âm (${lesson.linkingSecrets?.length || 0})`;
       renderRoadmap();
+      updateVoiceInfo();
       document.getElementById('subtab-label-native').textContent = `Cách Nói Người Bản Xứ (${lesson.nativeExpressions?.length || 0})`;
     }
 
