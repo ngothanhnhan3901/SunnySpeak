@@ -1956,9 +1956,19 @@
           ${fbFixed() ? '' : '<button onclick="resetFbConfig()" class="px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Đổi cấu hình</button>'}${steps}`;
         return;
       }
+      const hasPw = (cloud.user.providerData || []).some((p) => p.providerId === 'password');
+      const pwBox = hasPw
+        ? '<p class="text-sm text-emerald-700">🔑 Tài khoản này đã có mật khẩu: bạn có thể đăng nhập bằng email trong ứng dụng ở màn hình chính.</p>'
+        : `<div class="space-y-3 rounded-2xl border-2 border-indigo-100 p-4">
+            <p class="font-semibold text-slate-800">🔑 Đặt mật khẩu cho tài khoản này</p>
+            <p class="text-sm text-slate-600 leading-relaxed">Để đăng nhập bằng email <b>${escapeHtml(cloud.user.email || '')}</b> trong ứng dụng ở màn hình chính của iPhone mà vẫn dùng đúng dữ liệu này.</p>
+            <input id="cloud-newpass" type="password" autocomplete="new-password" placeholder="Mật khẩu mới (từ 6 ký tự)" class="w-full bg-slate-50 border-2 border-indigo-200 rounded-2xl px-4 py-3 text-base" />
+            <button onclick="cloudSetPassword()" class="w-full px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">Đặt mật khẩu</button>
+          </div>`;
       el.innerHTML = `<p>✅ Đã đăng nhập: <b>${escapeHtml(cloud.user.email || cloud.user.displayName || '')}</b></p>
         <p class="text-sm text-slate-500">${last}. Dữ liệu tự đồng bộ sau mỗi lần bạn học.</p>
         ${cloudErrHtml()}
+        ${pwBox}
         <div class="flex flex-col sm:flex-row gap-3">
           <button onclick="cloudSyncNow()" class="flex-1 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">${cloud.busy ? '⏳ Đang đồng bộ...' : '🔄 Đồng bộ ngay'}</button>
           <button onclick="cloudSignOut()" class="px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Đăng xuất</button>
@@ -2023,6 +2033,18 @@
         else await cloud.fb.signInWithEmailAndPassword(cloud.auth, email, pass);
       } catch (e) { showToast(authErr(e), 'error'); }
     }
+    window.cloudSetPassword = async () => {
+      const pass = (document.getElementById('cloud-newpass') || {}).value || '';
+      if (pass.length < 6) { showToast('Mật khẩu cần từ 6 ký tự.', 'error'); return; }
+      try {
+        const cred = cloud.fb.EmailAuthProvider.credential(cloud.user.email, pass);
+        await cloud.fb.linkWithCredential(cloud.user, cred);
+        renderCloud();
+        showToast('✅ Đã đặt mật khẩu. Giờ bạn đăng nhập bằng email và mật khẩu này ở mọi nơi.');
+      } catch (e) {
+        showToast(e.code === 'auth/requires-recent-login' ? 'Hãy đăng xuất, đăng nhập lại bằng Google rồi đặt mật khẩu ngay.' : authErr(e), 'error');
+      }
+    };
     window.cloudEmailSignIn = () => emailAuth('in');
     window.cloudEmailSignUp = () => emailAuth('up');
     window.cloudReset = async () => {
