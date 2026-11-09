@@ -1890,7 +1890,7 @@
     }
     // ===== Đồng bộ đám mây bằng Firebase (Google đăng nhập + Firestore) =====
     const FB_BASE = 'https://www.gstatic.com/firebasejs/11.6.1/';
-    const cloud = { app: null, auth: null, db: null, user: null, fb: null, timer: null, busy: false };
+    const cloud = { lastErr: '', app: null, auth: null, db: null, user: null, fb: null, timer: null, busy: false };
     // Dán firebaseConfig của bạn vào đây để MỌI người dùng chỉ cần bấm "Đăng nhập Google" (không phải tự tạo Firebase).
     // Ví dụ: { apiKey: '...', authDomain: '...firebaseapp.com', projectId: '...', appId: '...' }
     const DEFAULT_FB_CONFIG = {
@@ -1904,6 +1904,15 @@
     const fbFixed = () => !!(DEFAULT_FB_CONFIG && DEFAULT_FB_CONFIG.apiKey);
     const getFbCfg = () => { if (fbFixed()) return DEFAULT_FB_CONFIG; try { return JSON.parse(localStorage.getItem('ss_fbcfg') || 'null'); } catch (e) { return null; } };
 
+    function cloudErrHtml() {
+      if (!cloud.lastErr) return '';
+      const c = cloud.lastErr;
+      const hint = /permission-denied/.test(c) ? 'Firestore đang từ chối ghi: kiểm tra lại tab Rules trong Firestore Database.'
+        : /unavailable|offline/.test(c) ? 'Không kết nối được Firestore. Kiểm tra mạng, tắt trình chặn quảng cáo/VPN, và chắc chắn đã tạo Firestore Database.'
+        : /not-found|failed-precondition/.test(c) ? 'Có thể chưa tạo Firestore Database (Build → Firestore Database → Create database).'
+        : 'Thử bấm Đồng bộ ngay lần nữa.';
+      return `<p class="text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3 leading-relaxed">Lỗi đồng bộ gần nhất: <b>${escapeHtml(c)}</b>. ${hint}</p>`;
+    }
     function renderCloud() {
       const el = document.getElementById('cloud-body');
       if (!el) return;
@@ -1949,6 +1958,7 @@
       }
       el.innerHTML = `<p>✅ Đã đăng nhập: <b>${escapeHtml(cloud.user.email || cloud.user.displayName || '')}</b></p>
         <p class="text-sm text-slate-500">${last}. Dữ liệu tự đồng bộ sau mỗi lần bạn học.</p>
+        ${cloudErrHtml()}
         <div class="flex flex-col sm:flex-row gap-3">
           <button onclick="cloudSyncNow()" class="flex-1 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">🔄 Đồng bộ ngay</button>
           <button onclick="cloudSignOut()" class="px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Đăng xuất</button>
@@ -1975,7 +1985,7 @@
         cloud.fb = { ...A, ...Au, ...F };
         cloud.app = cloud.fb.initializeApp(cfg, 'sunny-sync');
         cloud.auth = cloud.fb.getAuth(cloud.app);
-        cloud.db = cloud.fb.getFirestore(cloud.app);
+        cloud.db = cloud.fb.initializeFirestore(cloud.app, { experimentalAutoDetectLongPolling: true });
         cloud.fb.onAuthStateChanged(cloud.auth, async (u) => { cloud.user = u; renderCloud(); if (u) await cloudPull(); });
       } catch (e) { showToast('Không tải được Firebase: ' + (e.message || e), 'error'); }
       renderCloud();
@@ -2033,8 +2043,9 @@
         const ts = Date.now();
         await cloud.fb.setDoc(cloudDoc(), { updatedAt: ts, payload: JSON.stringify(data) });
         localStorage.setItem('ss_last_sync', String(ts)); localStorage.setItem('ss_local_ts', String(ts));
+        cloud.lastErr = '';
         renderCloud();
-      } catch (e) { showToast('Chưa đẩy được dữ liệu lên đám mây (' + (e.code || e.message) + ')', 'error'); }
+      } catch (e) { cloud.lastErr = e.code || e.message; renderCloud(); showToast('Chưa đẩy được dữ liệu lên đám mây (' + (e.code || e.message) + ')', 'error'); }
     }
     function scheduleCloudPush() {
       if (!cloud.user) return;
@@ -2079,6 +2090,7 @@
         await cloudPush();
         if (manual) showToast('☁️ Đã đồng bộ xong!');
       } catch (e) {
+        cloud.lastErr = e.code || e.message; renderCloud();
         showToast('Đồng bộ lỗi (' + (e.code || e.message) + ')' + (e.code === 'permission-denied' ? '. Kiểm tra Rules của Firestore.' : ''), 'error');
       } finally { cloud.busy = false; }
     }
