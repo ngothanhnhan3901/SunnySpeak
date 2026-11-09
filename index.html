@@ -1927,11 +1927,24 @@
       const t = Number(lsGet('ss_last_sync') || 0);
       const last = t ? `Đồng bộ gần nhất: ${new Date(t).toLocaleString('vi-VN')}` : 'Chưa đồng bộ lần nào.';
       if (!cloud.user) {
-        el.innerHTML = `<p>${fbFixed() ? 'Đăng nhập bằng tài khoản Google để dữ liệu học của bạn được lưu trên đám mây và dùng được trên mọi thiết bị.' : 'Đã có cấu hình Firebase (<b>' + escapeHtml(cfg.projectId) + '</b>). Đăng nhập để bắt đầu đồng bộ.'}</p>
-          <div class="flex flex-col sm:flex-row gap-3">
-            <button onclick="cloudSignIn()" class="flex-1 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">🔐 Đăng nhập bằng Google</button>
-            ${fbFixed() ? '' : '<button onclick="resetFbConfig()" class="px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Đổi cấu hình</button>'}
-          </div>${steps}`;
+        const inCls = 'w-full bg-slate-50 border-2 border-indigo-200 rounded-2xl px-4 py-3 text-base';
+        const btn = 'flex-1 px-5 py-3 rounded-2xl font-bold cursor-pointer';
+        const iosApp = window.navigator.standalone === true;
+        el.innerHTML = `<p>${fbFixed() ? 'Đăng nhập để dữ liệu học của bạn được lưu trên đám mây và dùng được trên mọi thiết bị.' : 'Đã có cấu hình Firebase (<b>' + escapeHtml(cfg.projectId) + '</b>). Đăng nhập để bắt đầu đồng bộ.'}</p>
+          <div class="space-y-3 rounded-2xl border-2 border-indigo-100 p-4">
+            <p class="font-semibold text-slate-800">Đăng nhập bằng email</p>
+            <input id="cloud-email" type="email" autocomplete="email" placeholder="Email" class="${inCls}" />
+            <input id="cloud-pass" type="password" autocomplete="current-password" placeholder="Mật khẩu (từ 6 ký tự)" class="${inCls}" />
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button onclick="cloudEmailSignIn()" class="${btn} bg-indigo-600 hover:bg-indigo-700 text-white">Đăng nhập</button>
+              <button onclick="cloudEmailSignUp()" class="${btn} bg-indigo-50 border-2 border-indigo-200 text-indigo-800">Tạo tài khoản</button>
+            </div>
+            <button onclick="cloudReset()" class="text-sm font-semibold text-indigo-700 underline cursor-pointer">Quên mật khẩu?</button>
+          </div>
+          ${iosApp
+            ? '<p class="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 leading-relaxed">Đăng nhập Google không chạy được trong ứng dụng ở màn hình chính của iPhone. Hãy dùng email ở trên, hoặc mở trang bằng Safari để đăng nhập Google.</p>'
+            : `<button onclick="cloudSignIn()" class="w-full px-5 py-3 rounded-2xl bg-white border-2 border-indigo-300 text-indigo-800 font-bold cursor-pointer">🔐 Hoặc đăng nhập bằng Google</button>`}
+          ${fbFixed() ? '' : '<button onclick="resetFbConfig()" class="px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Đổi cấu hình</button>'}${steps}`;
         return;
       }
       el.innerHTML = `<p>✅ Đã đăng nhập: <b>${escapeHtml(cloud.user.email || cloud.user.displayName || '')}</b></p>
@@ -1969,6 +1982,7 @@
     }
 
     window.cloudSignIn = async () => {
+      if (window.navigator.standalone === true) { showToast('Trong ứng dụng màn hình chính, hãy đăng nhập bằng email nhé.', 'info'); return; }
       if (!cloud.auth) { await initCloud(); if (!cloud.auth) return; }
       const { GoogleAuthProvider, signInWithPopup, signInWithRedirect } = cloud.fb;
       const prov = new GoogleAuthProvider();
@@ -1981,6 +1995,33 @@
     };
     window.cloudSignOut = async () => { try { await cloud.fb.signOut(cloud.auth); } catch (e) {} showToast('Đã đăng xuất. Dữ liệu vẫn còn trên máy này.'); };
     window.cloudSyncNow = async () => { await cloudPull(true); };
+
+    const authErr = (e) => ({
+      'auth/invalid-credential': 'Sai email hoặc mật khẩu.', 'auth/wrong-password': 'Sai mật khẩu.',
+      'auth/user-not-found': 'Email này chưa có tài khoản, hãy bấm Tạo tài khoản.',
+      'auth/email-already-in-use': 'Email này đã có tài khoản, hãy bấm Đăng nhập. Nếu trước đó bạn dùng Google thì đăng nhập bằng Google.',
+      'auth/weak-password': 'Mật khẩu cần từ 6 ký tự.', 'auth/invalid-email': 'Email chưa đúng định dạng.',
+      'auth/operation-not-allowed': 'Chưa bật Email/Password trong Firebase (Authentication → Sign-in method).',
+      'auth/network-request-failed': 'Lỗi mạng, hãy thử lại.', 'auth/too-many-requests': 'Thử quá nhiều lần, hãy đợi một lúc.'
+    }[e.code] || ('Lỗi: ' + (e.code || e.message)));
+    async function emailAuth(kind) {
+      if (!cloud.auth) { await initCloud(); if (!cloud.auth) return; }
+      const email = (document.getElementById('cloud-email') || {}).value?.trim(), pass = (document.getElementById('cloud-pass') || {}).value;
+      if (!email || !pass) { showToast('Hãy nhập email và mật khẩu.', 'error'); return; }
+      try {
+        if (kind === 'up') await cloud.fb.createUserWithEmailAndPassword(cloud.auth, email, pass);
+        else await cloud.fb.signInWithEmailAndPassword(cloud.auth, email, pass);
+      } catch (e) { showToast(authErr(e), 'error'); }
+    }
+    window.cloudEmailSignIn = () => emailAuth('in');
+    window.cloudEmailSignUp = () => emailAuth('up');
+    window.cloudReset = async () => {
+      if (!cloud.auth) { await initCloud(); if (!cloud.auth) return; }
+      const email = ((document.getElementById('cloud-email') || {}).value || '').trim();
+      if (!email) { showToast('Nhập email của bạn vào ô trên rồi bấm lại.', 'error'); return; }
+      try { await cloud.fb.sendPasswordResetEmail(cloud.auth, email); showToast('Đã gửi email đặt lại mật khẩu. Kiểm tra hộp thư (cả mục Spam).'); }
+      catch (e) { showToast(authErr(e), 'error'); }
+    };
 
     const cloudDoc = () => cloud.fb.doc(cloud.db, 'users', cloud.user.uid, 'sunnyspeak', 'main');
 
