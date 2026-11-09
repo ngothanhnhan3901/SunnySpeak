@@ -1907,7 +1907,7 @@
     function cloudErrHtml() {
       if (!cloud.lastErr) return '';
       const c = cloud.lastErr;
-      const hint = /permission-denied/.test(c) ? 'Firestore đang từ chối ghi: kiểm tra lại tab Rules trong Firestore Database.'
+      const hint = /timeout/.test(c) ? 'Quá thời gian chờ: Firestore không phản hồi. Kiểm tra đã tạo Firestore Database, mạng ổn định, và tắt VPN hoặc trình chặn quảng cáo.' : /permission-denied/.test(c) ? 'Firestore đang từ chối ghi: kiểm tra lại tab Rules trong Firestore Database.'
         : /unavailable|offline/.test(c) ? 'Không kết nối được Firestore. Kiểm tra mạng, tắt trình chặn quảng cáo/VPN, và chắc chắn đã tạo Firestore Database.'
         : /not-found|failed-precondition/.test(c) ? 'Có thể chưa tạo Firestore Database (Build → Firestore Database → Create database).'
         : 'Thử bấm Đồng bộ ngay lần nữa.';
@@ -1960,7 +1960,7 @@
         <p class="text-sm text-slate-500">${last}. Dữ liệu tự đồng bộ sau mỗi lần bạn học.</p>
         ${cloudErrHtml()}
         <div class="flex flex-col sm:flex-row gap-3">
-          <button onclick="cloudSyncNow()" class="flex-1 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">🔄 Đồng bộ ngay</button>
+          <button onclick="cloudSyncNow()" class="flex-1 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">${cloud.busy ? '⏳ Đang đồng bộ...' : '🔄 Đồng bộ ngay'}</button>
           <button onclick="cloudSignOut()" class="px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Đăng xuất</button>
         </div>`;
     }
@@ -2035,17 +2035,24 @@
 
     const cloudDoc = () => cloud.fb.doc(cloud.db, 'users', cloud.user.uid, 'sunnyspeak', 'main');
 
+    const withTimeout = (p, ms = 20000) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error('timeout'), { code: 'timeout' })), ms))]);
+
     async function cloudPush() {
-      if (!cloud.user || !cloud.db) return;
+      if (!cloud.user || !cloud.db) return false;
       try {
         const data = JSON.parse(buildBackup(false)).data;
         if (JSON.stringify(data).length > 900000) delete data.ss_lessons;
         const ts = Date.now();
-        await cloud.fb.setDoc(cloudDoc(), { updatedAt: ts, payload: JSON.stringify(data) });
+        await withTimeout(cloud.fb.setDoc(cloudDoc(), { updatedAt: ts, payload: JSON.stringify(data) }));
         localStorage.setItem('ss_last_sync', String(ts)); localStorage.setItem('ss_local_ts', String(ts));
         cloud.lastErr = '';
         renderCloud();
-      } catch (e) { cloud.lastErr = e.code || e.message; renderCloud(); showToast('Chưa đẩy được dữ liệu lên đám mây (' + (e.code || e.message) + ')', 'error'); }
+        return true;
+      } catch (e) {
+        cloud.lastErr = e.code || e.message; renderCloud();
+        showToast('Chưa đẩy được dữ liệu lên đám mây (' + (e.code || e.message) + ')', 'error');
+        return false;
+      }
     }
     function scheduleCloudPush() {
       if (!cloud.user) return;
@@ -2076,23 +2083,26 @@
     }
 
     async function cloudPull(manual) {
-      if (!cloud.user || cloud.busy) return;
-      cloud.busy = true;
+      if (!cloud.user) { if (manual) showToast('Bạn chưa đăng nhập.', 'error'); return; }
+      if (cloud.busy) { if (manual) showToast('Đang đồng bộ, vui lòng đợi vài giây...', 'info'); return; }
+      cloud.busy = true; renderCloud();
+      if (manual) showToast('⏳ Đang đồng bộ...', 'info');
+      let ok = false;
       try {
-        const snap = await cloud.fb.getDoc(cloudDoc());
+        const snap = await withTimeout(cloud.fb.getDoc(cloudDoc()));
         if (snap.exists()) {
           const c = snap.data();
           const merged = mergeCloud(JSON.parse(buildBackup(true)).data, JSON.parse(c.payload || '{}'), Number(c.updatedAt || 0));
           Object.entries(merged).forEach(([k, v]) => { if (v !== undefined) try { localStorage.setItem(k, v); } catch (e) {} });
           loadLocal();
-          renderHeaderStats(); renderBadgesAndJournal(); renderLessonOverview(); renderLearnSubTabContent(); renderPracticeView(); renderRoadmap();
+          try { renderHeaderStats(); renderBadgesAndJournal(); renderLessonOverview(); renderLearnSubTabContent(); renderPracticeView(); renderRoadmap(); } catch (e) {}
         }
-        await cloudPush();
-        if (manual) showToast('☁️ Đã đồng bộ xong!');
+        ok = await cloudPush();
+        if (manual && ok) showToast('☁️ Đã đồng bộ xong!');
       } catch (e) {
-        cloud.lastErr = e.code || e.message; renderCloud();
+        cloud.lastErr = e.code || e.message;
         showToast('Đồng bộ lỗi (' + (e.code || e.message) + ')' + (e.code === 'permission-denied' ? '. Kiểm tra Rules của Firestore.' : ''), 'error');
-      } finally { cloud.busy = false; }
+      } finally { cloud.busy = false; renderCloud(); }
     }
 
     function saveLocal() {
