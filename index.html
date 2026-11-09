@@ -483,6 +483,12 @@
          VIEW 3: STUDY JOURNAL & REWARD BADGES
     ========================================== -->
     <div id="view-journal" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Cloud Sync Card -->
+      <div class="lg:col-span-12 bg-white border-2 border-indigo-200 rounded-3xl p-5 space-y-3 shadow-sm">
+        <h3 class="text-lg font-bold text-slate-800">☁️ Đồng bộ đám mây (đăng nhập Google)</h3>
+        <div id="cloud-body" class="space-y-3 text-base text-slate-700"></div>
+      </div>
+
       <!-- Left Column: Badges & Achievements -->
       <div class="lg:col-span-5 space-y-5">
         <div class="bg-white border-2 border-amber-200 rounded-3xl p-5 space-y-4 shadow-sm">
@@ -1873,7 +1879,172 @@
       } catch (e) {}
     }
 
+    const BACKUP_KEYS = ['ss_data', 'ss_lessons', 'ss_pron', 'ss_voice_f', 'ss_voice_m'];
+    function buildBackup(includeKey) {
+      const data = {};
+      BACKUP_KEYS.forEach((k) => { try { const v = localStorage.getItem(k); if (v !== null) data[k] = v; } catch (e) {} });
+      if (!includeKey && data.ss_data) {
+        try { const d = JSON.parse(data.ss_data); if (d.s) delete d.s.customApiKey; data.ss_data = JSON.stringify(d); } catch (e) {}
+      }
+      return JSON.stringify({ app: 'SunnySpeak', version: 1, exportedAt: new Date().toISOString(), includesKey: !!includeKey, data });
+    }
+    // ===== Đồng bộ đám mây bằng Firebase (Google đăng nhập + Firestore) =====
+    const FB_BASE = 'https://www.gstatic.com/firebasejs/11.6.1/';
+    const cloud = { app: null, auth: null, db: null, user: null, fb: null, timer: null, busy: false };
+    // Dán firebaseConfig của bạn vào đây để MỌI người dùng chỉ cần bấm "Đăng nhập Google" (không phải tự tạo Firebase).
+    // Ví dụ: { apiKey: '...', authDomain: '...firebaseapp.com', projectId: '...', appId: '...' }
+    const DEFAULT_FB_CONFIG = {
+      apiKey: 'AIzaSyB8-ulPuCfFNsrfOhAtbFj_H5J8yqyOERE',
+      authDomain: 'sunny-speak.firebaseapp.com',
+      projectId: 'sunny-speak',
+      storageBucket: 'sunny-speak.firebasestorage.app',
+      messagingSenderId: '704760723812',
+      appId: '1:704760723812:web:f32c19df5fe50d2e5aa271'
+    };
+    const fbFixed = () => !!(DEFAULT_FB_CONFIG && DEFAULT_FB_CONFIG.apiKey);
+    const getFbCfg = () => { if (fbFixed()) return DEFAULT_FB_CONFIG; try { return JSON.parse(localStorage.getItem('ss_fbcfg') || 'null'); } catch (e) { return null; } };
+
+    function renderCloud() {
+      const el = document.getElementById('cloud-body');
+      if (!el) return;
+      const cfg = getFbCfg();
+      const steps = fbFixed() ? '' : `<details class="rounded-2xl bg-indigo-50 border border-indigo-200 p-3 text-sm leading-relaxed">
+        <summary class="font-semibold text-indigo-800 cursor-pointer">Hướng dẫn tạo Firebase (làm một lần, miễn phí)</summary>
+        <ol class="list-decimal pl-5 mt-2 space-y-1">
+          <li>Vào <b>console.firebase.google.com</b> → <b>Add project</b> → đặt tên bất kỳ.</li>
+          <li>Trong dự án: biểu tượng <b>&lt;/&gt; (Web)</b> → đăng ký app → sao chép đoạn <b>firebaseConfig</b>.</li>
+          <li><b>Build → Authentication → Get started → Sign-in method</b> → bật <b>Google</b>.</li>
+          <li>Cùng trang <b>Authentication → Settings → Authorized domains</b> → thêm tên miền trang của bạn (ví dụ <b>${escapeHtml(location.hostname || 'ten-ban.github.io')}</b>).</li>
+          <li><b>Build → Firestore Database → Create database</b> (chọn chế độ production), vào tab <b>Rules</b> và dán:<br><code class="block bg-white border rounded-lg p-2 mt-1 text-xs break-all">rules_version = '2'; service cloud.firestore { match /databases/{db}/documents { match /users/{uid}/{doc=**} { allow read, write: if request.auth != null &amp;&amp; request.auth.uid == uid; } } }</code></li>
+          <li>Quay lại đây, dán <b>firebaseConfig</b> vào ô bên dưới rồi bấm <b>Lưu cấu hình</b>.</li>
+        </ol></details>`;
+      if (!cfg) {
+        el.innerHTML = `<p>Đăng nhập Google để dữ liệu học tự lưu trên đám mây và dùng được trên cả điện thoại lẫn máy tính. API Key của bạn không bao giờ được đưa lên đám mây.</p>${steps}
+          <textarea id="fb-config-input" rows="5" placeholder="Dán firebaseConfig vào đây (apiKey, authDomain, projectId, appId...)" class="w-full bg-slate-50 border-2 border-indigo-200 rounded-2xl p-3 text-sm font-mono"></textarea>
+          <button onclick="saveFbConfig()" class="w-full px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">Lưu cấu hình</button>`;
+        return;
+      }
+      const t = Number(lsGet('ss_last_sync') || 0);
+      const last = t ? `Đồng bộ gần nhất: ${new Date(t).toLocaleString('vi-VN')}` : 'Chưa đồng bộ lần nào.';
+      if (!cloud.user) {
+        el.innerHTML = `<p>${fbFixed() ? 'Đăng nhập bằng tài khoản Google để dữ liệu học của bạn được lưu trên đám mây và dùng được trên mọi thiết bị.' : 'Đã có cấu hình Firebase (<b>' + escapeHtml(cfg.projectId) + '</b>). Đăng nhập để bắt đầu đồng bộ.'}</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button onclick="cloudSignIn()" class="flex-1 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">🔐 Đăng nhập bằng Google</button>
+            ${fbFixed() ? '' : '<button onclick="resetFbConfig()" class="px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Đổi cấu hình</button>'}
+          </div>${steps}`;
+        return;
+      }
+      el.innerHTML = `<p>✅ Đã đăng nhập: <b>${escapeHtml(cloud.user.email || cloud.user.displayName || '')}</b></p>
+        <p class="text-sm text-slate-500">${last}. Dữ liệu tự đồng bộ sau mỗi lần bạn học.</p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button onclick="cloudSyncNow()" class="flex-1 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">🔄 Đồng bộ ngay</button>
+          <button onclick="cloudSignOut()" class="px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Đăng xuất</button>
+        </div>`;
+    }
+
+    window.saveFbConfig = () => {
+      const txt = (document.getElementById('fb-config-input') || {}).value || '';
+      const cfg = {};
+      for (const m of txt.matchAll(/["']?(\w+)["']?\s*:\s*["']([^"']+)["']/g)) cfg[m[1]] = m[2];
+      if (!cfg.apiKey || !cfg.projectId || !cfg.appId) { showToast('Cấu hình chưa đủ, cần có apiKey, projectId và appId.', 'error'); return; }
+      if (!cfg.authDomain) cfg.authDomain = cfg.projectId + '.firebaseapp.com';
+      try { localStorage.setItem('ss_fbcfg', JSON.stringify(cfg)); } catch (e) {}
+      showToast('Đã lưu cấu hình. Bấm "Đăng nhập bằng Google" nhé.');
+      renderCloud(); initCloud();
+    };
+    window.resetFbConfig = () => { try { localStorage.removeItem('ss_fbcfg'); } catch (e) {} renderCloud(); };
+
+    async function initCloud() {
+      const cfg = getFbCfg();
+      if (!cfg || cloud.app) { renderCloud(); return; }
+      try {
+        const [A, Au, F] = await Promise.all([import(FB_BASE + 'firebase-app.js'), import(FB_BASE + 'firebase-auth.js'), import(FB_BASE + 'firebase-firestore.js')]);
+        cloud.fb = { ...A, ...Au, ...F };
+        cloud.app = cloud.fb.initializeApp(cfg, 'sunny-sync');
+        cloud.auth = cloud.fb.getAuth(cloud.app);
+        cloud.db = cloud.fb.getFirestore(cloud.app);
+        cloud.fb.onAuthStateChanged(cloud.auth, async (u) => { cloud.user = u; renderCloud(); if (u) await cloudPull(); });
+      } catch (e) { showToast('Không tải được Firebase: ' + (e.message || e), 'error'); }
+      renderCloud();
+    }
+
+    window.cloudSignIn = async () => {
+      if (!cloud.auth) { await initCloud(); if (!cloud.auth) return; }
+      const { GoogleAuthProvider, signInWithPopup, signInWithRedirect } = cloud.fb;
+      const prov = new GoogleAuthProvider();
+      try { await signInWithPopup(cloud.auth, prov); }
+      catch (e) {
+        if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') { await signInWithRedirect(cloud.auth, prov); return; }
+        if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
+        showToast('Đăng nhập lỗi (' + (e.code || e.message) + ')' + (e.code === 'auth/unauthorized-domain' ? '. Hãy thêm tên miền của trang vào Authorized domains trong Firebase.' : ''), 'error');
+      }
+    };
+    window.cloudSignOut = async () => { try { await cloud.fb.signOut(cloud.auth); } catch (e) {} showToast('Đã đăng xuất. Dữ liệu vẫn còn trên máy này.'); };
+    window.cloudSyncNow = async () => { await cloudPull(true); };
+
+    const cloudDoc = () => cloud.fb.doc(cloud.db, 'users', cloud.user.uid, 'sunnyspeak', 'main');
+
+    async function cloudPush() {
+      if (!cloud.user || !cloud.db) return;
+      try {
+        const data = JSON.parse(buildBackup(false)).data;
+        if (JSON.stringify(data).length > 900000) delete data.ss_lessons;
+        const ts = Date.now();
+        await cloud.fb.setDoc(cloudDoc(), { updatedAt: ts, payload: JSON.stringify(data) });
+        localStorage.setItem('ss_last_sync', String(ts)); localStorage.setItem('ss_local_ts', String(ts));
+        renderCloud();
+      } catch (e) { showToast('Chưa đẩy được dữ liệu lên đám mây (' + (e.code || e.message) + ')', 'error'); }
+    }
+    function scheduleCloudPush() {
+      if (!cloud.user) return;
+      clearTimeout(cloud.timer);
+      cloud.timer = setTimeout(cloudPush, 4000);
+    }
+
+    function mergeCloud(L, C, cts) {
+      const P = (x) => { try { return JSON.parse(x || 'null') || {}; } catch (e) { return {}; } };
+      const cloudNewer = cts > Number(lsGet('ss_local_ts') || 0);
+      const ld = P(L.ss_data), cd = P(C.ss_data);
+      const base = cloudNewer ? cd : ld, other = cloudNewer ? ld : cd;
+      const s2 = { ...(other.s || {}), ...(base.s || {}) };
+      s2.xp = Math.max((ld.s || {}).xp || 0, (cd.s || {}).xp || 0);
+      ['learned', 'roadmapDone'].forEach((k) => {
+        const u = [...new Set([...((ld.s || {})[k] || []), ...((cd.s || {})[k] || [])])];
+        if (u.length) s2[k] = u;
+      });
+      if ((ld.s || {}).customApiKey) s2.customApiKey = ld.s.customApiKey; else delete s2.customApiKey;
+      const seen = new Set(), j = [];
+      [...(ld.j || []), ...(cd.j || [])].forEach((e) => { const id = String(e.id); if (!seen.has(id)) { seen.add(id); j.push(e); } });
+      return {
+        ss_data: JSON.stringify({ s: s2, j, m: base.m || other.m, l: base.l || other.l, d: base.d !== undefined ? base.d : other.d }),
+        ss_lessons: JSON.stringify({ ...P(C.ss_lessons), ...P(L.ss_lessons) }),
+        ss_pron: JSON.stringify({ ...P(C.ss_pron), ...P(L.ss_pron) }),
+        ss_voice_f: L.ss_voice_f || C.ss_voice_f, ss_voice_m: L.ss_voice_m || C.ss_voice_m
+      };
+    }
+
+    async function cloudPull(manual) {
+      if (!cloud.user || cloud.busy) return;
+      cloud.busy = true;
+      try {
+        const snap = await cloud.fb.getDoc(cloudDoc());
+        if (snap.exists()) {
+          const c = snap.data();
+          const merged = mergeCloud(JSON.parse(buildBackup(true)).data, JSON.parse(c.payload || '{}'), Number(c.updatedAt || 0));
+          Object.entries(merged).forEach(([k, v]) => { if (v !== undefined) try { localStorage.setItem(k, v); } catch (e) {} });
+          loadLocal();
+          renderHeaderStats(); renderBadgesAndJournal(); renderLessonOverview(); renderLearnSubTabContent(); renderPracticeView(); renderRoadmap();
+        }
+        await cloudPush();
+        if (manual) showToast('☁️ Đã đồng bộ xong!');
+      } catch (e) {
+        showToast('Đồng bộ lỗi (' + (e.code || e.message) + ')' + (e.code === 'permission-denied' ? '. Kiểm tra Rules của Firestore.' : ''), 'error');
+      } finally { cloud.busy = false; }
+    }
+
     function saveLocal() {
+      try { localStorage.setItem('ss_local_ts', String(Date.now())); } catch (e) {}
+      scheduleCloudPush();
       try { localStorage.setItem('ss_data', JSON.stringify({ s: state.userStats, j: state.journalEntries, m: state.selectedModel, l: state.currentLesson, d: state.currentDay })); } catch (e) {}
     }
     function loadLocal() {
@@ -3961,6 +4132,9 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
       loadLocal();
+      renderCloud();
+      initCloud();
+      try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
       const ta = document.getElementById('spoken-transcript-input');
       if (ta) {
         const d = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
