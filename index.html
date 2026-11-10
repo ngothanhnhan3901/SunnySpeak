@@ -555,7 +555,7 @@
       </div>
     </div>
 
-    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản 60 ngày (2 giai đoạn)</p>
+    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản 360 ngày (12 giai đoạn)</p>
   </main>
 
   <!-- ==========================================
@@ -1560,7 +1560,9 @@
       { id: 'linking_pro', name: 'Cao Thủ Nối Âm', icon: '🔗', desc: 'Đạt từ 80 XP trở lên khi luyện nói', reqXp: 80 },
       { id: 'streak_star', name: 'Ong Chăm Chỉ', icon: '🐝', desc: 'Điểm danh nhận thưởng mỗi ngày', reqXp: 150 },
       { id: 'native_vibe', name: 'Chuẩn Bản Xứ', icon: '🦄', desc: 'Tích lũy 300 XP học tập', reqXp: 300 },
-      { id: 'super_speaker', name: 'Đại Sứ Giao Tiếp', icon: '👑', desc: 'Tích lũy 600 XP xuất sắc', reqXp: 600 }
+      { id: 'super_speaker', name: 'Đại Sứ Giao Tiếp', icon: '👑', desc: 'Tích lũy 600 XP xuất sắc', reqXp: 600 },
+      { id: 'master', name: 'Bậc Thầy Phát Âm', icon: '💎', desc: 'Tích lũy 2000 XP', reqXp: 2000 },
+      { id: 'legend', name: 'Huyền Thoại Giao Tiếp', icon: '🌟', desc: 'Tích lũy 5000 XP', reqXp: 5000 }
     ];
 
     const MOOD_OPTIONS = ['🤩 Hào hứng', '😊 Tự tin', '💪 Quyết tâm'];
@@ -1694,42 +1696,59 @@
     }
 
     const ROADMAP = [["Chào hỏi & giới thiệu", "Greeting and introducing yourself to someone new", "nối phụ âm + nguyên âm"], ["Gọi đồ uống", "Ordering drinks at a coffee shop", "Flap T"], ["Hỏi đường", "Asking for and giving directions in a city", "giảm âm can/to/for"], ["Mua sắm", "Shopping for clothes, asking about size and price", "nối it/a/on"], ["Gọi món nhà hàng", "Ordering a meal at a restaurant", "wanna/gonna/gotta"], ["Nói về gia đình", "Talking about family and friends", "you → ya"], ["Thói quen hằng ngày", "Describing a daily routine", "nuốt âm /h/ (him, her, have)"], ["Thời tiết & kế hoạch", "Small talk about weather and weekend plans", "ngữ điệu câu hỏi đuôi"], ["Hẹn lịch", "Making and confirming appointments", "đọc số & giờ (thirteen/thirty)"], ["Gọi taxi/Grab", "Taking a taxi or rideshare", "lemme/gimme/gotcha"], ["Chào hàng xóm", "Small talk with a neighbor", "nhịp nhấn câu (stress timing)"], ["Khách sạn", "Checking in at a hotel", "câu yêu cầu lịch sự could/would"], ["Sân bay", "Check-in and security at the airport", "chuỗi nối 3 từ"], ["Khám bác sĩ", "Describing symptoms at a doctor's office", "cụm phụ âm"], ["Gọi điện thoại", "Making a phone call and leaving a message", "giảm âm and/of/at"], ["Kể chuyện cuối tuần", "Telling a story about your weekend", "đuôi -ed quá khứ"], ["Rủ bạn đi chơi", "Making plans with friends", "whaddaya/dontcha/didja"], ["Đổi trả hàng", "Returning an item and asking for a refund", "Stop T (can't, didn't)"], ["Thuê nhà", "Viewing an apartment with a landlord", "nhấn từ nội dung"], ["Nêu ý kiến", "Giving opinions and politely agreeing or disagreeing", "ngữ điệu đồng tình/phản đối"], ["Phỏng vấn xin việc", "A job interview about experience and strengths", "nối âm trong câu dài"], ["Họp nhóm", "Taking part in a team meeting", "ngắt nhóm ý (thought groups)"], ["Thuyết trình ngắn", "Opening a short presentation", "nhấn mạnh & ngắt nghỉ"], ["Đàm phán", "Negotiating price or deadlines", "rút gọn I'd/we'd/would've"], ["Phàn nàn lịch sự", "Making a polite complaint at a restaurant or hotel", "ngữ điệu lịch sự"], ["Networking", "Networking at a conference", "nối chuỗi khi tự giới thiệu"], ["Giải thích sự cố kỹ thuật", "Explaining a problem to tech support", "âm yếu schwa"], ["Tranh luận nhẹ", "A friendly debate about a news topic", "nhấn tương phản"], ["Kể chuyện vui", "Telling a funny story with natural reactions", "ngữ điệu cảm thán"], ["Ôn tập tổng hợp", "A free-flowing conversation with a new friend, reviewing everything", "tổng hợp mọi kỹ thuật"], ["Kể chuyện chuyến đi", "Telling a longer story about a memorable trip and answering follow-up questions", "nối âm trong chuỗi câu kể quá khứ"], ["Mô tả người & nơi chốn", "Describing a person and a place in detail to a friend", "nhấn từ miêu tả (tính từ)"], ["Giải thích cách làm", "Explaining step by step how to cook a dish or use a gadget", "ngắt nhóm ý + từ nối (first, then, after that)"], ["So sánh & lựa chọn", "Comparing two options such as phones, apartments or jobs and deciding", "nhấn tương phản khi so sánh"], ["Hỏi thăm & an ủi", "Comforting a friend who had a bad week and offering support", "ngữ điệu đồng cảm, giọng mềm"], ["Lên kế hoạch chuyến đi nhóm", "Planning a group trip: budget, dates, activities and small disagreements", "rút gọn gonna/hafta/gotta trong câu dài"], ["Dời lịch lịch sự", "Rescheduling plans politely and negotiating a new time", "câu lịch sự would/could/I was wondering"], ["Phỏng vấn tình huống (STAR)", "Answering behavioral interview questions with real examples", "nối âm khi kể kinh nghiệm"], ["Báo cáo tiến độ dự án", "Giving a project status update and discussing a delay", "ngắt nhịp & nhấn số liệu"], ["Góp ý công việc", "Giving and receiving constructive feedback at work", "ngữ điệu mềm hóa lời phê bình"], ["Thuyết phục đồng nghiệp", "Persuading a colleague to support a new idea", "nhấn mạnh lập luận (stress for emphasis)"], ["Thương lượng lương", "Negotiating a salary or a contract term", "rút gọn would've/could've/shouldn't've"], ["Giải quyết xung đột", "Calmly resolving a disagreement with a roommate or teammate", "ngữ điệu hạ giọng, nói chậm rõ"], ["Họp với khách hàng", "Handling a client meeting with objections and tough questions", "nối chuỗi thuật ngữ chuyên ngành"], ["Thuyết trình đầy đủ", "Delivering a two-minute presentation with a clear structure and Q&A", "nhóm ý (thought groups) & ngắt nghỉ"], ["Bàn luận tin tức", "Discussing a news story and giving reasons for your opinions", "nối âm trong câu phức"], ["Sức khỏe & lối sống", "Discussing health, sleep, diet and habits in depth", "cụm phụ âm khó (months, thoughts)"], ["Công nghệ & AI", "Debating the pros and cons of AI and new technology", "nhấn từ khóa & âm schwa"], ["Du học & sống ở nước ngoài", "Talking about studying or living abroad and culture shock", "ngữ điệu khi kể trải nghiệm"], ["Gọi điện xử lý sự cố", "Calling customer service to fix a billing or delivery problem", "ngữ điệu kiên quyết nhưng lịch sự"], ["Kể chuyện hài có thắt nút", "Telling a funny story with timing, pauses and a punchline", "nhịp điệu & ngắt nghỉ kịch tính"], ["Phát biểu trong tiệc", "Giving a toast or a short speech at a party or a wedding", "ngữ điệu ấm áp, trang trọng"], ["Networking nâng cao", "Building rapport with a stranger at a professional event and following up", "nối âm tự nhiên khi nói nhanh"], ["Tranh luận có lý lẽ", "Taking part in a structured debate with rebuttals", "nhấn tương phản & ngữ điệu phản biện"], ["Dẫn dắt cuộc họp", "Leading a meeting: agenda, time keeping and decisions", "câu yêu cầu mềm & ngắt nhịp"], ["Cố vấn đồng nghiệp trẻ", "Mentoring a junior colleague with advice and encouragement", "ngữ điệu khích lệ"], ["Xử lý tình huống khó", "Calmly dealing with a stressful situation such as lost luggage or a cancelled flight", "giảm âm khi nói nhanh dưới áp lực"], ["Chia sẻ mục tiêu dài hạn", "Talking about long-term goals and how to achieve them", "linking cụm tương lai (gonna, I'd like to)"], ["Phỏng vấn podcast", "Being interviewed on a podcast about your hobby or work", "trôi chảy kéo dài & filler tự nhiên"], ["Nhìn lại hành trình", "A relaxed long conversation reflecting on your English journey with a friend", "tổng hợp mọi kỹ thuật"]];
-    const phaseOf = (n) => n <= 10 ? { group: 1, name: 'Nền tảng', level: 'A2', len: 'max 12 words per sentence', lines: 15, extras: 4 }
+    const phaseOfBase = (n) => n <= 10 ? { group: 1, name: 'Nền tảng', level: 'A2', len: 'max 12 words per sentence', lines: 15, extras: 4 }
       : n <= 20 ? { group: 1, name: 'Giao tiếp tự tin', level: 'B1', len: 'max 16 words per sentence', lines: 15, extras: 4 }
       : n <= 30 ? { group: 1, name: 'Nâng cao & công việc', level: 'B2', len: 'max 22 words per sentence', lines: 15, extras: 4 }
       : n <= 40 ? { group: 2, name: 'Mở rộng', level: 'B1+', len: 'max 20 words per sentence, some compound sentences', lines: 25, extras: 6 }
       : n <= 50 ? { group: 2, name: 'Thành thạo', level: 'B2', len: 'max 24 words per sentence, with subordinate clauses', lines: 25, extras: 6 }
       : { group: 2, name: 'Chuyên sâu', level: 'B2+', len: 'max 28 words per sentence, natural complex sentences', lines: 25, extras: 6 };
-    const isLearned = (e) => (state.userStats.learned || []).includes(e);
+    const PHASES_EXTRA = [{"name": "Công việc nâng cao", "level": "B2", "len": "max 24 words per sentence", "theme": "advanced workplace communication", "focus": "rút gọn trong câu công sở|ngắt nhóm ý dài|nhấn số liệu & tên riêng|ngữ điệu lịch sự khi từ chối|nối âm trong thuật ngữ|giảm âm từ chức năng|nhấn tương phản|ngữ điệu mềm khi góp ý", "topics": "Họp đầu tuần|Phân công nhiệm vụ|Xin nghỉ phép|Từ chối nhận thêm việc|Trễ deadline|Xin gia hạn|Báo cáo lỗi|Họp 1-1 với sếp|Xin tăng lương|Phản hồi 360°|Làm việc từ xa|Họp video lỗi kỹ thuật|Onboarding nhân viên mới|Nhắc việc đồng nghiệp|Xử lý đồng nghiệp khó|Đề xuất cải tiến|Trao đổi email quan trọng|Gọi điện cho khách hàng|Chốt hợp đồng|Đàm phán thời hạn|Báo cáo doanh số|Họp ngân sách|Quản lý rủi ro dự án|Chia sẻ kiến thức|Tuyển dụng đồng đội|Tiệc công ty|Nghỉ việc tử tế|Bàn giao công việc|Team building|Tổng kết quý"}, {"name": "Du lịch & sống ở nước ngoài", "level": "B2", "len": "max 24 words per sentence", "theme": "travelling and living abroad", "focus": "nối âm trong câu hỏi dài|ngữ điệu nhờ vả lịch sự|âm cuối bị nuốt|chuỗi nối 4 từ|nhấn địa danh & số|ngữ điệu khi phàn nàn|giảm âm to/for/of|ngữ điệu kể trải nghiệm", "topics": "Đặt vé máy bay|Đổi chuyến bay|Quầy hải quan|Thuê xe|Nhận phòng muộn|Phàn nàn phòng ốc|Hỏi đường phức tạp|Đi tàu điện ngầm|Đặt tour|Mặc cả ở chợ|Nhà hàng địa phương|Dị ứng thực phẩm|Mua quà lưu niệm|Đổi tiền|Mất hộ chiếu|Khám bệnh nước ngoài|Mở tài khoản ngân hàng|Thuê nhà dài hạn|Làm quen hàng xóm|Đăng ký sim|Đi siêu thị|Gọi dịch vụ sửa chữa|Kết bạn đồng hương|Đi bảo tàng|Du lịch bụi|Cắm trại|Lễ hội địa phương|Hỏi về văn hóa|Nhớ nhà|Chia tay chuyến đi"}, {"name": "Kể chuyện & cảm xúc", "level": "B2+", "len": "max 26 words per sentence", "theme": "storytelling and expressing emotions", "focus": "nhịp kể & ngắt nghỉ|ngữ điệu cảm xúc|kéo dài âm nhấn|nối âm trong câu kể quá khứ|giọng thì thầm & hạ giọng|ngữ điệu ngạc nhiên|nhấn từ cảm thán|tốc độ nhanh chậm theo cảm xúc", "topics": "Kể kỷ niệm tuổi thơ|Kể chuyện xấu hổ|Kể chuyện may mắn|Chuyện ngày đầu đi làm|Kể về lần đi lạc|Kể về người thầy|Kể chuyện gia đình|Chuyện tình cảm|Chia sẻ tin vui|Báo tin buồn|An ủi người mất mát|Xin lỗi chân thành|Cảm ơn sâu sắc|Bày tỏ thất vọng|Bày tỏ lo lắng|Khen ngợi bạn bè|Động viên người thất bại|Kể về giấc mơ|Nói về nỗi sợ|Kể chuyện ma vui|Kể về chuyến phiêu lưu|Hồi tưởng bạn cũ|Kể chuyện cười|Chuyện hiểu lầm|Tả cảnh đẹp|Tả bữa ăn đáng nhớ|Chia sẻ sở thích|Nói về thần tượng|Kể chuyện thú cưng|Tổng kết năm"}, {"name": "Tranh luận & thuyết phục", "level": "B2+", "len": "max 26 words per sentence", "theme": "debating and persuading", "focus": "nhấn tương phản|ngữ điệu phản biện|ngắt nhóm ý trong lập luận|rút gọn would/should have|ngữ điệu nhượng bộ|nhấn từ phủ định|câu hỏi vặn lên giọng|kết luận hạ giọng", "topics": "Đồng ý & phản đối lịch sự|Nêu quan điểm cá nhân|Đưa ví dụ minh họa|Phản bác nhẹ nhàng|Nhượng bộ rồi phản biện|Hỏi vặn để làm rõ|Tóm tắt lập luận|Thuyết phục bạn bè|Tranh luận về mạng xã hội|Làm việc từ xa hay văn phòng|Học online hay offline|Ăn chay có tốt hơn|Giáo dục trẻ em|Tiền có mua được hạnh phúc|Nên đi du học không|Xe điện & môi trường|Nghĩa vụ công dân|Bình đẳng giới nơi làm việc|Tự do báo chí|Quyền riêng tư dữ liệu|Cấm điện thoại ở trường|Thuế đường|AI thay thế việc làm|Tuần làm việc 4 ngày|Nhà ở giá rẻ|Du lịch bền vững|Động vật trong rạp xiếc|Phim ảnh và bạo lực|Hợp tác hay cạnh tranh|Kết luận cuộc tranh luận"}, {"name": "Thuyết trình & nói trước đám đông", "level": "C1", "len": "max 28 words per sentence", "theme": "presenting and public speaking", "focus": "thought groups & ngắt nghỉ|nhấn trọng âm câu|ngữ điệu mở đầu thu hút|giọng trầm ổn định|tốc độ vừa phải & nhấn mạnh|ngữ điệu câu hỏi tu từ|kết thúc hạ giọng|nối âm khi nói liên tục", "topics": "Mở đầu thu hút|Giới thiệu bản thân|Nêu mục tiêu bài nói|Trình bày vấn đề|Số liệu & biểu đồ|Chuyển ý mượt|Kể chuyện trong bài nói|Dùng câu hỏi tu từ|Nhấn mạnh thông điệp|Xử lý người hỏi khó|Trả lời Q&A|Thuyết trình sản phẩm|Pitch gọi vốn|Demo phần mềm|Báo cáo nghiên cứu|Phát biểu nhận giải|Diễn văn khai mạc|Chúc mừng đám cưới|Bài nói truyền cảm hứng|Tổng kết dự án|Họp báo|Hội thảo chuyên ngành|Lễ tốt nghiệp|Dẫn chương trình|Giới thiệu diễn giả|Lời cảm ơn cuối bài|Khi quên lời|Khi bị ngắt lời|Thuyết trình với người bản xứ|Bài nói 2 phút tự do"}, {"name": "Phỏng vấn & sự nghiệp", "level": "C1", "len": "max 28 words per sentence", "theme": "interviews and career development", "focus": "nối âm khi kể thành tích|ngữ điệu tự tin|nhấn động từ hành động|giảm âm khi nói nhanh|ngữ điệu trung thực khi nói điểm yếu|ngắt nhịp câu dài|nhấn số liệu thành tích|ngữ điệu hỏi lịch sự", "topics": "Giới thiệu bản thân ngắn|Điểm mạnh điểm yếu|Vì sao chọn công ty|Kể thành tích|Thất bại & bài học|Làm việc nhóm|Xử lý áp lực|Mục tiêu 5 năm|Mức lương mong muốn|Câu hỏi ngược cho nhà tuyển dụng|Phỏng vấn kỹ thuật|Phỏng vấn nhóm|Phỏng vấn qua video|Phỏng vấn với giám đốc|Thương lượng offer|Từ chối offer|Chấp nhận offer|Ngày đầu đi làm|Thử việc|Xin thăng chức|Chuyển ngành|Khởi nghiệp|Gọi vốn nhà đầu tư|Networking LinkedIn|Xin giới thiệu việc|Thư giới thiệu|Họp với mentor|Dẫn dắt đội nhóm|Quản lý nhân viên khó|Lên kế hoạch sự nghiệp"}, {"name": "Văn hóa, tin tức, xã hội", "level": "C1", "len": "max 28 words per sentence", "theme": "culture, news and society", "focus": "nối âm trong câu phức|nhấn từ khóa trong tin tức|ngữ điệu trung lập|rút gọn trong câu dài|giọng khách quan|ngữ điệu hỏi mở|nhịp điệu thảo luận|nhấn tên riêng & số liệu", "topics": "Bàn tin thời sự|Thảo luận bầu cử|Kinh tế & lạm phát|Giá nhà đất|Biến đổi khí hậu|Năng lượng sạch|Giáo dục đại học|Y tế công|Dân số già hóa|Di cư & hòa nhập|Văn hóa đại chúng|Âm nhạc & thế hệ|Điện ảnh & phê bình|Sách & đọc|Nghệ thuật đương đại|Thể thao & quốc gia|Thế vận hội|Đa văn hóa & tôn giáo|Phong tục Việt Nam|Ẩm thực & bản sắc|Ngôn ngữ & bản sắc|Mạng xã hội & giới trẻ|Tin giả|Từ thiện|Tình nguyện|Môi trường đô thị|Giao thông công cộng|An ninh mạng|Lịch sử & ký ức|Tương lai xã hội"}, {"name": "Công nghệ, khoa học, kinh doanh", "level": "C1", "len": "max 28 words per sentence", "theme": "technology, science and business", "focus": "nhấn thuật ngữ & schwa|nối âm chuỗi thuật ngữ|ngắt nhóm ý khi giải thích|ngữ điệu giải thích rõ ràng|nhấn số & đơn vị|giảm âm từ chức năng|rút gọn trong câu kỹ thuật|ngữ điệu so sánh & liệt kê", "topics": "AI & việc làm|Học máy dễ hiểu|Bảo mật dữ liệu|Điện toán đám mây|Blockchain|Xe tự lái|Robot & tự động hóa|Không gian & vũ trụ|Y học hiện đại|Gen & đạo đức|Năng lượng hạt nhân|Khoa học đời thường|Giải thích thí nghiệm|Đọc nghiên cứu|Khởi nghiệp công nghệ|Mô hình kinh doanh|Marketing số|Thương mại điện tử|Chuỗi cung ứng|Tài chính cá nhân|Đầu tư cơ bản|Chứng khoán|Tiền mã hóa|Đọc bảng cân đối|Phân tích đối thủ|Chiến lược giá|Quản trị rủi ro|ESG & doanh nghiệp|Mua bán sáp nhập|Tầm nhìn công ty"}, {"name": "Tiếng lóng, thành ngữ, hài hước", "level": "C1", "len": "max 26 words per sentence, very natural and casual", "theme": "slang, idioms and humor", "focus": "âm lóng rút gọn (gonna/wanna/dunno)|ngữ điệu mỉa mai|nhấn bất ngờ|nối âm tốc độ cao|flap T & glottal stop|ngữ điệu hài hước|giảm âm cực mạnh|nhịp trêu đùa", "topics": "Tiếng lóng giới trẻ|Thành ngữ về tiền|Thành ngữ về thời gian|Thành ngữ về tình cảm|Thành ngữ về công việc|Cụm động từ thông dụng 1|Cụm động từ thông dụng 2|Cụm động từ thông dụng 3|Nói giảm nói tránh|Mỉa mai & châm biếm|Chơi chữ|Kể chuyện cười|Trêu đùa bạn bè|Roast nhẹ nhàng|Khen kiểu bản xứ|Phàn nàn kiểu bản xứ|Ngạc nhiên kiểu bản xứ|Đồng ý kiểu bản xứ|Từ chối kiểu bản xứ|Nói chuyện phiếm|Tin đồn công sở|Tán gẫu quán bar|Xem bóng đá cùng bạn|Chơi game|Tiệc tại nhà|Cắm trại đêm|Nói chuyện với người Anh|Nói chuyện với người Úc|Giọng vùng miền|Chuyện cười tổng hợp"}, {"name": "Ôn tập, nói tự do, thi thử", "level": "C1", "len": "max 28 words per sentence", "theme": "review, free speaking and exam practice", "focus": "tổng hợp nối âm|tổng hợp ngữ điệu|tổng hợp nhấn trọng âm|nói trôi chảy liên tục|phản xạ nhanh|tự sửa lỗi khi nói|nhịp điệu tự nhiên|ngữ điệu tổng hợp", "topics": "Ôn nối âm tuần 1|Ôn nuốt âm tuần 2|Ôn ngữ điệu tuần 3|Ôn nhấn trọng âm tuần 4|Nói tự do về gia đình|Nói tự do về công việc|Nói tự do về sở thích|Nói tự do về du lịch|Nói tự do về mục tiêu|Mô phỏng IELTS Part 1|Mô phỏng IELTS Part 2|Mô phỏng IELTS Part 3|Mô phỏng TOEIC nói|Mô phỏng phỏng vấn xin việc|Mô phỏng họp quốc tế|Mô phỏng thuyết trình|Mô phỏng tranh luận|Kể chuyện 3 phút|Mô phỏng gọi khách hàng|Mô phỏng đàm phán|Phản xạ nhanh 1|Phản xạ nhanh 2|Phản xạ nhanh 3|Nhại giọng bản xứ|Shadowing podcast|Shadowing TED|Shadowing phim|Tự đánh giá cuối khóa|Lễ tốt nghiệp|Nhìn lại một năm"}];
+    PHASES_EXTRA.forEach((p) => {
+      const f = p.focus.split('|');
+      p.topics.split('|').forEach((t, i) => ROADMAP.push([t, `${t} (title of the situation, in Vietnamese). Overall theme of this phase: ${p.theme}.`, f[i % f.length]]));
+    });
+    const phaseOf = (n) => {
+      const g = Math.ceil(n / 30);
+      if (g <= 2) return phaseOfBase(n);
+      const p = PHASES_EXTRA[g - 3];
+      return { group: g, name: p.name, level: p.level, len: p.len, lines: 25, extras: 6, theme: p.theme };
+    };
+    const phaseDone = (g, done) => { for (let d = (g - 1) * 30 + 1; d <= g * 30; d++) if (!done.includes(d)) return false; return true; };
+    const pruneKeys = (o, n) => { const k = Object.keys(o); if (k.length > n) k.slice(0, k.length - n).forEach((x) => delete o[x]); return o; };
+    const isLearned = (e) => {
+      if ((state.userStats.learned || []).includes(e)) return true;
+      return !!(state.currentDay && (state.userStats.roadmapDone || []).includes(state.currentDay) && (state.currentLesson.dialogue || []).some((l) => l.english === e));
+    };
 
     function renderRoadmap() {
       const el = document.getElementById('roadmap-card');
       if (!el) return;
       const done = state.userStats.roadmapDone || [];
-      const phase1Done = ROADMAP.slice(0, 30).every((_, i) => done.includes(i + 1));
+      const GROUPS = ROADMAP.length / 30;
       const allDone = ROADMAP.every((_, i) => done.includes(i + 1));
       let next = ROADMAP.findIndex((_, i) => !done.includes(i + 1));
       if (next < 0) next = ROADMAP.length - 1;
-      const view = state.roadmapView || (next >= 30 ? 2 : 1);
+      const view = state.roadmapView || Math.ceil((next + 1) / 30);
+      const unlocked = (g) => g === 1 || phaseDone(g - 1, done);
+      const locked = !unlocked(view);
       const start = (view - 1) * 30;
-      const cur = ROADMAP[next], ph = phaseOf(next + 1);
+      const cur = ROADMAP[next], ph = phaseOf(next + 1), vph = phaseOf(start + 1);
       const dayInPhase = next + 1 - (ph.group - 1) * 30;
       const doneInView = ROADMAP.slice(start, start + 30).filter((_, i) => done.includes(start + i + 1)).length;
-      const locked = view === 2 && !phase1Done;
       const noKey = !(state.customApiKey || '').trim() && typeof __app_id === 'undefined';
-      const tab = (v) => `<button onclick="setRoadmapView(${v})" class="px-4 py-2 rounded-xl text-sm font-bold cursor-pointer border-2 ${view === v ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-indigo-200 text-indigo-800'}">Giai đoạn ${v}${v === 2 && !phase1Done ? ' 🔒' : ''}</button>`;
+      const tabs = Array.from({ length: GROUPS }, (_, k) => k + 1).map((g) => `<button onclick="setRoadmapView(${g})" class="py-2 rounded-xl text-sm font-bold cursor-pointer border-2 ${view === g ? 'bg-indigo-600 border-indigo-600 text-white' : phaseDone(g, done) ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-white border-indigo-200 text-indigo-800'}">${phaseDone(g, done) ? '✓' : g}${unlocked(g) ? '' : '🔒'}</button>`).join('');
       el.innerHTML = `
-        <div class="flex flex-wrap gap-2 mb-4">${tab(1)}${tab(2)}</div>
+        <p class="text-sm font-semibold text-slate-600 mb-2">Lộ trình ${ROADMAP.length} ngày · ${GROUPS} giai đoạn (bấm số để xem từng giai đoạn)</p>
+        <div class="grid grid-cols-6 sm:grid-cols-12 gap-2 mb-4">${tabs}</div>
         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div class="space-y-1">
             ${allDone
-              ? '<p class="text-xl font-bold text-emerald-700">🎉 Bạn đã hoàn thành cả 60 ngày của lộ trình!</p>'
-              : `<p class="text-sm font-semibold text-indigo-700">Giai đoạn ${ph.group} · Cấp ${ph.name} (${ph.level})</p>
+              ? '<p class="text-xl font-bold text-emerald-700">🏆 Bạn đã hoàn thành cả 12 giai đoạn của lộ trình!</p>'
+              : `<p class="text-sm font-semibold text-indigo-700">Giai đoạn ${ph.group}/${GROUPS} · ${ph.name} (${ph.level})</p>
                  <h2 class="text-xl font-bold text-slate-800">Ngày ${dayInPhase}: ${escapeHtml(cur[0])}</h2>
                  <p class="text-sm text-slate-600">Trọng tâm nối âm: ${escapeHtml(cur[2])} · ${ph.lines} câu mỗi ngày</p>`}
-            <p class="text-sm text-slate-600">Giai đoạn ${view}: đã hoàn thành ${doneInView}/30 ngày. Tick “đã học” hết các câu của ngày để hoàn thành ngày đó (+50 XP).</p>
-            ${view === 2 ? '<p class="text-sm text-indigo-700 font-medium">Giai đoạn 2 có bài dài hơn (25 câu), câu phức hơn, thành ngữ và nhiều bí kíp nối âm hơn.</p>' : ''}
-            ${locked ? '<p class="text-sm text-amber-700 font-semibold">🔒 Hoàn thành đủ 30 ngày của Giai đoạn 1 để mở Giai đoạn 2.</p>' : ''}
+            <p class="text-sm text-slate-600">Giai đoạn ${view} (${escapeHtml(vph.name)}): đã hoàn thành ${doneInView}/30 ngày. Tick “đã học” hết các câu của ngày để hoàn thành ngày đó (+50 XP, xong cả giai đoạn +200 XP).</p>
+            ${locked ? `<p class="text-sm text-amber-700 font-semibold">🔒 Hoàn thành đủ 30 ngày của Giai đoạn ${view - 1} để mở Giai đoạn ${view}.</p>` : ''}
             ${noKey ? '<p class="text-sm text-amber-700 font-semibold">Nhập Gemini API Key để AI soạn bài riêng cho từng ngày.</p>' : ''}
           </div>
           ${allDone ? '' : `<button onclick="startRoadmapDay(${next + 1})" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">Bắt đầu Ngày ${dayInPhase}</button>`}
@@ -1756,14 +1775,15 @@
       const d = ROADMAP[n - 1];
       if (!d || state.isGeneratingLesson) return;
       const done = state.userStats.roadmapDone || [];
-      if (n > 30 && !ROADMAP.slice(0, 30).every((_, i) => done.includes(i + 1))) { showToast('🔒 Hãy hoàn thành đủ 30 ngày của Giai đoạn 1 để mở Giai đoạn 2.', 'info'); return; }
-      const ph = phaseOf(n), dayNo = n - (ph.group - 1) * 30;
+      const g = Math.ceil(n / 30);
+      if (g > 1 && !phaseDone(g - 1, done)) { showToast(`🔒 Hãy hoàn thành đủ 30 ngày của Giai đoạn ${g - 1} để mở Giai đoạn ${g}.`, 'info'); return; }
+      const ph = phaseOf(n), dayNo = n - (g - 1) * 30;
       try {
         const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}')[n];
-        if (c && (c.dialogue || []).length >= ph.lines) { loadLesson(c, n); showToast(`Đã mở lại bài Ngày ${dayNo} (Giai đoạn ${ph.group}).`); return; }
+        if (c && (c.dialogue || []).length >= ph.lines) { loadLesson(c, n); showToast(`Đã mở lại bài Ngày ${dayNo} (Giai đoạn ${g}).`); return; }
       } catch (e) {}
       state.pendingDay = n; state.pendingLines = ph.lines; state.pendingExtras = ph.extras;
-      state.pendingFocus = ` This is Day ${dayNo} of Phase ${ph.group} of a 60-day speaking roadmap, target level CEFR ${ph.level}. Main connected-speech focus: ${d[2]} (build the linkingSecrets around it). Sentence length: ${ph.len}.${ph.group === 2 ? ' This is an advanced, richer lesson: longer and more natural sentences with subordinate clauses, idioms and phrasal verbs, and a conversation that develops with real detail.' : ''}`;
+      state.pendingFocus = ` This is Day ${dayNo} of Phase ${g} (of 12) of a year-long speaking roadmap, target level CEFR ${ph.level}.${ph.theme ? ' Phase theme: ' + ph.theme + '.' : ''} Main connected-speech focus: ${d[2]} (build the linkingSecrets around it). Sentence length: ${ph.len}.${g >= 2 ? ' This is an advanced, richer lesson: longer and more natural sentences with subordinate clauses, idioms and phrasal verbs, and a conversation that develops with real detail.' : ''}`;
       handleGenerateNewLesson(d[1], null);
     };
 
@@ -1772,9 +1792,15 @@
       const L = state.currentLesson.dialogue || [], done = state.userStats.roadmapDone || [];
       if (L.length && L.every((l) => isLearned(l.english)) && !done.includes(state.currentDay)) {
         updateStats({ roadmapDone: [...done, state.currentDay], xp: state.userStats.xp + 50 });
-        const dd = state.currentDay, wasP1 = ROADMAP.slice(0, 30).every((_, i) => done.includes(i + 1)), nowP1 = ROADMAP.slice(0, 30).every((_, i) => [...done, dd].includes(i + 1));
+        const dd = state.currentDay, g = Math.ceil(dd / 30);
+        const wasG = phaseDone(g, done), nowG = phaseDone(g, [...done, dd]);
         state.roadmapView = null;
-        showToast(nowP1 && !wasP1 ? '🎊 Hoàn thành Giai đoạn 1! Giai đoạn 2 đã mở khóa (+50 XP)' : `🎉 Hoàn thành ${dd > 30 ? 'Giai đoạn 2 · Ngày ' + (dd - 30) : 'Ngày ' + dd}! +50 XP`);
+        const ls = new Set(L.map((l) => l.english));
+        updateStats({ learned: (state.userStats.learned || []).filter((e) => !ls.has(e)) });
+        if (nowG && !wasG) {
+          updateStats({ xp: state.userStats.xp + 200 });
+          showToast(g < ROADMAP.length / 30 ? `🎊 Hoàn thành Giai đoạn ${g}! Giai đoạn ${g + 1} đã mở khóa (+250 XP)` : '🏆 Bạn đã hoàn thành cả 12 giai đoạn! (+250 XP)');
+        } else showToast(`🎉 Hoàn thành Giai đoạn ${g} · Ngày ${dd - (g - 1) * 30}! +50 XP`);
       }
     }
     function refreshLearned() { renderLearnSubTabContent(); renderPracticeView(); renderRoadmap(); renderLessonOverview(); }
@@ -1832,7 +1858,7 @@
           if (!x.l.phonetic && it.ipa) x.l.phonetic = it.ipa;
           cache[x.l.english] = { ipa: x.l.phonetic || it.ipa, vi: it.vi };
         });
-        try { localStorage.setItem('ss_pron', JSON.stringify(cache)); } catch (e) {}
+        try { localStorage.setItem('ss_pron', JSON.stringify(pruneKeys(cache, 300))); } catch (e) {}
         if (state.currentLesson === lesson) { saveLocal(); renderLearnSubTabContent(); renderPracticeView(); }
       } catch (e) { pronTried.delete(key); }
     }
@@ -1858,7 +1884,7 @@
           generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { ipa: { type: 'STRING' }, vi: { type: 'STRING' } }, required: ['ipa', 'vi'] } }
         });
         const c = readPronCache(); c[e] = { ipa: r.ipa, vi: r.vi };
-        try { localStorage.setItem('ss_pron', JSON.stringify(c)); } catch (x) {}
+        try { localStorage.setItem('ss_pron', JSON.stringify(pruneKeys(c, 300))); } catch (x) {}
       } catch (err) {
         if (state.selectedPracticeItem.english === e) show(get(), 'Chưa lấy được phiên âm. Kiểm tra API Key và mạng.');
         pronPending.delete(e); return;
@@ -3001,7 +3027,11 @@ Include EXACTLY ${targetLines} natural dialogue turns between Character A and Ch
 
       try {
         state.currentLesson = normalizeLesson(nextLesson);
-        if (state.currentDay && usedLiveAI) { try { const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}'); c[state.currentDay] = nextLesson; localStorage.setItem('ss_lessons', JSON.stringify(c)); } catch (e) {} }
+        if (state.currentDay && usedLiveAI) { try { const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}'); c[state.currentDay] = nextLesson;
+          const tm = c.__t || {}; tm[state.currentDay] = Date.now(); c.__t = tm;
+          const ks = Object.keys(c).filter((k) => k !== '__t');
+          if (ks.length > 10) ks.sort((a, b) => (tm[a] || 0) - (tm[b] || 0)).slice(0, ks.length - 10).forEach((k) => { delete c[k]; delete tm[k]; });
+          localStorage.setItem('ss_lessons', JSON.stringify(c)); } catch (e) {} }
         if (nextLesson.dialogue && nextLesson.dialogue.length > 0) {
           const firstLine = nextLesson.dialogue[0];
           const charInfo = nextLesson.characters[firstLine.speaker] || { name: 'Speaker', avatar: '🌟' };
@@ -3875,6 +3905,12 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       lucide.createIcons();
     }
 
+    function phaseBadgesHtml() {
+      const done = state.userStats.roadmapDone || [];
+      const icons = ['🌱', '🌿', '🍀', '🌸', '🌻', '🔥', '⭐', '🌙', '🏔️', '🚀', '👑', '🏆'];
+      return `<div class="pt-2"><p class="text-sm font-bold text-slate-700 mb-2">Huy hiệu giai đoạn</p><div class="grid grid-cols-4 sm:grid-cols-6 gap-2">${icons.map((ic, i) => { const ok = phaseDone(i + 1, done); return `<div class="text-center p-2 rounded-2xl border-2 ${ok ? 'bg-amber-50 border-amber-300' : 'bg-slate-50 border-slate-200 opacity-50'}"><div class="text-2xl">${ic}</div><div class="text-xs font-semibold text-slate-700">GĐ ${i + 1}</div></div>`; }).join('')}</div></div>`;
+    }
+
     function renderBadgesAndJournal() {
       const xpEl = document.getElementById('badges-xp-badge');
       if (xpEl) xpEl.textContent = `${state.userStats.xp} XP Hiện Có`;
@@ -3905,7 +3941,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
               </div>
             </div>
           `;
-        }).join('');
+        }).join('') + phaseBadgesHtml();
       }
 
       const moodSelector = document.getElementById('journal-mood-selector');
