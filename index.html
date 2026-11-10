@@ -555,7 +555,7 @@
       </div>
     </div>
 
-    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản 15 câu/ngày</p>
+    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản 60 ngày (2 giai đoạn)</p>
   </main>
 
   <!-- ==========================================
@@ -1693,33 +1693,55 @@
       );
     }
 
-    const ROADMAP = [["Chào hỏi & giới thiệu", "Greeting and introducing yourself to someone new", "nối phụ âm + nguyên âm"], ["Gọi đồ uống", "Ordering drinks at a coffee shop", "Flap T"], ["Hỏi đường", "Asking for and giving directions in a city", "giảm âm can/to/for"], ["Mua sắm", "Shopping for clothes, asking about size and price", "nối it/a/on"], ["Gọi món nhà hàng", "Ordering a meal at a restaurant", "wanna/gonna/gotta"], ["Nói về gia đình", "Talking about family and friends", "you → ya"], ["Thói quen hằng ngày", "Describing a daily routine", "nuốt âm /h/ (him, her, have)"], ["Thời tiết & kế hoạch", "Small talk about weather and weekend plans", "ngữ điệu câu hỏi đuôi"], ["Hẹn lịch", "Making and confirming appointments", "đọc số & giờ (thirteen/thirty)"], ["Gọi taxi/Grab", "Taking a taxi or rideshare", "lemme/gimme/gotcha"], ["Chào hàng xóm", "Small talk with a neighbor", "nhịp nhấn câu (stress timing)"], ["Khách sạn", "Checking in at a hotel", "câu yêu cầu lịch sự could/would"], ["Sân bay", "Check-in and security at the airport", "chuỗi nối 3 từ"], ["Khám bác sĩ", "Describing symptoms at a doctor's office", "cụm phụ âm"], ["Gọi điện thoại", "Making a phone call and leaving a message", "giảm âm and/of/at"], ["Kể chuyện cuối tuần", "Telling a story about your weekend", "đuôi -ed quá khứ"], ["Rủ bạn đi chơi", "Making plans with friends", "whaddaya/dontcha/didja"], ["Đổi trả hàng", "Returning an item and asking for a refund", "Stop T (can't, didn't)"], ["Thuê nhà", "Viewing an apartment with a landlord", "nhấn từ nội dung"], ["Nêu ý kiến", "Giving opinions and politely agreeing or disagreeing", "ngữ điệu đồng tình/phản đối"], ["Phỏng vấn xin việc", "A job interview about experience and strengths", "nối âm trong câu dài"], ["Họp nhóm", "Taking part in a team meeting", "ngắt nhóm ý (thought groups)"], ["Thuyết trình ngắn", "Opening a short presentation", "nhấn mạnh & ngắt nghỉ"], ["Đàm phán", "Negotiating price or deadlines", "rút gọn I'd/we'd/would've"], ["Phàn nàn lịch sự", "Making a polite complaint at a restaurant or hotel", "ngữ điệu lịch sự"], ["Networking", "Networking at a conference", "nối chuỗi khi tự giới thiệu"], ["Giải thích sự cố kỹ thuật", "Explaining a problem to tech support", "âm yếu schwa"], ["Tranh luận nhẹ", "A friendly debate about a news topic", "nhấn tương phản"], ["Kể chuyện vui", "Telling a funny story with natural reactions", "ngữ điệu cảm thán"], ["Ôn tập tổng hợp", "A free-flowing conversation with a new friend, reviewing everything", "tổng hợp mọi kỹ thuật"]];
-    const phaseOf = (n) => n <= 10 ? { name: 'Nền tảng', level: 'A2', len: 'max 12 words per sentence' } : n <= 20 ? { name: 'Giao tiếp tự tin', level: 'B1', len: 'max 16 words per sentence' } : { name: 'Nâng cao & công việc', level: 'B2', len: 'max 22 words per sentence' };
+    const ROADMAP = [["Chào hỏi & giới thiệu", "Greeting and introducing yourself to someone new", "nối phụ âm + nguyên âm"], ["Gọi đồ uống", "Ordering drinks at a coffee shop", "Flap T"], ["Hỏi đường", "Asking for and giving directions in a city", "giảm âm can/to/for"], ["Mua sắm", "Shopping for clothes, asking about size and price", "nối it/a/on"], ["Gọi món nhà hàng", "Ordering a meal at a restaurant", "wanna/gonna/gotta"], ["Nói về gia đình", "Talking about family and friends", "you → ya"], ["Thói quen hằng ngày", "Describing a daily routine", "nuốt âm /h/ (him, her, have)"], ["Thời tiết & kế hoạch", "Small talk about weather and weekend plans", "ngữ điệu câu hỏi đuôi"], ["Hẹn lịch", "Making and confirming appointments", "đọc số & giờ (thirteen/thirty)"], ["Gọi taxi/Grab", "Taking a taxi or rideshare", "lemme/gimme/gotcha"], ["Chào hàng xóm", "Small talk with a neighbor", "nhịp nhấn câu (stress timing)"], ["Khách sạn", "Checking in at a hotel", "câu yêu cầu lịch sự could/would"], ["Sân bay", "Check-in and security at the airport", "chuỗi nối 3 từ"], ["Khám bác sĩ", "Describing symptoms at a doctor's office", "cụm phụ âm"], ["Gọi điện thoại", "Making a phone call and leaving a message", "giảm âm and/of/at"], ["Kể chuyện cuối tuần", "Telling a story about your weekend", "đuôi -ed quá khứ"], ["Rủ bạn đi chơi", "Making plans with friends", "whaddaya/dontcha/didja"], ["Đổi trả hàng", "Returning an item and asking for a refund", "Stop T (can't, didn't)"], ["Thuê nhà", "Viewing an apartment with a landlord", "nhấn từ nội dung"], ["Nêu ý kiến", "Giving opinions and politely agreeing or disagreeing", "ngữ điệu đồng tình/phản đối"], ["Phỏng vấn xin việc", "A job interview about experience and strengths", "nối âm trong câu dài"], ["Họp nhóm", "Taking part in a team meeting", "ngắt nhóm ý (thought groups)"], ["Thuyết trình ngắn", "Opening a short presentation", "nhấn mạnh & ngắt nghỉ"], ["Đàm phán", "Negotiating price or deadlines", "rút gọn I'd/we'd/would've"], ["Phàn nàn lịch sự", "Making a polite complaint at a restaurant or hotel", "ngữ điệu lịch sự"], ["Networking", "Networking at a conference", "nối chuỗi khi tự giới thiệu"], ["Giải thích sự cố kỹ thuật", "Explaining a problem to tech support", "âm yếu schwa"], ["Tranh luận nhẹ", "A friendly debate about a news topic", "nhấn tương phản"], ["Kể chuyện vui", "Telling a funny story with natural reactions", "ngữ điệu cảm thán"], ["Ôn tập tổng hợp", "A free-flowing conversation with a new friend, reviewing everything", "tổng hợp mọi kỹ thuật"], ["Kể chuyện chuyến đi", "Telling a longer story about a memorable trip and answering follow-up questions", "nối âm trong chuỗi câu kể quá khứ"], ["Mô tả người & nơi chốn", "Describing a person and a place in detail to a friend", "nhấn từ miêu tả (tính từ)"], ["Giải thích cách làm", "Explaining step by step how to cook a dish or use a gadget", "ngắt nhóm ý + từ nối (first, then, after that)"], ["So sánh & lựa chọn", "Comparing two options such as phones, apartments or jobs and deciding", "nhấn tương phản khi so sánh"], ["Hỏi thăm & an ủi", "Comforting a friend who had a bad week and offering support", "ngữ điệu đồng cảm, giọng mềm"], ["Lên kế hoạch chuyến đi nhóm", "Planning a group trip: budget, dates, activities and small disagreements", "rút gọn gonna/hafta/gotta trong câu dài"], ["Dời lịch lịch sự", "Rescheduling plans politely and negotiating a new time", "câu lịch sự would/could/I was wondering"], ["Phỏng vấn tình huống (STAR)", "Answering behavioral interview questions with real examples", "nối âm khi kể kinh nghiệm"], ["Báo cáo tiến độ dự án", "Giving a project status update and discussing a delay", "ngắt nhịp & nhấn số liệu"], ["Góp ý công việc", "Giving and receiving constructive feedback at work", "ngữ điệu mềm hóa lời phê bình"], ["Thuyết phục đồng nghiệp", "Persuading a colleague to support a new idea", "nhấn mạnh lập luận (stress for emphasis)"], ["Thương lượng lương", "Negotiating a salary or a contract term", "rút gọn would've/could've/shouldn't've"], ["Giải quyết xung đột", "Calmly resolving a disagreement with a roommate or teammate", "ngữ điệu hạ giọng, nói chậm rõ"], ["Họp với khách hàng", "Handling a client meeting with objections and tough questions", "nối chuỗi thuật ngữ chuyên ngành"], ["Thuyết trình đầy đủ", "Delivering a two-minute presentation with a clear structure and Q&A", "nhóm ý (thought groups) & ngắt nghỉ"], ["Bàn luận tin tức", "Discussing a news story and giving reasons for your opinions", "nối âm trong câu phức"], ["Sức khỏe & lối sống", "Discussing health, sleep, diet and habits in depth", "cụm phụ âm khó (months, thoughts)"], ["Công nghệ & AI", "Debating the pros and cons of AI and new technology", "nhấn từ khóa & âm schwa"], ["Du học & sống ở nước ngoài", "Talking about studying or living abroad and culture shock", "ngữ điệu khi kể trải nghiệm"], ["Gọi điện xử lý sự cố", "Calling customer service to fix a billing or delivery problem", "ngữ điệu kiên quyết nhưng lịch sự"], ["Kể chuyện hài có thắt nút", "Telling a funny story with timing, pauses and a punchline", "nhịp điệu & ngắt nghỉ kịch tính"], ["Phát biểu trong tiệc", "Giving a toast or a short speech at a party or a wedding", "ngữ điệu ấm áp, trang trọng"], ["Networking nâng cao", "Building rapport with a stranger at a professional event and following up", "nối âm tự nhiên khi nói nhanh"], ["Tranh luận có lý lẽ", "Taking part in a structured debate with rebuttals", "nhấn tương phản & ngữ điệu phản biện"], ["Dẫn dắt cuộc họp", "Leading a meeting: agenda, time keeping and decisions", "câu yêu cầu mềm & ngắt nhịp"], ["Cố vấn đồng nghiệp trẻ", "Mentoring a junior colleague with advice and encouragement", "ngữ điệu khích lệ"], ["Xử lý tình huống khó", "Calmly dealing with a stressful situation such as lost luggage or a cancelled flight", "giảm âm khi nói nhanh dưới áp lực"], ["Chia sẻ mục tiêu dài hạn", "Talking about long-term goals and how to achieve them", "linking cụm tương lai (gonna, I'd like to)"], ["Phỏng vấn podcast", "Being interviewed on a podcast about your hobby or work", "trôi chảy kéo dài & filler tự nhiên"], ["Nhìn lại hành trình", "A relaxed long conversation reflecting on your English journey with a friend", "tổng hợp mọi kỹ thuật"]];
+    const phaseOf = (n) => n <= 10 ? { group: 1, name: 'Nền tảng', level: 'A2', len: 'max 12 words per sentence', lines: 15, extras: 4 }
+      : n <= 20 ? { group: 1, name: 'Giao tiếp tự tin', level: 'B1', len: 'max 16 words per sentence', lines: 15, extras: 4 }
+      : n <= 30 ? { group: 1, name: 'Nâng cao & công việc', level: 'B2', len: 'max 22 words per sentence', lines: 15, extras: 4 }
+      : n <= 40 ? { group: 2, name: 'Mở rộng', level: 'B1+', len: 'max 20 words per sentence, some compound sentences', lines: 25, extras: 6 }
+      : n <= 50 ? { group: 2, name: 'Thành thạo', level: 'B2', len: 'max 24 words per sentence, with subordinate clauses', lines: 25, extras: 6 }
+      : { group: 2, name: 'Chuyên sâu', level: 'B2+', len: 'max 28 words per sentence, natural complex sentences', lines: 25, extras: 6 };
     const isLearned = (e) => (state.userStats.learned || []).includes(e);
 
     function renderRoadmap() {
       const el = document.getElementById('roadmap-card');
       if (!el) return;
       const done = state.userStats.roadmapDone || [];
+      const phase1Done = ROADMAP.slice(0, 30).every((_, i) => done.includes(i + 1));
+      const allDone = ROADMAP.every((_, i) => done.includes(i + 1));
       let next = ROADMAP.findIndex((_, i) => !done.includes(i + 1));
       if (next < 0) next = ROADMAP.length - 1;
+      const view = state.roadmapView || (next >= 30 ? 2 : 1);
+      const start = (view - 1) * 30;
       const cur = ROADMAP[next], ph = phaseOf(next + 1);
+      const dayInPhase = next + 1 - (ph.group - 1) * 30;
+      const doneInView = ROADMAP.slice(start, start + 30).filter((_, i) => done.includes(start + i + 1)).length;
+      const locked = view === 2 && !phase1Done;
       const noKey = !(state.customApiKey || '').trim() && typeof __app_id === 'undefined';
+      const tab = (v) => `<button onclick="setRoadmapView(${v})" class="px-4 py-2 rounded-xl text-sm font-bold cursor-pointer border-2 ${view === v ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-indigo-200 text-indigo-800'}">Giai đoạn ${v}${v === 2 && !phase1Done ? ' 🔒' : ''}</button>`;
       el.innerHTML = `
+        <div class="flex flex-wrap gap-2 mb-4">${tab(1)}${tab(2)}</div>
         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-          <div>
-            <p class="text-sm font-semibold text-indigo-700">Lộ trình 30 ngày · Giai đoạn ${ph.name} (${ph.level})</p>
-            <h2 class="text-xl font-bold text-slate-800">Ngày ${next + 1}: ${escapeHtml(cur[0])}</h2>
-            <p class="text-sm text-slate-600">Trọng tâm nối âm: ${escapeHtml(cur[2])} · Đã hoàn thành ${done.length}/30 ngày</p>
-            <p class="text-sm text-slate-600">Tick “đã học” hết các câu của ngày để hoàn thành ngày đó (+50 XP).</p>
-            ${noKey ? '<p class="text-sm text-amber-700 font-semibold mt-1">Nhập Gemini API Key để AI soạn bài riêng cho từng ngày.</p>' : ''}
+          <div class="space-y-1">
+            ${allDone
+              ? '<p class="text-xl font-bold text-emerald-700">🎉 Bạn đã hoàn thành cả 60 ngày của lộ trình!</p>'
+              : `<p class="text-sm font-semibold text-indigo-700">Giai đoạn ${ph.group} · Cấp ${ph.name} (${ph.level})</p>
+                 <h2 class="text-xl font-bold text-slate-800">Ngày ${dayInPhase}: ${escapeHtml(cur[0])}</h2>
+                 <p class="text-sm text-slate-600">Trọng tâm nối âm: ${escapeHtml(cur[2])} · ${ph.lines} câu mỗi ngày</p>`}
+            <p class="text-sm text-slate-600">Giai đoạn ${view}: đã hoàn thành ${doneInView}/30 ngày. Tick “đã học” hết các câu của ngày để hoàn thành ngày đó (+50 XP).</p>
+            ${view === 2 ? '<p class="text-sm text-indigo-700 font-medium">Giai đoạn 2 có bài dài hơn (25 câu), câu phức hơn, thành ngữ và nhiều bí kíp nối âm hơn.</p>' : ''}
+            ${locked ? '<p class="text-sm text-amber-700 font-semibold">🔒 Hoàn thành đủ 30 ngày của Giai đoạn 1 để mở Giai đoạn 2.</p>' : ''}
+            ${noKey ? '<p class="text-sm text-amber-700 font-semibold">Nhập Gemini API Key để AI soạn bài riêng cho từng ngày.</p>' : ''}
           </div>
-          <button onclick="startRoadmapDay(${next + 1})" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">Bắt đầu Ngày ${next + 1}</button>
+          ${allDone ? '' : `<button onclick="startRoadmapDay(${next + 1})" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">Bắt đầu Ngày ${dayInPhase}</button>`}
         </div>
         <div class="grid grid-cols-6 sm:grid-cols-10 gap-2">
-          ${ROADMAP.map((d, i) => `<button onclick="startRoadmapDay(${i + 1})" title="${escapeHtml(d[0])}" class="py-2 rounded-xl text-sm font-semibold border-2 cursor-pointer ${done.includes(i + 1) ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : i === next ? 'bg-amber-100 border-amber-400 text-amber-900' : 'bg-white border-slate-200 text-slate-700'} ${state.currentDay === i + 1 ? 'ring-2 ring-teal-500' : ''}">${done.includes(i + 1) ? '✓' : i + 1}</button>`).join('')}
+          ${ROADMAP.slice(start, start + 30).map((d, i) => {
+            const n = start + i + 1, isDone = done.includes(n);
+            return `<button onclick="startRoadmapDay(${n})" title="${escapeHtml(d[0])}" class="py-2 rounded-xl text-sm font-semibold border-2 cursor-pointer ${isDone ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : n === next + 1 ? 'bg-amber-100 border-amber-400 text-amber-900' : locked ? 'bg-slate-100 border-slate-200 text-slate-400' : 'bg-white border-slate-200 text-slate-700'} ${state.currentDay === n ? 'ring-2 ring-teal-500' : ''}">${isDone ? '✓' : i + 1}</button>`;
+          }).join('')}
         </div>`;
     }
+    window.setRoadmapView = (v) => { state.roadmapView = v; renderRoadmap(); };
 
     function loadLesson(l, n) {
       state.currentLesson = normalizeLesson(l); state.currentDay = n || null;
@@ -1732,13 +1754,15 @@
     window.startRoadmapDay = (n) => {
       const d = ROADMAP[n - 1];
       if (!d || state.isGeneratingLesson) return;
+      const done = state.userStats.roadmapDone || [];
+      if (n > 30 && !ROADMAP.slice(0, 30).every((_, i) => done.includes(i + 1))) { showToast('🔒 Hãy hoàn thành đủ 30 ngày của Giai đoạn 1 để mở Giai đoạn 2.', 'info'); return; }
+      const ph = phaseOf(n), dayNo = n - (ph.group - 1) * 30;
       try {
         const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}')[n];
-        if (c && (c.dialogue || []).length >= 15) { loadLesson(c, n); showToast(`Đã mở lại bài Ngày ${n}.`); return; }
+        if (c && (c.dialogue || []).length >= ph.lines) { loadLesson(c, n); showToast(`Đã mở lại bài Ngày ${dayNo} (Giai đoạn ${ph.group}).`); return; }
       } catch (e) {}
-      const ph = phaseOf(n);
-      state.pendingDay = n;
-      state.pendingFocus = ` This is Day ${n} of a 30-day speaking roadmap, target level CEFR ${ph.level}. Main connected-speech focus: ${d[2]} (build the linkingSecrets around it). Sentence length: ${ph.len}.`;
+      state.pendingDay = n; state.pendingLines = ph.lines; state.pendingExtras = ph.extras;
+      state.pendingFocus = ` This is Day ${dayNo} of Phase ${ph.group} of a 60-day speaking roadmap, target level CEFR ${ph.level}. Main connected-speech focus: ${d[2]} (build the linkingSecrets around it). Sentence length: ${ph.len}.${ph.group === 2 ? ' This is an advanced, richer lesson: longer and more natural sentences with subordinate clauses, idioms and phrasal verbs, and a conversation that develops with real detail.' : ''}`;
       handleGenerateNewLesson(d[1], null);
     };
 
@@ -1747,7 +1771,9 @@
       const L = state.currentLesson.dialogue || [], done = state.userStats.roadmapDone || [];
       if (L.length && L.every((l) => isLearned(l.english)) && !done.includes(state.currentDay)) {
         updateStats({ roadmapDone: [...done, state.currentDay], xp: state.userStats.xp + 50 });
-        showToast(`🎉 Hoàn thành Ngày ${state.currentDay} của lộ trình! +50 XP`);
+        const dd = state.currentDay, wasP1 = ROADMAP.slice(0, 30).every((_, i) => done.includes(i + 1)), nowP1 = ROADMAP.slice(0, 30).every((_, i) => [...done, dd].includes(i + 1));
+        state.roadmapView = null;
+        showToast(nowP1 && !wasP1 ? '🎊 Hoàn thành Giai đoạn 1! Giai đoạn 2 đã mở khóa (+50 XP)' : `🎉 Hoàn thành ${dd > 30 ? 'Giai đoạn 2 · Ngày ' + (dd - 30) : 'Ngày ' + dd}! +50 XP`);
       }
     }
     function refreshLearned() { renderLearnSubTabContent(); renderPracticeView(); renderRoadmap(); renderLessonOverview(); }
@@ -2235,7 +2261,7 @@
           const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${attemptCfg.model}:generateContent`;
           const doFetch = (p) => {
             const ctl = new AbortController();
-            const timer = setTimeout(() => ctl.abort(), 60000);
+            const timer = setTimeout(() => ctl.abort(), 120000);
             return fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(attemptCfg.key ? { 'x-goog-api-key': attemptCfg.key } : {}) }, body: JSON.stringify(p), signal: ctl.signal }).finally(() => clearTimeout(timer));
           };
           let response;
@@ -2813,6 +2839,7 @@
       state.isGeneratingLesson = true;
       state.currentDay = state.pendingDay || null; state.pendingDay = null;
       const focusNote = state.pendingFocus || ''; state.pendingFocus = '';
+      const targetLines = state.pendingLines || 15, targetExtras = state.pendingExtras || 4; state.pendingLines = 0; state.pendingExtras = 0;
       window.speechSynthesis?.cancel();
       updateGenerateLessonButtonUI();
 
@@ -2821,7 +2848,7 @@ Generate a realistic, natural everyday conversation with rich connected speech (
 Make sure all Vietnamese explanations are warm, cute, encouraging, and easy to understand. Use the '‿' symbol in the 'linking' field to clearly show where words link together. In 'viPron', write how a Vietnamese learner can read the sentence aloud using Vietnamese-style syllable spelling with hyphens between syllables (e.g. Hello -> Hé-lô), following the linking and reductions. In every dialogue turn the 'speaker' field must be exactly the letter 'A' or 'B' (never a name) and the turns must strictly alternate A, B, A, B. Each character's 'avatar' must be exactly ONE emoji character, never a URL or text. Each character also needs 'gender' set to exactly 'male' or 'female', consistent with the name and role, and the avatar emoji should match that gender (e.g. 👩 or 👨 style faces, or a fitting character emoji). Use a mix: one male and one female character unless the situation clearly needs otherwise.`;
 
       const userQuery = `Create a fresh daily English speaking lesson for the situation/topic: "${topicToUse}". Today is ${getTodayIso()}; vary character names, settings and phrasing.${focusNote}
-Include EXACTLY 15 natural dialogue turns between Character A and Character B (one coherent conversation with a clear beginning, middle and end; each turn 1-2 short sentences; alternate speakers), 4 connected speech/linking secrets from the dialogue, and 4 native expressions compared with textbook English.`;
+Include EXACTLY ${targetLines} natural dialogue turns between Character A and Character B (one coherent conversation with a clear beginning, middle and end; each turn ${targetLines > 15 ? '2-3 fuller sentences' : '1-2 short sentences'}; alternate speakers), ${targetExtras} connected speech/linking secrets from the dialogue, and ${targetExtras} native expressions compared with textbook English.`;
 
       const payload = {
         contents: [{ parts: [{ text: userQuery }] }],
@@ -2920,8 +2947,8 @@ Include EXACTLY 15 natural dialogue turns between Character A and Character B (o
         usedLiveAI = true;
         // Nếu AI trả thiếu câu, yêu cầu viết tiếp cho đủ 15 câu
         try {
-          for (let k = 0; k < 2 && (nextLesson.dialogue || []).length < 15; k++) {
-            const need = 15 - nextLesson.dialogue.length;
+          for (let k = 0; k < 3 && (nextLesson.dialogue || []).length < targetLines; k++) {
+            const need = targetLines - nextLesson.dialogue.length;
             const last = nextLesson.dialogue[nextLesson.dialogue.length - 1];
             const more = await callGeminiAPI({
               contents: [{ parts: [{ text: `Topic: "${nextLesson.topic}". Conversation so far (JSON): ${JSON.stringify(nextLesson.dialogue.map((l) => ({ speaker: l.speaker, english: l.english })))}\nContinue the SAME conversation with EXACTLY ${need} more turns, alternating speakers (the next speaker is ${last.speaker === 'A' ? 'B' : 'A'}). Use the same fields as before.` }] }],
