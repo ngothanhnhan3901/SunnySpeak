@@ -180,6 +180,10 @@
 
       <!-- Gamification Stats & Check-in Button -->
       <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+        <select id="lang-select" onchange="setLang(this.value)" title="Ngôn ngữ đang học" class="bg-white border-2 border-slate-200 rounded-2xl px-3 py-1.5 font-bold text-sm text-slate-700 cursor-pointer">
+          <option value="en">🇺🇸 Tiếng Anh</option>
+          <option value="fr">🇫🇷 Tiếng Pháp</option>
+        </select>
         <!-- API Key Settings Button -->
         <button id="header-apikey-btn" onclick="openApiKeyModal()" class="flex items-center gap-2 bg-slate-50 hover:bg-teal-50 border-2 border-slate-200 hover:border-teal-300 px-3 py-1.5 rounded-2xl transition cursor-pointer" title="Cài đặt Gemini API Key & Model">
           <span id="apikey-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 ring-4 ring-amber-100"></span>
@@ -555,7 +559,7 @@
       </div>
     </div>
 
-    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản 360 ngày (12 giai đoạn)</p>
+    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản đa ngôn ngữ (Anh · Pháp)</p>
   </main>
 
   <!-- ==========================================
@@ -715,6 +719,25 @@
        APPLICATION LOGIC & FIREBASE CLOUD STORAGE
   ========================================== -->
   <script type="module">
+let LANG = 'en';
+    try { LANG = localStorage.getItem('ss_lang') || 'en'; } catch (e) {}
+    const K = (b) => b + (LANG === 'en' ? '' : '_' + LANG);
+    const LANGS = {
+      en: {
+        name: 'tiếng Anh', L: 'American English', speech: 'en-US', voiceRe: /^en[-_]/i, prefRe: /en[-_]US/i,
+        test: 'Hey there! Nice to meet you.',
+        coach: `You are a cheerful, expert native American English speaking coach creating daily interactive lessons for Vietnamese learners.
+Generate a realistic, natural everyday conversation with rich connected speech (linking, flap T, reductions like wanna/gonna/kinda, elision) and vivid native expressions.`
+      },
+      fr: {
+        name: 'tiếng Pháp', L: 'French', speech: 'fr-FR', voiceRe: /^fr[-_]/i, prefRe: /fr[-_]FR/i,
+        test: "Bonjour ! Enchanté de vous rencontrer.",
+        coach: `You are a cheerful, expert native French speaking coach creating daily interactive lessons for Vietnamese learners, who may be complete beginners.
+All dialogue sentences must be natural spoken French at the requested CEFR level. Put the French sentence in the field named 'english' and keep every field name unchanged. In the 'linking' field show liaison, enchaînement, elision and mute e with the '‿' symbol (e.g. les‿amis, vous‿avez, j'ai‿un). Give the French IPA in 'phonetic'. For 'viPron' give a Vietnamese-style approximation of the French sound (nasal vowels, the French r and u vs ou can only be approximated). The 'vietnamese' field is the Vietnamese translation. For linkingSecrets focus on liaison, enchaînement, mute e, nasal vowels, the French r and silent final consonants. For nativeExpressions give natural spoken French (e.g. 'chais pas', 'y a') and put the textbook French version in 'textbook'.`
+      }
+    };
+    if (!LANGS[LANG]) LANG = 'en';
+    const LC = LANGS[LANG];
     let initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, doc, setDoc, collection, onSnapshot, addDoc, deleteDoc;
 
     // ==========================================
@@ -1535,7 +1558,37 @@
       }
     };
 
-    const DEFAULT_LESSON = BUILTIN_LESSONS_BANK.coffee;
+    const FR_LESSON = {
+      id: 'builtin-fr-cafe',
+      topic: 'Gọi đồ uống ở quán cà phê (Au café)',
+      situation: 'Bạn bước vào một quán cà phê nhỏ ở Paris và gọi đồ uống với người phục vụ.',
+      level: 'A1 - Mới bắt đầu',
+      characters: {
+        A: { name: 'Hugo (Serveur)', gender: 'male', avatar: '🦊', role: 'Nhân viên phục vụ thân thiện' },
+        B: { name: 'Léa (Cliente)', gender: 'female', avatar: '🐰', role: 'Khách hàng' }
+      },
+      dialogue: [
+        { speaker: 'A', english: "Bonjour ! Qu'est-ce que je vous sers ?", linking: "Bonjour ! Qu'est-ce‿que je vous‿sers ?", phonetic: "/bɔ̃.ʒuʁ ! kɛs.kə ʒə vu sɛʁ/", viPron: "Bông-giua ! Két-xơ-kờ giơ vu xe-r ?", vietnamese: "Xin chào! Tôi phục vụ gì cho bạn ạ?", tip: "'Qu'est-ce que' đọc liền thành 'két-xơ-kờ'. 'Bon' có nguyên âm mũi, không đọc rõ âm n." },
+        { speaker: 'B', english: "Bonjour ! Je voudrais un café, s'il vous plaît.", linking: "Bonjour ! Je‿voudrais un café, s'il‿vous plaît.", phonetic: "/bɔ̃.ʒuʁ ! ʒə vu.dʁɛ œ̃ ka.fe sil vu plɛ/", viPron: "Bông-giua ! Giơ vu-đrê ơn ca-phê, xin vu plê.", vietnamese: "Xin chào! Cho tôi một ly cà phê, làm ơn.", tip: "'Je voudrais' là cách gọi lịch sự (nhẹ nhàng hơn 'je veux'). 'Un' là nguyên âm mũi, gần như 'ơn' ngậm." },
+        { speaker: 'A', english: "Très bien. Vous voulez autre chose ?", linking: "Très bien. Vous‿voulez autre‿chose ?", phonetic: "/tʁɛ bjɛ̃ . vu vu.le o.tʁə ʃoz/", viPron: "Tre biêng. Vu vu-le ô-trơ sôz ?", vietnamese: "Rất tốt. Bạn muốn gọi thêm gì không?", tip: "Âm 'e' cuối trong 'autre' là e câm, gần như không đọc. 'Vous voulez' có nối âm 'z'." },
+        { speaker: 'B', english: "Oui, un croissant, s'il vous plaît.", linking: "Oui, un croissant, s'il‿vous plaît.", phonetic: "/wi œ̃ kʁwa.sɑ̃ sil vu plɛ/", viPron: "Uy, ơn crooa-xăng, xin vu plê.", vietnamese: "Vâng, cho thêm một chiếc bánh sừng bò.", tip: "'Croissant' có nguyên âm mũi 'xăng', không đọc âm t cuối." },
+        { speaker: 'A', english: "Parfait ! Ça fait quatre euros cinquante.", linking: "Parfait ! Ça fait quatre‿euros cinquante.", phonetic: "/paʁ.fɛ ! sa fɛ katʁ ø.ʁo sɛ̃.kɑ̃t/", viPron: "Pa-fê ! Xa fê cát-rơ ơ-rô xanh-căng.", vietnamese: "Hoàn hảo! Tất cả là 4,50 euro.", tip: "'Parfait' không đọc âm t cuối. 'Quatre euros' đọc liền nhau." }
+      ],
+      linkingSecrets: [
+        { phrase: "les‿amis", type: "Liaison (nối âm bắt buộc)", standardPronunciation: "/le a.mi/", nativePronunciation: "lê-za-mi", explanation: "Phụ âm cuối vốn câm (s) được đọc lại khi từ sau bắt đầu bằng nguyên âm: 'les amis' thành 'lê-za-mi'.", example: "Les‿amis arrivent." },
+        { phrase: "une‿amie", type: "Enchaînement (nối phụ âm với nguyên âm)", standardPronunciation: "/yn a.mi/", nativePronunciation: "y-na-mi", explanation: "Phụ âm cuối được đọc đã có sẵn (n) dính sang nguyên âm của từ sau, tạo thành một chuỗi liền mạch.", example: "C'est une‿amie." },
+        { phrase: "petite → p'tite", type: "E câm (e muet)", standardPronunciation: "/pə.tit/", nativePronunciation: "p'tit", explanation: "Trong lời nói nhanh, âm 'e' không nhấn thường bị bỏ: 'je ne sais pas' thành 'chais pas'.", example: "Je ne sais pas." },
+        { phrase: "un / on / an / in", type: "Nguyên âm mũi", standardPronunciation: "/œ̃ ɔ̃ ɑ̃ ɛ̃/", nativePronunciation: "ơn̄ ông̃ ăng̃ ăn̄", explanation: "Không đọc rõ âm n hay m cuối, luồng hơi đi qua mũi: 'bon', 'vin', 'enfant'.", example: "Un bon vin blanc." }
+      ],
+      nativeExpressions: [
+        { native: "Je voudrais...", textbook: "Je veux...", meaning: "Tôi muốn... (cách gọi lịch sự)", context: "Dùng khi gọi món hoặc xin điều gì ở quán, cửa hàng.", example: "Je voudrais un thé, s'il vous plaît." },
+        { native: "S'il vous plaît", textbook: "Pouvez-vous...", meaning: "Làm ơn / xin vui lòng", context: "Thêm vào cuối câu yêu cầu để lịch sự (nói với người lạ, người lớn tuổi).", example: "L'addition, s'il vous plaît." },
+        { native: "Ça fait combien ?", textbook: "Quel est le prix ?", meaning: "Tất cả là bao nhiêu?", context: "Cách hỏi giá tự nhiên khi thanh toán.", example: "Ça fait combien, s'il vous plaît ?" },
+        { native: "Qu'est-ce que je vous sers ?", textbook: "Que désirez-vous ?", meaning: "Tôi phục vụ gì cho bạn?", context: "Câu hỏi quen thuộc của người phục vụ ở quán cà phê.", example: "Bonjour, qu'est-ce que je vous sers ?" }
+      ]
+    };
+
+    const DEFAULT_LESSON = LANG === 'fr' ? FR_LESSON : BUILTIN_LESSONS_BANK.coffee;
 
     const PRESET_TOPICS = [
       { id: 'coffee', label: '☕ Quán Cà Phê', prompt: 'Ordering drinks and pastries at a cozy morning coffee shop' },
@@ -1619,6 +1672,10 @@
     };
 
     let recognitionInstance = null;
+    if (LANG !== 'en') {
+      state.userStats = { xp: 0, streak: 0, lastCheckInDate: '', checkedInDays: [], lessonsCompleted: 0 };
+      state.journalEntries = [];
+    }
     let db = null;
     let auth = null;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'sunnyspeak-english-app';
@@ -1707,8 +1764,16 @@
       const f = p.focus.split('|');
       p.topics.split('|').forEach((t, i) => ROADMAP.push([t, `${t} (title of the situation, in Vietnamese). Overall theme of this phase: ${p.theme}.`, f[i % f.length]]));
     });
+    const FR_ROADMAP = [["Chào hỏi cơ bản", "Greeting people and saying goodbye politely", "âm r Pháp & e câm"], ["Giới thiệu bản thân", "Introducing yourself: name, age and where you are from", "nguyên âm mũi (on, an, in)"], ["Bảng chữ cái & đánh vần", "Spelling your name and email with the French alphabet", "phát âm bảng chữ cái"], ["Số đếm 0-20", "Counting from 0 to 20 and giving a phone number", "liaison với số (deux‿ans)"], ["Ngày giờ & thứ", "Days of the week, months and telling the time", "âm cuối câm"], ["Gọi đồ uống", "Ordering a coffee and a croissant in a café", "u và ou"], ["Gia đình", "Talking about your family members", "âm eu & oeu"], ["Màu sắc & đồ vật", "Describing everyday objects and colours", "liaison (un‿ami)"], ["Hỏi đường", "Asking for directions to the station or a pharmacy", "enchaînement phụ âm cuối"], ["Mua sắm ở chợ", "Buying bread and fruit at a market", "ngữ điệu câu hỏi lên giọng"], ["Giá cả & số 20-100", "Asking prices and paying in euros", "nhấn âm cuối nhóm từ"], ["Quần áo & size", "Buying clothes and asking for a size", "âm ch và j"], ["Ở nhà hàng", "Booking a table and ordering a meal", "e câm khi nói nhanh"], ["Thói quen hằng ngày", "Describing your daily routine", "động từ -er (âm cuối câm)"], ["Sở thích", "Talking about hobbies and sports", "liaison với aimer"], ["Thời tiết", "Small talk about the weather", "âm oi và ou"], ["Hỏi thăm sức khỏe", "Asking how someone is and answering", "ngữ điệu hỏi thăm"], ["Mô tả người", "Describing a friend's appearance and character", "enchaînement tính từ"], ["Nhà cửa", "Describing your flat and its rooms", "nguyên âm mũi in/un"], ["Đi tàu & xe buýt", "Buying a ticket and taking public transport", "liaison les‿autobus"], ["Gọi điện thoại", "A short phone call to make an appointment", "ngữ điệu cuối câu"], ["Hẹn gặp bạn bè", "Making plans to meet a friend this weekend", "âm gn (agneau)"], ["Ở khách sạn", "Checking in at a hotel", "nối âm câu lịch sự"], ["Ở hiệu thuốc", "Asking for medicine at a pharmacy", "âm ill và y"], ["Mua vé xem phim", "Buying tickets and choosing a film", "âm qu và k"], ["Cảm ơn & xin lỗi", "Thanking and apologizing in different situations", "ngữ điệu lịch sự"], ["Hỏi thông tin", "Asking for information at a tourist office", "câu hỏi est-ce que"], ["Tương lai gần", "Talking about plans with aller + infinitive", "nối âm je vais‿aller"], ["Quá khứ gần", "Telling what you did yesterday with the passé composé basics", "âm cuối phân từ"], ["Ôn tập giai đoạn 1", "A short free conversation reviewing everything with a new friend", "tổng hợp liaison, e câm, nguyên âm mũi"], ["Kể về cuối tuần", "Telling a friend about your weekend with the passé composé", "liaison trong thì quá khứ"], ["Kỷ niệm tuổi thơ", "Talking about childhood memories with the imparfait", "é và è"], ["Lên kế hoạch du lịch", "Planning a holiday: dates, budget and transport", "chuỗi nối 3 từ"], ["Mua sắm nâng cao", "Shopping for clothes: comparing, trying on and bargaining", "ngữ điệu so sánh"], ["Bưu điện & ngân hàng", "Sending a parcel and opening a bank account", "âm cuối câm trong từ dài"], ["Phàn nàn lịch sự", "Making a polite complaint in a restaurant", "ngữ điệu phàn nàn lịch sự"], ["Phỏng vấn cơ bản", "A simple job interview: experience and skills", "nhấn nhóm từ cuối"], ["Đi khám bác sĩ", "Describing symptoms to a doctor", "nguyên âm mũi trong từ y tế"], ["Thuê nhà", "Visiting a flat and talking to the landlord", "enchaînement trong câu hỏi dài"], ["Công việc hằng ngày", "Talking about your job and your colleagues", "rút gọn je ne sais pas thành chais pas"], ["Cho lời khuyên", "Giving advice with devoir and il faut", "ngữ điệu khuyên bảo"], ["Nói về tương lai", "Talking about future plans with the futur simple", "âm r trong đuôi tương lai"], ["Sức khỏe & thể thao", "Discussing sport, health and healthy habits", "liaison trong cụm danh từ"], ["Ẩm thực Pháp", "Talking about French food, recipes and wine", "âm oin và ien"], ["Lễ hội & truyền thống", "Describing a French festival or tradition", "nhấn từ khóa"], ["Điện thoại & mạng xã hội", "Talking about phones, social media and technology", "từ vay mượn tiếng Anh"], ["Giấc mơ & mục tiêu", "Talking about dreams and goals with the conditionnel", "âm rait và rais"], ["Đưa ra ý kiến", "Giving opinions with je pense que and à mon avis", "ngữ điệu quan điểm"], ["Đồng ý & phản đối", "Agreeing and disagreeing politely", "ngữ điệu phản đối nhẹ"], ["Kể một câu chuyện", "Telling a short story with passé composé and imparfait", "nhịp kể & ngắt nghỉ"], ["Cuộc họp ngắn", "Taking part in a short work meeting", "nối âm khi nói nhanh"], ["Gọi điện công việc", "Making a professional phone call", "ngữ điệu lịch sự công sở"], ["Đọc & trả lời email", "Reading out and answering a professional email", "nhấn tên riêng & số"], ["Du lịch Paris", "Visiting Paris: museums, metro and restaurants", "liaison địa danh"], ["Làm quen người mới", "Meeting new people at a party and making small talk", "e câm & nối âm tự nhiên"], ["Giải quyết sự cố", "Solving a problem such as a lost bag or a late train", "ngữ điệu bực bội lịch sự"], ["Nói về môi trường", "Discussing the environment and recycling", "nguyên âm mũi khó"], ["Thảo luận tin tức", "Discussing a simple news story", "nhấn trọng âm nhóm từ"], ["Tranh luận nhẹ", "A friendly debate: city life versus country life", "ngữ điệu tranh luận"], ["Ôn tập & nói tự do", "A relaxed long conversation reviewing the whole course", "tổng hợp mọi kỹ thuật"]];
+    if (LANG === 'fr') ROADMAP.splice(0, ROADMAP.length, ...FR_ROADMAP);
     const phaseOf = (n) => {
       const g = Math.ceil(n / 30);
+      if (LANG === 'fr') {
+        const nm = [['Khởi động', 'A1'], ['Cơ bản', 'A1+'], ['Giao tiếp', 'A2'], ['Mở rộng', 'A2+'], ['Tự tin', 'B1'], ['Vững vàng', 'B1+']];
+        const ln = ['max 6 words per sentence', 'max 8 words per sentence', 'max 10 words per sentence', 'max 14 words per sentence', 'max 18 words per sentence', 'max 22 words per sentence'];
+        const i = Math.min(5, Math.floor((n - 1) / 10));
+        return { group: g, name: nm[i][0], level: nm[i][1], len: ln[i], lines: g === 1 ? 12 : 18, extras: 4 };
+      }
       if (g <= 2) return phaseOfBase(n);
       const p = PHASES_EXTRA[g - 3];
       return { group: g, name: p.name, level: p.level, len: p.len, lines: 25, extras: 6, theme: p.theme };
@@ -1743,7 +1808,7 @@
         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div class="space-y-1">
             ${allDone
-              ? '<p class="text-xl font-bold text-emerald-700">🏆 Bạn đã hoàn thành cả 12 giai đoạn của lộ trình!</p>'
+              ? `<p class="text-xl font-bold text-emerald-700">🏆 Bạn đã hoàn thành cả ${GROUPS} giai đoạn của lộ trình!</p>`
               : `<p class="text-sm font-semibold text-indigo-700">Giai đoạn ${ph.group}/${GROUPS} · ${ph.name} (${ph.level})</p>
                  <h2 class="text-xl font-bold text-slate-800">Ngày ${dayInPhase}: ${escapeHtml(cur[0])}</h2>
                  <p class="text-sm text-slate-600">Trọng tâm nối âm: ${escapeHtml(cur[2])} · ${ph.lines} câu mỗi ngày</p>`}
@@ -1779,11 +1844,11 @@
       if (g > 1 && !phaseDone(g - 1, done)) { showToast(`🔒 Hãy hoàn thành đủ 30 ngày của Giai đoạn ${g - 1} để mở Giai đoạn ${g}.`, 'info'); return; }
       const ph = phaseOf(n), dayNo = n - (g - 1) * 30;
       try {
-        const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}')[n];
+        const c = JSON.parse(localStorage.getItem(K('ss_lessons')) || '{}')[n];
         if (c && (c.dialogue || []).length >= ph.lines) { loadLesson(c, n); showToast(`Đã mở lại bài Ngày ${dayNo} (Giai đoạn ${g}).`); return; }
       } catch (e) {}
       state.pendingDay = n; state.pendingLines = ph.lines; state.pendingExtras = ph.extras;
-      state.pendingFocus = ` This is Day ${dayNo} of Phase ${g} (of 12) of a year-long speaking roadmap, target level CEFR ${ph.level}.${ph.theme ? ' Phase theme: ' + ph.theme + '.' : ''} Main connected-speech focus: ${d[2]} (build the linkingSecrets around it). Sentence length: ${ph.len}.${g >= 2 ? ' This is an advanced, richer lesson: longer and more natural sentences with subordinate clauses, idioms and phrasal verbs, and a conversation that develops with real detail.' : ''}`;
+      state.pendingFocus = ` This is Day ${dayNo} of Phase ${g} (of ${ROADMAP.length / 30}) of a ${ROADMAP.length}-day speaking roadmap, target level CEFR ${ph.level}.${ph.theme ? ' Phase theme: ' + ph.theme + '.' : ''} Main connected-speech focus: ${d[2]} (build the linkingSecrets around it). Sentence length: ${ph.len}.${g >= 2 ? ' This is an advanced, richer lesson: longer and more natural sentences with subordinate clauses, idioms and phrasal verbs, and a conversation that develops with real detail.' : ''}`;
       handleGenerateNewLesson(d[1], null);
     };
 
@@ -1799,7 +1864,7 @@
         updateStats({ learned: (state.userStats.learned || []).filter((e) => !ls.has(e)) });
         if (nowG && !wasG) {
           updateStats({ xp: state.userStats.xp + 200 });
-          showToast(g < ROADMAP.length / 30 ? `🎊 Hoàn thành Giai đoạn ${g}! Giai đoạn ${g + 1} đã mở khóa (+250 XP)` : '🏆 Bạn đã hoàn thành cả 12 giai đoạn! (+250 XP)');
+          showToast(g < ROADMAP.length / 30 ? `🎊 Hoàn thành Giai đoạn ${g}! Giai đoạn ${g + 1} đã mở khóa (+250 XP)` : `🏆 Bạn đã hoàn thành cả ${ROADMAP.length / 30} giai đoạn! (+250 XP)`);
         } else showToast(`🎉 Hoàn thành Giai đoạn ${g} · Ngày ${dd - (g - 1) * 30}! +50 XP`);
       }
     }
@@ -1827,7 +1892,7 @@
       "Awesome, I'll have that right out for you in a sec!": "Ó-xậm, ai-ồ hép đát rai-đaut phờ-ya i-nờ xéc!"
     };
     const pronPending = new Set();
-    const readPronCache = () => { try { return JSON.parse(localStorage.getItem('ss_pron') || '{}'); } catch (e) { return {}; } };
+    const readPronCache = () => { try { return JSON.parse(localStorage.getItem(K('ss_pron')) || '{}'); } catch (e) { return {}; } };
 
     const pronTried = new Set();
     const viOf = (l) => l.viPron || VI_BUILTIN[l.english] || (readPronCache()[l.english] || {}).vi || '';
@@ -1847,7 +1912,7 @@
       pronTried.add(key);
       try {
         const r = await callGeminiAPI({
-          contents: [{ parts: [{ text: 'For each numbered English sentence give: ipa (American English IPA of the whole sentence, between slashes) and vi (how a Vietnamese learner reads it aloud using Vietnamese-style syllable spelling with hyphens between syllables, e.g. "Hello" -> "Hé-lô", following the linking shown). vi MUST cover every word of the sentence in order and must never be abbreviated. Return every item.\n' + bad.map((x, k) => `${k + 1}. ${x.l.english} || linking: ${x.l.linking || ''}`).join('\n') }] }],
+          contents: [{ parts: [{ text: 'For each numbered ' + LC.L + ' sentence give: ipa (' + LC.L + ' IPA of the whole sentence, between slashes) and vi (how a Vietnamese learner reads it aloud using Vietnamese-style syllable spelling with hyphens between syllables, e.g. "Hello" -> "Hé-lô", following the linking shown). vi MUST cover every word of the sentence in order and must never be abbreviated. Return every item.\n' + bad.map((x, k) => `${k + 1}. ${x.l.english} || linking: ${x.l.linking || ''}`).join('\n') }] }],
           generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { items: { type: 'ARRAY', items: { type: 'OBJECT', properties: { n: { type: 'INTEGER' }, ipa: { type: 'STRING' }, vi: { type: 'STRING' } }, required: ['n', 'ipa', 'vi'] } } }, required: ['items'] } }
         });
         const cache = readPronCache();
@@ -1858,7 +1923,7 @@
           if (!x.l.phonetic && it.ipa) x.l.phonetic = it.ipa;
           cache[x.l.english] = { ipa: x.l.phonetic || it.ipa, vi: it.vi };
         });
-        try { localStorage.setItem('ss_pron', JSON.stringify(pruneKeys(cache, 300))); } catch (e) {}
+        try { localStorage.setItem(K('ss_pron'), JSON.stringify(pruneKeys(cache, 300))); } catch (e) {}
         if (state.currentLesson === lesson) { saveLocal(); renderLearnSubTabContent(); renderPracticeView(); }
       } catch (e) { pronTried.delete(key); }
     }
@@ -1880,11 +1945,11 @@
       pronPending.add(e);
       try {
         const r = await callGeminiAPI({
-          contents: [{ parts: [{ text: `English sentence: "${e}"\nNative linking: "${item.linking}"\nGive (1) ipa: American English IPA of the whole sentence between slashes; (2) vi: how a Vietnamese learner reads it aloud using Vietnamese-style syllable spelling with hyphens between syllables, e.g. "Hello" -> "Hé-lô", reflecting the linking.` }] }],
+          contents: [{ parts: [{ text: `${LC.L} sentence: "${e}"\nNative linking: "${item.linking}"\nGive (1) ipa: ${LC.L} IPA of the whole sentence between slashes; (2) vi: how a Vietnamese learner reads it aloud using Vietnamese-style syllable spelling with hyphens between syllables, e.g. "Hello" -> "Hé-lô", reflecting the linking.` }] }],
           generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { ipa: { type: 'STRING' }, vi: { type: 'STRING' } }, required: ['ipa', 'vi'] } }
         });
         const c = readPronCache(); c[e] = { ipa: r.ipa, vi: r.vi };
-        try { localStorage.setItem('ss_pron', JSON.stringify(pruneKeys(c, 300))); } catch (x) {}
+        try { localStorage.setItem(K('ss_pron'), JSON.stringify(pruneKeys(c, 300))); } catch (x) {}
       } catch (err) {
         if (state.selectedPracticeItem.english === e) show(get(), 'Chưa lấy được phiên âm. Kiểm tra API Key và mạng.');
         pronPending.delete(e); return;
@@ -1969,7 +2034,7 @@
     const BACKUP_KEYS = ['ss_data', 'ss_lessons', 'ss_pron', 'ss_voice_f', 'ss_voice_m'];
     function buildBackup(includeKey) {
       const data = {};
-      BACKUP_KEYS.forEach((k) => { try { const v = localStorage.getItem(k); if (v !== null) data[k] = v; } catch (e) {} });
+      BACKUP_KEYS.forEach((k) => { try { const v = localStorage.getItem(K(k)); if (v !== null) data[k] = v; } catch (e) {} });
       if (!includeKey && data.ss_data) {
         try { const d = JSON.parse(data.ss_data); if (d.s) delete d.s.customApiKey; data.ss_data = JSON.stringify(d); } catch (e) {}
       }
@@ -2020,7 +2085,7 @@
           <button onclick="saveFbConfig()" class="w-full px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">Lưu cấu hình</button>`;
         return;
       }
-      const t = Number(lsGet('ss_last_sync') || 0);
+      const t = Number(lsGet(K('ss_last_sync')) || 0);
       const last = t ? `Đồng bộ gần nhất: ${new Date(t).toLocaleString('vi-VN')}` : 'Chưa đồng bộ lần nào.';
       if (!cloud.user) {
         const inCls = 'w-full bg-slate-50 border-2 border-indigo-200 rounded-2xl px-4 py-3 text-base';
@@ -2142,7 +2207,7 @@
       catch (e) { showToast(authErr(e), 'error'); }
     };
 
-    const cloudDoc = () => cloud.fb.doc(cloud.db, 'users', cloud.user.uid, 'sunnyspeak', 'main');
+    const cloudDoc = () => cloud.fb.doc(cloud.db, 'users', cloud.user.uid, 'sunnyspeak', LANG === 'en' ? 'main' : LANG);
 
     const withTimeout = (p, ms = 20000) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error('timeout'), { code: 'timeout' })), ms))]);
 
@@ -2153,7 +2218,7 @@
         if (JSON.stringify(data).length > 900000) delete data.ss_lessons;
         const ts = Date.now();
         await withTimeout(cloud.fb.setDoc(cloudDoc(), { updatedAt: ts, payload: JSON.stringify(data) }));
-        localStorage.setItem('ss_last_sync', String(ts)); localStorage.setItem('ss_local_ts', String(ts));
+        localStorage.setItem(K('ss_last_sync'), String(ts)); localStorage.setItem(K('ss_local_ts'), String(ts));
         cloud.lastErr = '';
         renderCloud();
         return true;
@@ -2171,7 +2236,7 @@
 
     function mergeCloud(L, C, cts) {
       const P = (x) => { try { return JSON.parse(x || 'null') || {}; } catch (e) { return {}; } };
-      const cloudNewer = cts > Number(lsGet('ss_local_ts') || 0);
+      const cloudNewer = cts > Number(lsGet(K('ss_local_ts')) || 0);
       const ld = P(L.ss_data), cd = P(C.ss_data);
       const base = cloudNewer ? cd : ld, other = cloudNewer ? ld : cd;
       const s2 = { ...(other.s || {}), ...(base.s || {}) };
@@ -2202,7 +2267,7 @@
         if (snap.exists()) {
           const c = snap.data();
           const merged = mergeCloud(JSON.parse(buildBackup(true)).data, JSON.parse(c.payload || '{}'), Number(c.updatedAt || 0));
-          Object.entries(merged).forEach(([k, v]) => { if (v !== undefined) try { localStorage.setItem(k, v); } catch (e) {} });
+          Object.entries(merged).forEach(([k, v]) => { if (v !== undefined) try { localStorage.setItem(K(k), v); } catch (e) {} });
           loadLocal();
           try { renderHeaderStats(); renderBadgesAndJournal(); renderLessonOverview(); renderLearnSubTabContent(); renderPracticeView(); renderRoadmap(); } catch (e) {}
         }
@@ -2215,13 +2280,13 @@
     }
 
     function saveLocal() {
-      try { localStorage.setItem('ss_local_ts', String(Date.now())); } catch (e) {}
+      try { localStorage.setItem(K('ss_local_ts'), String(Date.now())); } catch (e) {}
       scheduleCloudPush();
-      try { localStorage.setItem('ss_data', JSON.stringify({ s: state.userStats, j: state.journalEntries, m: state.selectedModel, l: state.currentLesson, d: state.currentDay })); } catch (e) {}
+      try { localStorage.setItem(K('ss_data'), JSON.stringify({ s: state.userStats, j: state.journalEntries, m: state.selectedModel, l: state.currentLesson, d: state.currentDay })); } catch (e) {}
     }
     function loadLocal() {
       try {
-        const d = JSON.parse(localStorage.getItem('ss_data') || 'null');
+        const d = JSON.parse(localStorage.getItem(K('ss_data')) || 'null');
         if (!d) return;
         state.userStats = { ...state.userStats, ...d.s };
         if (d.j) state.journalEntries = d.j;
@@ -2359,6 +2424,7 @@
     // SMART LOCAL LESSON GENERATOR (NEVER FAILS)
     // ==========================================
     function getSmartLocalLesson(topicQuery, presetId) {
+      if (LANG === 'fr') return FR_LESSON;
       if (presetId && BUILTIN_LESSONS_BANK[presetId]) {
         return BUILTIN_LESSONS_BANK[presetId];
       }
@@ -2456,7 +2522,7 @@
       const targetWords = targetSentence.trim().split(/\s+/);
       const cleanSpokenWords = spokenTranscript
         .toLowerCase()
-        .replace(/[^a-z0-9'\s]/g, '')
+        .replace(/[^a-z\u00e0-\u00ff\u0153\u00e6'\u2019\s0-9]/g, '')
         .split(/\s+/)
         .filter(Boolean);
 
@@ -2464,7 +2530,7 @@
       let almostCount = 0;
 
       const wordBreakdown = targetWords.map((rawWord) => {
-        const cleanTarget = rawWord.toLowerCase().replace(/[^a-z0-9']/g, '');
+        const cleanTarget = rawWord.toLowerCase().replace(/[^a-z\u00e0-\u00ff\u0153\u00e6'\u2019\s0-9]/g, '');
         if (!cleanTarget) {
           return { word: rawWord, status: 'good', advice: 'Tốt!' };
         }
@@ -2534,16 +2600,16 @@
     // WEB SPEECH API (TEXT TO SPEECH)
     // ==========================================
     let EN_VOICES = [];
-    const FEM_RE = /female|samantha|\bava\b|allison|susan|zoe|karen|moira|tessa|fiona|victoria|serena|kate\b|aria|jenny|michelle|emma|\bana\b|sonia|libby|zira|hazel|catherine|linda|heather|joanna|salli|kendra|kimberly|ivy|amy|nicole|olivia|sara\b|nicky|martha|rebecca|ellen|isabella|google us english/i;
-    const MAL_RE = /\bmale\b|daniel|\balex\b|\btom\b|oliver|aaron|arthur|gordon|\bguy\b|davis|christopher|eric\b|roger|steffan|ryan|mark\b|david|james|richard|george|brian|andrew|liam|ethan|evan|nathan|rishi|\blee\b|joey|matthew|justin|kevin/i;
-    const FEM_NAMES = /^(linh|hana|lan|hoa|mai|huong|trang|thu|ngoc|vy|my|maya|chloe|emma|sarah|lily|anna|mia|sophie|olivia|emily|grace|lucy|kate|nora|ella|zoe|amy|jessica|linda|rachel|mary|jenny|lisa|tina|sofia|ruby|hannah|ivy|nina|julia|sara|chloé|ava|isla|ellie|rosa|lena|maria|nicole|laura|karen|susan|claire|megan|alice|bella|daisy|eva|holly|jade|kim|nancy|paula|rita|sally|vera|wendy)$/i;
-    const MAL_NAMES = /^(minh|tuan|nam|hung|long|duc|khoa|phong|son|hai|binh|tung|leo|jax|tom|mike|jack|ben|david|james|john|ryan|max|dan|chris|kevin|noah|liam|ethan|luke|mark|peter|henry|oscar|jake|tony|eric|sam|alex|carlos|diego|frank|george|harry|ivan|jason|kyle|larry|nick|paul|ray|steve|tim|victor|will|zack|adam|brian|charlie|daniel|ed|felix|greg|hugo|ian|joe|ken|marco|neil|owen|pete|sean)$/i;
-    const voiceRank = (v) => (/en[-_]US/i.test(v.lang) ? 10 : 0) + (/natural|online|neural|google|aria|jenny|guy|samantha|ava|allison|zoe|siri/i.test(v.name) ? 5 : 0);
+    const FEM_RE = /female|samantha|\bava\b|allison|susan|zoe|karen|moira|tessa|fiona|victoria|serena|kate\b|aria|jenny|michelle|emma|\bana\b|sonia|libby|zira|hazel|catherine|linda|heather|joanna|salli|kendra|kimberly|ivy|amy|nicole|olivia|sara\b|nicky|martha|rebecca|ellen|isabella|google us english|amélie|amelie|audrey|aurélie|aurelie|marie|julie|hortense|denise|eloise|vivienne|sylvie|google français/i;
+    const MAL_RE = /\bmale\b|daniel|\balex\b|\btom\b|oliver|aaron|arthur|gordon|\bguy\b|davis|christopher|eric\b|roger|steffan|ryan|mark\b|david|james|richard|george|brian|andrew|liam|ethan|evan|nathan|rishi|\blee\b|joey|matthew|justin|kevin|thomas|henri|paul\b|claude|rémy|remy|jérôme|jerome|nicolas|antoine|mathieu|xavier/i;
+    const FEM_NAMES = /^(léa|lea|manon|juliette|inès|ines|clara|louise|amélie|margot|camille|linh|hana|lan|hoa|mai|huong|trang|thu|ngoc|vy|my|maya|chloe|emma|sarah|lily|anna|mia|sophie|olivia|emily|grace|lucy|kate|nora|ella|zoe|amy|jessica|linda|rachel|mary|jenny|lisa|tina|sofia|ruby|hannah|ivy|nina|julia|sara|chloé|ava|isla|ellie|rosa|lena|maria|nicole|laura|karen|susan|claire|megan|alice|bella|daisy|eva|holly|jade|kim|nancy|paula|rita|sally|vera|wendy)$/i;
+    const MAL_NAMES = /^(lucas|louis|jules|gabriel|théo|theo|maxime|antoine|pierre|jean|thomas|nicolas|julien|mathieu|minh|tuan|nam|hung|long|duc|khoa|phong|son|hai|binh|tung|leo|jax|tom|mike|jack|ben|david|james|john|ryan|max|dan|chris|kevin|noah|liam|ethan|luke|mark|peter|henry|oscar|jake|tony|eric|sam|alex|carlos|diego|frank|george|harry|ivan|jason|kyle|larry|nick|paul|ray|steve|tim|victor|will|zack|adam|brian|charlie|daniel|ed|felix|greg|hugo|ian|joe|ken|marco|neil|owen|pete|sean)$/i;
+    const voiceRank = (v) => (LC.prefRe.test(v.lang) ? 10 : 0) + (/natural|online|neural|google|aria|jenny|guy|samantha|ava|allison|zoe|siri/i.test(v.name) ? 5 : 0);
     const voiceGender = (v) => /female/i.test(v.name) ? 'F' : MAL_RE.test(v.name) ? 'M' : FEM_RE.test(v.name) ? 'F' : null;
     const lsGet = (k) => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
     function loadVoices() {
-      EN_VOICES = (window.speechSynthesis?.getVoices() || []).filter((v) => /^en[-_]/i.test(v.lang) && !/albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|kathy|ralph|eddy|flo\b|grandma|grandpa|reed|rocko|sandy|shelley|espeak|compact/i.test(v.name)).sort((a, b) => voiceRank(b) - voiceRank(a));
-      [['voice-select', 'ss_voice_f', 'Giọng nữ: tự động'], ['voice-select-m', 'ss_voice_m', 'Giọng nam: tự động']].forEach(([id, key, label]) => {
+      EN_VOICES = (window.speechSynthesis?.getVoices() || []).filter((v) => LC.voiceRe.test(v.lang) && !/albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|kathy|ralph|eddy|flo\b|grandma|grandpa|reed|rocko|sandy|shelley|espeak|compact/i.test(v.name)).sort((a, b) => voiceRank(b) - voiceRank(a));
+      [['voice-select', K('ss_voice_f'), 'Giọng nữ: tự động'], ['voice-select-m', K('ss_voice_m'), 'Giọng nam: tự động']].forEach(([id, key, label]) => {
         const sel = document.getElementById(id);
         if (!sel) return;
         sel.innerHTML = `<option value="">${label}</option>` + EN_VOICES.map((v) => `<option value="${escapeHtml(v.name)}">${escapeHtml(v.name)} (${v.lang})${voiceGender(v) ? (voiceGender(v) === 'F' ? ' · nữ' : ' · nam') : ''}</option>`).join('');
@@ -2571,13 +2637,13 @@
       return sp === 'B' ? 'M' : 'F';
     }
     function pickVoice(gender) {
-      const saved = lsGet(gender === 'M' ? 'ss_voice_m' : 'ss_voice_f');
+      const saved = lsGet(gender === 'M' ? K('ss_voice_m') : K('ss_voice_f'));
       const chosen = EN_VOICES.find((x) => x.name === saved);
       if (chosen) return chosen;
       const fem = EN_VOICES.filter((x) => voiceGender(x) === 'F');
       const mal = EN_VOICES.filter((x) => voiceGender(x) === 'M');
       const unk = EN_VOICES.filter((x) => !voiceGender(x));
-      const f = lsGet('ss_voice_f') && EN_VOICES.find((x) => x.name === lsGet('ss_voice_f')) || fem[0] || unk[0] || mal[1] || mal[0] || EN_VOICES[0];
+      const f = lsGet(K('ss_voice_f')) && EN_VOICES.find((x) => x.name === lsGet(K('ss_voice_f'))) || fem[0] || unk[0] || mal[1] || mal[0] || EN_VOICES[0];
       if (gender === 'F') return f;
       return mal[0] || unk.find((x) => x !== f) || EN_VOICES.find((x) => x !== f) || EN_VOICES[0];
     }
@@ -2590,12 +2656,12 @@
         return `${escapeHtml(c.avatar || '')} ${escapeHtml(c.name || 'Nhân vật ' + sp)} (${g === 'M' ? 'nam' : 'nữ'}): <b>${v ? escapeHtml(v.name) : 'chưa có giọng'}</b>`;
       }).join('<br>');
       const cnt = document.getElementById('voice-count');
-      if (cnt) cnt.textContent = `· máy có ${EN_VOICES.length} giọng tiếng Anh`;
+      if (cnt) cnt.textContent = `· máy có ${EN_VOICES.length} giọng ${LC.name}`;
       const hint = document.getElementById('voice-hint');
       const vf = pickVoice('F'), vm = pickVoice('M');
       if (hint) {
         if (EN_VOICES.length < 2 || (vf && vm && vf.name === vm.name)) {
-          hint.textContent = 'Máy chỉ có 1 giọng tiếng Anh nên hai nhân vật nghe giống nhau (app hạ thấp tông giọng nam để phân biệt). Trên iPhone: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → English, rồi tải thêm giọng như Aaron, Nicky, Daniel.';
+          hint.textContent = 'Máy chỉ có 1 giọng ' + LC.name + ' nên hai nhân vật nghe giống nhau (app hạ thấp tông giọng nam để phân biệt). Trên iPhone: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → ' + (LANG === 'fr' ? 'Français, rồi tải thêm giọng như Thomas, Amélie' : 'English, rồi tải thêm giọng như Aaron, Nicky, Daniel') + '.';
           hint.classList.remove('hidden');
         } else hint.classList.add('hidden');
       }
@@ -2615,22 +2681,22 @@
       const same = v && pickVoice(gender === 'M' ? 'F' : 'M') === v;
       const vg = v ? voiceGender(v) : null;
       u.pitch = same ? (gender === 'M' ? 0.82 : 1.06) : (vg && vg !== gender ? (gender === 'F' ? 1.12 : 0.86) : 1);
-      u.lang = v ? v.lang : 'en-US';
+      u.lang = v ? v.lang : LC.speech;
       if (v) u.voice = v;
       else if (!window._warnedVoice) {
         window._warnedVoice = 1;
-        showToast('Máy chưa có giọng tiếng Anh. Hãy cài giọng English (US) trong cài đặt Giọng nói của hệ điều hành, hoặc dùng Chrome/Edge.', 'error');
+        showToast(`Máy chưa có giọng ${LC.name}. Hãy cài giọng ${LC.L} trong cài đặt Giọng nói của hệ điều hành, hoặc dùng Chrome/Edge.`, 'error');
       }
     }
     window.setVoice = (name) => {
-      try { localStorage.setItem('ss_voice_f', name); } catch (e) {}
+      try { localStorage.setItem(K('ss_voice_f'), name); } catch (e) {}
       window._forceGender = 'F';
-      speakText('Hey there! Nice to meet you.', 1.0);
+      speakText(LC.test, 1.0);
     };
     window.setVoiceM = (name) => {
-      try { localStorage.setItem('ss_voice_m', name); } catch (e) {}
+      try { localStorage.setItem(K('ss_voice_m'), name); } catch (e) {}
       window._forceGender = 'M';
-      speakText('Hey there! Nice to meet you.', 1.0);
+      speakText(LC.test, 1.0);
     };
 
     function speakText(text, customRate = state.speechRate, pitch = 1.05) {
@@ -2644,7 +2710,7 @@
 
       const cleanText = text.replace(/‿/g, ' ');
       const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'en-US';
+      utterance.lang = LC.speech;
       utterance.rate = customRate;
       utterance.pitch = 1;
 
@@ -2697,7 +2763,7 @@
         }
         const line = lines[index];
         const utterance = new SpeechSynthesisUtterance(line.english);
-        utterance.lang = 'en-US';
+        utterance.lang = LC.speech;
         utterance.rate = state.speechRate;
         utterance.pitch = 1;
         applyVoice(utterance, line.speaker);
@@ -2828,7 +2894,7 @@
         return;
       }
       const rec = new SR();
-      rec.lang = 'en-US'; rec.interimResults = true; rec.continuous = false;
+      rec.lang = LC.speech; rec.interimResults = true; rec.continuous = false;
       rec.onstart = () => {
         state.isListening = true; state.lastAudio = null;
         document.getElementById('spoken-transcript-input').value = '';
@@ -2904,12 +2970,11 @@
       window.speechSynthesis?.cancel();
       updateGenerateLessonButtonUI();
 
-      const systemPrompt = `You are a cheerful, expert native American English speaking coach creating daily interactive lessons for Vietnamese learners.
-Generate a realistic, natural everyday conversation with rich connected speech (linking, flap T, reductions like wanna/gonna/kinda, elision) and vivid native expressions.
+      const systemPrompt = `${LC.coach}
 Make sure all Vietnamese explanations are warm, cute, encouraging, and easy to understand. Use the '‿' symbol in the 'linking' field to clearly show where words link together. In 'viPron', write how a Vietnamese learner can read the sentence aloud using Vietnamese-style syllable spelling with hyphens between syllables (e.g. Hello -> Hé-lô), following the linking and reductions. It must cover EVERY word of the sentence in order, never abbreviate or skip words. In every dialogue turn the 'speaker' field must be exactly the letter 'A' or 'B' (never a name) and the turns must strictly alternate A, B, A, B. Each character's 'avatar' must be exactly ONE emoji character, never a URL or text. Each character also needs 'gender' set to exactly 'male' or 'female', consistent with the name and role, and the avatar emoji should match that gender (e.g. 👩 or 👨 style faces, or a fitting character emoji). Use a mix: one male and one female character unless the situation clearly needs otherwise.`;
 
-      const userQuery = `Create a fresh daily English speaking lesson for the situation/topic: "${topicToUse}". Today is ${getTodayIso()}; vary character names, settings and phrasing.${focusNote}
-Include EXACTLY ${targetLines} natural dialogue turns between Character A and Character B (one coherent conversation with a clear beginning, middle and end; each turn ${targetLines > 15 ? '2-3 fuller sentences' : '1-2 short sentences'}; alternate speakers), ${targetExtras} connected speech/linking secrets from the dialogue, and ${targetExtras} native expressions compared with textbook English.`;
+      const userQuery = `Create a fresh daily ${LC.L} speaking lesson for the situation/topic: "${topicToUse}". Today is ${getTodayIso()}; vary character names, settings and phrasing.${focusNote}
+Include EXACTLY ${targetLines} natural dialogue turns between Character A and Character B (one coherent conversation with a clear beginning, middle and end; each turn ${targetLines > 15 ? '2-3 fuller sentences' : '1-2 short sentences'}; alternate speakers), ${targetExtras} connected speech/linking secrets from the dialogue, and ${targetExtras} native expressions compared with textbook ${LC.L}.`;
 
       const payload = {
         contents: [{ parts: [{ text: userQuery }] }],
@@ -3027,11 +3092,11 @@ Include EXACTLY ${targetLines} natural dialogue turns between Character A and Ch
 
       try {
         state.currentLesson = normalizeLesson(nextLesson);
-        if (state.currentDay && usedLiveAI) { try { const c = JSON.parse(localStorage.getItem('ss_lessons') || '{}'); c[state.currentDay] = nextLesson;
+        if (state.currentDay && usedLiveAI) { try { const c = JSON.parse(localStorage.getItem(K('ss_lessons')) || '{}'); c[state.currentDay] = nextLesson;
           const tm = c.__t || {}; tm[state.currentDay] = Date.now(); c.__t = tm;
           const ks = Object.keys(c).filter((k) => k !== '__t');
           if (ks.length > 10) ks.sort((a, b) => (tm[a] || 0) - (tm[b] || 0)).slice(0, ks.length - 10).forEach((k) => { delete c[k]; delete tm[k]; });
-          localStorage.setItem('ss_lessons', JSON.stringify(c)); } catch (e) {} }
+          localStorage.setItem(K('ss_lessons'), JSON.stringify(c)); } catch (e) {} }
         if (nextLesson.dialogue && nextLesson.dialogue.length > 0) {
           const firstLine = nextLesson.dialogue[0];
           const charInfo = nextLesson.characters[firstLine.speaker] || { name: 'Speaker', avatar: '🌟' };
@@ -3103,7 +3168,7 @@ Include EXACTLY ${targetLines} natural dialogue turns between Character A and Ch
       state.isEvaluating = true;
       updateEvaluateButtonUI();
 
-      const systemPrompt = `You are an encouraging, friendly English pronunciation & connected speech coach for Vietnamese learners.
+      const systemPrompt = `You are an encouraging, friendly ${LC.L} pronunciation & connected speech coach for Vietnamese learners.
 Compare the Target Sentence with the Learner's Spoken Transcript.
 Evaluate accuracy, naturalness, and linking sounds.
 Even if punctuation is missing in the spoken transcript, do not penalize punctuation.
@@ -3908,7 +3973,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
     function phaseBadgesHtml() {
       const done = state.userStats.roadmapDone || [];
       const icons = ['🌱', '🌿', '🍀', '🌸', '🌻', '🔥', '⭐', '🌙', '🏔️', '🚀', '👑', '🏆'];
-      return `<div class="pt-2"><p class="text-sm font-bold text-slate-700 mb-2">Huy hiệu giai đoạn</p><div class="grid grid-cols-4 sm:grid-cols-6 gap-2">${icons.map((ic, i) => { const ok = phaseDone(i + 1, done); return `<div class="text-center p-2 rounded-2xl border-2 ${ok ? 'bg-amber-50 border-amber-300' : 'bg-slate-50 border-slate-200 opacity-50'}"><div class="text-2xl">${ic}</div><div class="text-xs font-semibold text-slate-700">GĐ ${i + 1}</div></div>`; }).join('')}</div></div>`;
+      return `<div class="pt-2"><p class="text-sm font-bold text-slate-700 mb-2">Huy hiệu giai đoạn</p><div class="grid grid-cols-4 sm:grid-cols-6 gap-2">${icons.slice(0, ROADMAP.length / 30).map((ic, i) => { const ok = phaseDone(i + 1, done); return `<div class="text-center p-2 rounded-2xl border-2 ${ok ? 'bg-amber-50 border-amber-300' : 'bg-slate-50 border-slate-200 opacity-50'}"><div class="text-2xl">${ic}</div><div class="text-xs font-semibold text-slate-700">GĐ ${i + 1}</div></div>`; }).join('')}</div></div>`;
     }
 
     function renderBadgesAndJournal() {
@@ -4307,6 +4372,10 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       }
     };
 
+    window.setLang = (l) => {
+      try { saveLocal(); localStorage.setItem('ss_lang', l); } catch (e) {}
+      location.reload();
+    };
     window.handleTestApiKeyConnection = () => handleTestApiKeyConnection();
     window.handleSaveApiKeySettings = () => handleSaveApiKeySettings();
     window.handleClearApiKey = () => handleClearApiKey();
@@ -4315,6 +4384,8 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
     // INITIALIZE ON WINDOW LOAD
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
+      const ls0 = document.getElementById('lang-select'); if (ls0) ls0.value = LANG;
+      document.title = LANG === 'fr' ? 'SunnySpeak - Học Nói Tiếng Pháp Mỗi Ngày' : document.title;
       loadLocal();
       renderCloud();
       initCloud();
