@@ -1749,6 +1749,7 @@
       state.selectedPracticeItem = { english: f.english, linking: f.linking, vietnamese: f.vietnamese, tip: f.tip, speakerName: ch.name || 'Speaker', avatar: ch.avatar || '🌟' };
       state.evaluationResult = null;
       renderLessonOverview(); renderLearnSubTabContent(); renderPracticeView(); saveLocal();
+      ensurePron();
     }
 
     window.startRoadmapDay = (n) => {
@@ -1801,6 +1802,40 @@
     };
     const pronPending = new Set();
     const readPronCache = () => { try { return JSON.parse(localStorage.getItem('ss_pron') || '{}'); } catch (e) { return {}; } };
+
+    const pronTried = new Set();
+    const viOf = (l) => l.viPron || VI_BUILTIN[l.english] || (readPronCache()[l.english] || {}).vi || '';
+    // Phiên âm thiếu = trống, hoặc ít âm tiết hơn số từ của câu (AI viết tắt)
+    const pronBad = (l) => {
+      const v = viOf(l);
+      const w = String(l.english || '').trim().split(/\s+/).length;
+      const sy = v.split(/[\s-]+/).filter(Boolean).length;
+      return !v || sy < w * 0.8;
+    };
+    async function ensurePron() {
+      const lesson = state.currentLesson, key = lesson.id || lesson.topic;
+      const canAI = (state.customApiKey || '').trim() || typeof __app_id !== 'undefined';
+      if (!canAI || pronTried.has(key)) return;
+      const bad = (lesson.dialogue || []).map((l, i) => ({ l, i })).filter((x) => pronBad(x.l)).slice(0, 30);
+      if (!bad.length) return;
+      pronTried.add(key);
+      try {
+        const r = await callGeminiAPI({
+          contents: [{ parts: [{ text: 'For each numbered English sentence give: ipa (American English IPA of the whole sentence, between slashes) and vi (how a Vietnamese learner reads it aloud using Vietnamese-style syllable spelling with hyphens between syllables, e.g. "Hello" -> "Hé-lô", following the linking shown). vi MUST cover every word of the sentence in order and must never be abbreviated. Return every item.\n' + bad.map((x, k) => `${k + 1}. ${x.l.english} || linking: ${x.l.linking || ''}`).join('\n') }] }],
+          generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { items: { type: 'ARRAY', items: { type: 'OBJECT', properties: { n: { type: 'INTEGER' }, ipa: { type: 'STRING' }, vi: { type: 'STRING' } }, required: ['n', 'ipa', 'vi'] } } }, required: ['items'] } }
+        });
+        const cache = readPronCache();
+        (r.items || []).forEach((it) => {
+          const x = bad[it.n - 1];
+          if (!x || !it.vi) return;
+          x.l.viPron = it.vi;
+          if (!x.l.phonetic && it.ipa) x.l.phonetic = it.ipa;
+          cache[x.l.english] = { ipa: x.l.phonetic || it.ipa, vi: it.vi };
+        });
+        try { localStorage.setItem('ss_pron', JSON.stringify(cache)); } catch (e) {}
+        if (state.currentLesson === lesson) { saveLocal(); renderLearnSubTabContent(); renderPracticeView(); }
+      } catch (e) { pronTried.delete(key); }
+    }
 
     async function loadPron() {
       const ipaEl = document.getElementById('practice-target-ipa');
@@ -2845,7 +2880,7 @@
 
       const systemPrompt = `You are a cheerful, expert native American English speaking coach creating daily interactive lessons for Vietnamese learners.
 Generate a realistic, natural everyday conversation with rich connected speech (linking, flap T, reductions like wanna/gonna/kinda, elision) and vivid native expressions.
-Make sure all Vietnamese explanations are warm, cute, encouraging, and easy to understand. Use the '‿' symbol in the 'linking' field to clearly show where words link together. In 'viPron', write how a Vietnamese learner can read the sentence aloud using Vietnamese-style syllable spelling with hyphens between syllables (e.g. Hello -> Hé-lô), following the linking and reductions. In every dialogue turn the 'speaker' field must be exactly the letter 'A' or 'B' (never a name) and the turns must strictly alternate A, B, A, B. Each character's 'avatar' must be exactly ONE emoji character, never a URL or text. Each character also needs 'gender' set to exactly 'male' or 'female', consistent with the name and role, and the avatar emoji should match that gender (e.g. 👩 or 👨 style faces, or a fitting character emoji). Use a mix: one male and one female character unless the situation clearly needs otherwise.`;
+Make sure all Vietnamese explanations are warm, cute, encouraging, and easy to understand. Use the '‿' symbol in the 'linking' field to clearly show where words link together. In 'viPron', write how a Vietnamese learner can read the sentence aloud using Vietnamese-style syllable spelling with hyphens between syllables (e.g. Hello -> Hé-lô), following the linking and reductions. It must cover EVERY word of the sentence in order, never abbreviate or skip words. In every dialogue turn the 'speaker' field must be exactly the letter 'A' or 'B' (never a name) and the turns must strictly alternate A, B, A, B. Each character's 'avatar' must be exactly ONE emoji character, never a URL or text. Each character also needs 'gender' set to exactly 'male' or 'female', consistent with the name and role, and the avatar emoji should match that gender (e.g. 👩 or 👨 style faces, or a fitting character emoji). Use a mix: one male and one female character unless the situation clearly needs otherwise.`;
 
       const userQuery = `Create a fresh daily English speaking lesson for the situation/topic: "${topicToUse}". Today is ${getTodayIso()}; vary character names, settings and phrasing.${focusNote}
 Include EXACTLY ${targetLines} natural dialogue turns between Character A and Character B (one coherent conversation with a clear beginning, middle and end; each turn ${targetLines > 15 ? '2-3 fuller sentences' : '1-2 short sentences'}; alternate speakers), ${targetExtras} connected speech/linking secrets from the dialogue, and ${targetExtras} native expressions compared with textbook English.`;
@@ -2991,6 +3026,7 @@ Include EXACTLY ${targetLines} natural dialogue turns between Character A and Ch
         renderLessonOverview();
         renderLearnSubTabContent();
         renderPracticeView();
+        ensurePron();
 
         if (usedLiveAI) {
           showToast('✨ Gemini AI đã biên soạn bài học mới tinh cho bạn! (+15 XP)');
@@ -3478,7 +3514,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
                               ${formatLinkingHtml(line.linking)}
                             </p>
                             <p class="text-xs font-mono text-slate-500">${escapeHtml(line.phonetic)}</p>
-                            ${(line.viPron || VI_BUILTIN[line.english]) ? `<p class="text-lg font-extrabold text-rose-700">${escapeHtml(line.viPron || VI_BUILTIN[line.english])}</p>` : ''}
+                            ${viOf(line) ? `<p class="text-lg font-extrabold text-rose-700">${escapeHtml(viOf(line))}</p>` : ''}
                           </div>
 
                           <p class="text-sm font-bold text-slate-700">
@@ -4264,6 +4300,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       renderPracticeView();
       renderBadgesAndJournal();
       lucide.createIcons();
+      setTimeout(ensurePron, 1500);
       initFirebase();
     });
   </script>
