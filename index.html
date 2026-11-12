@@ -19,7 +19,7 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Quicksand & Nunito -->
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -69,7 +69,7 @@
   
     /* ===== Đọc dễ hơn ===== */
     html{font-size:17px}
-    body{font-family:'Be Vietnam Pro','Nunito',system-ui,sans-serif!important;line-height:1.65;color:#0f172a}
+    body{font-family:'Be Vietnam Pro','Noto Sans','Nunito',system-ui,sans-serif!important;line-height:1.65;color:#0f172a}
     .font-black,.font-extrabold{font-weight:700!important}
     .font-bold{font-weight:600!important}
     .font-semibold,.font-medium{font-weight:500!important}
@@ -181,6 +181,7 @@
         <select id="lang-select" onchange="setLang(this.value)" title="Ngôn ngữ đang học" class="bg-white border-2 border-slate-200 rounded-2xl px-3 py-1.5 font-bold text-sm text-slate-700 cursor-pointer">
           <option value="en">🇺🇸 Tiếng Anh</option>
           <option value="fr">🇫🇷 Tiếng Pháp</option>
+          <option value="ru">🇷🇺 Tiếng Nga</option>
         </select>
         <!-- API Key Settings Button -->
         <button id="header-apikey-btn" onclick="openApiKeyModal()" class="flex items-center gap-2 bg-slate-50 hover:bg-teal-50 border-2 border-slate-200 hover:border-teal-300 px-3 py-1.5 rounded-2xl transition cursor-pointer" title="Cài đặt Gemini API Key & Model">
@@ -557,7 +558,7 @@
       </div>
     </div>
 
-    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản đa ngôn ngữ (Anh · Pháp)</p>
+    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản đa ngôn ngữ (Anh · Pháp · Nga)</p>
   </main>
 
   <!-- ==========================================
@@ -730,6 +731,12 @@ Generate a realistic, natural everyday conversation with rich connected speech (
         test: "Bonjour ! Enchanté de vous rencontrer.",
         coach: `You are a cheerful, expert native French speaking coach creating daily interactive lessons for Vietnamese learners, who may be complete beginners.
 All dialogue sentences must be natural spoken French at the requested CEFR level. Put the French sentence in the field named 'english' and keep every field name unchanged. In the 'linking' field show liaison, enchaînement, elision and mute e with the '‿' symbol (e.g. les‿amis, vous‿avez, j'ai‿un). Give the French IPA in 'phonetic'. For 'viPron' give a Vietnamese-style approximation of the French sound (nasal vowels, the French r and u vs ou can only be approximated). The 'vietnamese' field is the Vietnamese translation. For linkingSecrets focus on liaison, enchaînement, mute e, nasal vowels, the French r and silent final consonants. For nativeExpressions give natural spoken French (e.g. 'chais pas', 'y a') and put the textbook French version in 'textbook'.`
+      },
+      ru: {
+        name: 'tiếng Nga', L: 'Russian', speech: 'ru-RU', voiceRe: /^ru[-_]/i, prefRe: /ru[-_]RU/i,
+        test: "Привет! Приятно познакомиться.",
+        coach: `You are a cheerful, expert native Russian speaking coach creating daily interactive lessons for Vietnamese learners, who may be complete beginners.
+All dialogue sentences must be natural spoken Russian written in Cyrillic at the requested CEFR level. Put the Russian sentence in the field named 'english' and keep every field name unchanged. In the 'linking' field write the sentence with an acute accent on the stressed vowel of each word with more than one syllable, and use the '‿' symbol where words are pronounced as one unit (prepositions with the next word, particles, не with a verb, e.g. в‿школе, не‿знаю). Give the Russian IPA in 'phonetic'. For 'viPron' give a Vietnamese-style approximation of how it really sounds, including reduced vowels (молоко -> ma-la-cô); hard and soft consonants, ы and the rolled р can only be approximated. The 'vietnamese' field is the Vietnamese translation. For linkingSecrets focus on vowel reduction (akanye), word stress, hard and soft consonants, final devoicing, voicing assimilation, prepositions pronounced together with the next word, and the sounds ы, р, ч, щ, ш. For nativeExpressions give natural spoken Russian (e.g. чё, щас, ну, ладно, давай) and put the textbook Russian version in 'textbook'.`
       }
     };
     if (!LANGS[LANG]) LANG = 'en';
@@ -1584,7 +1591,37 @@ All dialogue sentences must be natural spoken French at the requested CEFR level
       ]
     };
 
-    const DEFAULT_LESSON = LANG === 'fr' ? FR_LESSON : BUILTIN_LESSONS_BANK.coffee;
+    const RU_LESSON = {
+      id: 'builtin-ru-cafe',
+      topic: 'Gọi đồ ở quán cà phê (В кафе)',
+      situation: 'Bạn bước vào một quán cà phê nhỏ ở Moscow và gọi đồ ăn, đồ uống với nhân viên phục vụ.',
+      level: 'A1 - Mới bắt đầu',
+      characters: {
+        A: { name: 'Анна (Официантка)', gender: 'female', avatar: '🦊', role: 'Nhân viên phục vụ thân thiện' },
+        B: { name: 'Иван (Клиент)', gender: 'male', avatar: '🐻', role: 'Khách hàng' }
+      },
+      dialogue: [
+        { speaker: 'A', english: "Здравствуйте! Что вы будете заказывать?", linking: "Здра́вствуйте! Что‿вы бу́дете зака́зывать?", phonetic: "/ˈzdrastvʊjtʲɪ ʂto vɨ ˈbudʲɪtʲɪ zɐˈkazɨvətʲ/", viPron: "Đờ-rát-xtvui-chi! Shto vư bu-đi-chi za-ka-zư-vát?", vietnamese: "Xin chào! Các bạn sẽ gọi món gì ạ?", tip: "Chữ 'в' đầu từ 'Здравствуйте' không đọc: 'dờ-rát-xtvui-chi'. 'Что' đọc là 'shto', không phải 'chto'." },
+        { speaker: 'B', english: "Здравствуйте! Мне, пожалуйста, чай и пирожок.", linking: "Здра́вствуйте! Мне, пожа́луйста, чай‿и пирожо́к.", phonetic: "/ˈzdrastvʊjtʲɪ mnʲe pɐˈʐaləstə tɕɪj i pʲɪrɐˈʐok/", viPron: "Đờ-rát-xtvui-chi! Mnhe, pa-gia-lưx-ta, chai i pi-ra-giốc.", vietnamese: "Xin chào! Làm ơn cho tôi trà và một cái bánh pirozhok.", tip: "'Пожалуйста' đọc nhanh thành 'pa-gia-lưx-ta' (nuốt bớt âm). Âm 'ж' giống 'gi' nhưng rung hơn." },
+        { speaker: 'A', english: "Хорошо. Вам ещё что-нибудь?", linking: "Хорошо́. Вам ещё́ что́-нибудь?", phonetic: "/xərɐˈʂo vam jɪˈɕːo ˈʂto nʲɪbutʲ/", viPron: "Kha-ra-sô. Vam yi-xchô shto-ni-but?", vietnamese: "Tốt rồi. Bạn cần thêm gì nữa không?", tip: "Chữ 'х' đọc như 'kh'. 'Хорошо' có ba chữ o nhưng chỉ chữ o cuối có trọng âm, hai chữ đầu đọc thành 'kha-ra'." },
+        { speaker: 'B', english: "Да, и воду без газа, пожалуйста.", linking: "Да, и‿во́ду без‿га́за, пожа́луйста.", phonetic: "/da i ˈvodu bʲɪz ˈɡazə pɐˈʐaləstə/", viPron: "Đa, i vô-đu bi-z ga-za, pa-gia-lưx-ta.", vietnamese: "Vâng, và cho tôi nước không ga.", tip: "'Без газа' đọc liền nhau: 'bi-z-ga-za'. 'Воду' có trọng âm ở âm đầu: 'VÔ-đu'." },
+        { speaker: 'A', english: "Конечно. С вас двести рублей.", linking: "Коне́чно. С‿вас две́сти рубле́й.", phonetic: "/kɐˈnʲeʂnə sːvas ˈdvʲestʲɪ rʊˈblʲej/", viPron: "Ka-nhe-shna. Xvas dvê-xti ru-blây.", vietnamese: "Dĩ nhiên rồi. Tổng cộng 200 rúp.", tip: "'Конечно' đọc là 'ka-nhe-shna' (chữ ч đọc thành sh trong từ này). 'С вас' đọc liền thành một nhịp." }
+      ],
+      linkingSecrets: [
+        { phrase: "молоко → ma-la-cô", type: "Giảm nguyên âm (akanye)", standardPronunciation: "/mo.lo.ko/", nativePronunciation: "ma-la-cô", explanation: "Chữ o không nhấn đọc thành a hoặc âm yếu; chỉ nguyên âm có trọng âm mới đọc rõ và kéo dài.", example: "Хорошо́, молоко́." },
+        { phrase: "в‿школе", type: "Giới từ đọc liền với từ sau", standardPronunciation: "/v ʂko.lʲe/", nativePronunciation: "fshkô-lê", explanation: "Giới từ không có trọng âm, dính liền với từ sau như một từ; 'в' trước phụ âm vô thanh đọc thành 'f'.", example: "Он в‿шко́ле." },
+        { phrase: "хлеб → khlep", type: "Vô thanh hóa phụ âm cuối", standardPronunciation: "/xlʲeb/", nativePronunciation: "khlep", explanation: "Phụ âm kêu ở cuối từ đọc thành âm không kêu: б thành п, в thành ф, д thành т, г thành к, з thành с.", example: "Хлеб, пожа́луйста." },
+        { phrase: "вы / мы / ты", type: "Âm ы (khó)", standardPronunciation: "/ɨ/", nativePronunciation: "vư / mư / tư", explanation: "Âm 'ы' gần giống chữ 'ư' của tiếng Việt, rất khác 'и'. Lưỡi lùi về sau, môi không tròn.", example: "Вы́ и мы́." }
+      ],
+      nativeExpressions: [
+        { native: "Мне, пожалуйста...", textbook: "Я хочу...", meaning: "Cho tôi... (cách gọi lịch sự)", context: "Gọi món ở quán, mua hàng. Nghe lịch sự hơn 'Я хочу' (tôi muốn).", example: "Мне, пожалуйста, кофе." },
+        { native: "Что-нибудь ещё?", textbook: "Вы хотите что-то ещё?", meaning: "Còn gì nữa không ạ?", context: "Câu hỏi quen thuộc của người bán hàng hay phục vụ.", example: "Вам что-нибудь ещё?" },
+        { native: "Сколько с меня?", textbook: "Сколько это стоит?", meaning: "Tôi phải trả bao nhiêu?", context: "Hỏi khi thanh toán, tự nhiên hơn hỏi giá.", example: "Сколько с меня, пожалуйста?" },
+        { native: "Конечно!", textbook: "Да, конечно.", meaning: "Dĩ nhiên rồi!", context: "Đáp lại lời nhờ vả một cách thân thiện.", example: "— Можно воды? — Конечно!" }
+      ]
+    };
+
+    const DEFAULT_LESSON = LANG === 'fr' ? FR_LESSON : LANG === 'ru' ? RU_LESSON : BUILTIN_LESSONS_BANK.coffee;
 
     const PRESET_TOPICS = [
       { id: 'coffee', label: '☕ Quán Cà Phê', prompt: 'Ordering drinks and pastries at a cozy morning coffee shop' },
@@ -1773,14 +1810,28 @@ All dialogue sentences must be natural spoken French at the requested CEFR level
       const f = p.focus.split('|');
       p.topics.split('|').forEach((t, i) => ROADMAP.push([t, `${t} (title of the situation, in Vietnamese). Overall theme of this phase: ${p.theme}.`, f[i % f.length]]));
     });
+    // ===== Tiếng Nga: dùng lại tiêu đề & tình huống của lộ trình Pháp (không phụ thuộc ngôn ngữ), đổi phần ngữ pháp riêng =====
+    const ruFix = (p) => p.replace(/with the passé composé basics/g, 'in the past tense').replace(/with the passé composé/g, 'in the past tense').replace(/with the imparfait/g, 'in the past tense').replace(/with passé composé and imparfait/g, 'in the past tense').replace(/with aller \+ infinitive/g, 'in the future tense').replace(/with devoir and il faut/g, 'with must / should (надо, нужно)').replace(/with the futur simple/g, 'in the future tense').replace(/with the conditionnel/g, 'with would / wish forms (бы)').replace(/with je pense que and à mon avis/g, 'with я думаю, что and по-моему').replace(/French food, recipes and wine/g, 'Russian food, recipes and tea').replace(/Visiting Paris/g, 'Visiting Moscow').replace(/French/g, 'Russian');
+    const RU_FOCUS = "đọc bảng chữ cái & trọng âm|giảm nguyên âm không nhấn (о→а)|phụ âm cứng & mềm|âm ы|âm р rung lưỡi|âm ч, щ, ш|vô thanh hóa phụ âm cuối|ngữ điệu câu hỏi (ИК-3)|giới từ đọc liền từ sau|đồng hóa phụ âm khi nói nhanh".split('|');
+    if (LANG === 'ru') ROADMAP.splice(0, ROADMAP.length, ...FR_ROADMAP.map((r, i) => [r[0].replace('Paris', 'Moscow').replace('Pháp', 'Nga'), ruFix(r[1]), RU_FOCUS[i % RU_FOCUS.length]]));
+    const RU_PH = [{"level": "A2", "len": "max 9 words per sentence", "focus": "giảm nguyên âm không nhấn|trọng âm từ khi hỏi đường|giới từ đọc liền từ sau|phụ âm cứng & mềm|ngữ điệu hỏi (ИК-3)|vô thanh hóa phụ âm cuối|âm р rung lưỡi|đọc số & đơn vị"}, {"level": "A2+", "len": "max 12 words per sentence", "focus": "nhịp kể & ngắt nghỉ|ngữ điệu cảm xúc|kéo dài nguyên âm nhấn|đồng hóa phụ âm khi nói nhanh|ngữ điệu ngạc nhiên|nhấn từ cảm thán|trọng âm di động ở quá khứ|giọng thì thầm & hạ giọng"}, {"level": "B1", "len": "max 14 words per sentence", "focus": "đọc to số liệu & tên riêng|ngắt nhóm ý dài|ngữ điệu lịch sự khi từ chối|giảm âm trong lời nói nhanh|nối giới từ trong câu công sở|ngữ điệu mềm khi góp ý|nhấn từ logic|đọc tắt tên & chức danh"}, {"level": "B1", "len": "max 15 words per sentence", "focus": "ngữ điệu tự tin|nhấn động từ hành động|ngắt nhịp câu dài|giảm nguyên âm khi kể thành tích|ngữ điệu trung thực|nối giới từ|ngữ điệu hỏi lịch sự|nhấn số liệu thành tích"}, {"level": "B1", "len": "max 16 words per sentence", "focus": "ngữ điệu phản biện|nhấn từ phủ định (не)|ngắt nhóm ý trong lập luận|ngữ điệu nhượng bộ|câu hỏi vặn lên giọng|nhấn tương phản|kết luận hạ giọng|trợ từ ну, же, ведь"}, {"level": "B1+", "len": "max 18 words per sentence", "focus": "ngữ điệu trung lập|nhấn từ khóa trong tin tức|giọng khách quan|nhịp điệu thảo luận|ngữ điệu hỏi mở|nhấn tên riêng & số liệu|phụ âm kép & dài (жж, сс)|trọng âm từ vay mượn"}, {"level": "B1+", "len": "max 18 words per sentence", "focus": "thought groups & ngắt nghỉ|nhấn trọng âm nhóm từ|ngữ điệu mở đầu|giọng trầm ổn định|tốc độ vừa phải|ngữ điệu câu hỏi tu từ|kết thúc hạ giọng|ngữ điệu liệt kê"}, {"level": "B1+", "len": "max 20 words per sentence", "focus": "nhấn thuật ngữ|đọc từ vay mượn tiếng Anh|ngắt nhóm ý khi giải thích|ngữ điệu giải thích rõ ràng|nhấn số & đơn vị|cụm phụ âm dài|giảm nguyên âm trong thuật ngữ|ngữ điệu liệt kê"}, {"level": "B2", "len": "max 18 words per sentence, very natural colloquial Russian", "focus": "rút gọn khẩu ngữ (чё, щас, ничё)|ngữ điệu mỉa mai|trợ từ ну, типа, короче|nối âm tốc độ cao|nuốt âm giữa từ|ngữ điệu hài hước|giảm âm cực mạnh|nhịp trêu đùa"}, {"level": "B2", "len": "max 20 words per sentence", "focus": "tổng hợp giảm nguyên âm|tổng hợp ngữ điệu|tổng hợp trọng âm|nói trôi chảy liên tục|phản xạ nhanh|tự sửa lỗi khi nói|nhịp điệu tự nhiên|tổng hợp phụ âm cứng mềm & ы"}];
+    const PHASES_EXTRA_RU = RU_PH.map((m, k) => {
+      const e = PHASES_EXTRA[FR_PH[k].src];
+      return { name: FR_PH[k].name || e.name, level: m.level, len: m.len, theme: e.theme, focus: m.focus,
+        topics: e.topics.replace('Nói chuyện với người Anh', 'Nói chuyện với người Nga').replace('Nói chuyện với người Úc', 'Nói chuyện với người Ukraina').replace(/IELTS Part/g, 'TORFL phần').replace('TOEIC nói', 'TORFL nói') };
+    });
+    if (LANG === 'ru') PHASES_EXTRA_RU.forEach((p) => {
+      const f = p.focus.split('|');
+      p.topics.split('|').forEach((t, i) => ROADMAP.push([t, `${t} (title of the situation, in Vietnamese). Overall theme of this phase: ${p.theme}.`, f[i % f.length]]));
+    });
     const phaseOf = (n) => {
       const g = Math.ceil(n / 30);
-      if (LANG === 'fr' && g >= 3) { const p = PHASES_EXTRA_FR[g - 3]; return { group: g, name: p.name, level: p.level, len: p.len, lines: 20, extras: 5, theme: p.theme }; }
-      if (LANG === 'fr') {
+      if (LANG !== 'en' && g >= 3) { const p = (LANG === 'ru' ? PHASES_EXTRA_RU : PHASES_EXTRA_FR)[g - 3]; return { group: g, name: p.name, level: p.level, len: p.len, lines: LANG === 'ru' ? 16 : 20, extras: LANG === 'ru' ? 4 : 5, theme: p.theme }; }
+      if (LANG !== 'en') {
         const nm = [['Khởi động', 'A1'], ['Cơ bản', 'A1+'], ['Giao tiếp', 'A2'], ['Mở rộng', 'A2+'], ['Tự tin', 'B1'], ['Vững vàng', 'B1+']];
-        const ln = ['max 6 words per sentence', 'max 8 words per sentence', 'max 10 words per sentence', 'max 14 words per sentence', 'max 18 words per sentence', 'max 22 words per sentence'];
+        const ln = LANG === 'ru' ? ['max 5 words per sentence', 'max 7 words per sentence', 'max 9 words per sentence', 'max 12 words per sentence', 'max 16 words per sentence', 'max 20 words per sentence'] : ['max 6 words per sentence', 'max 8 words per sentence', 'max 10 words per sentence', 'max 14 words per sentence', 'max 18 words per sentence', 'max 22 words per sentence'];
         const i = Math.min(5, Math.floor((n - 1) / 10));
-        return { group: g, name: nm[i][0], level: nm[i][1], len: ln[i], lines: g === 1 ? 12 : 18, extras: 4 };
+        return { group: g, name: nm[i][0], level: nm[i][1], len: ln[i], lines: LANG === 'ru' ? (g === 1 ? 10 : 14) : (g === 1 ? 12 : 18), extras: 4 };
       }
       if (g <= 2) return phaseOfBase(n);
       const p = PHASES_EXTRA[g - 3];
@@ -2433,6 +2484,7 @@ All dialogue sentences must be natural spoken French at the requested CEFR level
     // ==========================================
     function getSmartLocalLesson(topicQuery, presetId) {
       if (LANG === 'fr') return FR_LESSON;
+      if (LANG === 'ru') return RU_LESSON;
       if (presetId && BUILTIN_LESSONS_BANK[presetId]) {
         return BUILTIN_LESSONS_BANK[presetId];
       }
@@ -2530,7 +2582,7 @@ All dialogue sentences must be natural spoken French at the requested CEFR level
       const targetWords = targetSentence.trim().split(/\s+/);
       const cleanSpokenWords = spokenTranscript
         .toLowerCase()
-        .replace(/[^a-z\u00e0-\u00ff\u0153\u00e6'\u2019\s0-9]/g, '')
+        .replace(/[^a-z\u00e0-\u00ff\u0153\u00e6\u0400-\u04ff'\u2019\s0-9]/g, '')
         .split(/\s+/)
         .filter(Boolean);
 
@@ -2538,7 +2590,7 @@ All dialogue sentences must be natural spoken French at the requested CEFR level
       let almostCount = 0;
 
       const wordBreakdown = targetWords.map((rawWord) => {
-        const cleanTarget = rawWord.toLowerCase().replace(/[^a-z\u00e0-\u00ff\u0153\u00e6'\u2019\s0-9]/g, '');
+        const cleanTarget = rawWord.toLowerCase().replace(/[^a-z\u00e0-\u00ff\u0153\u00e6\u0400-\u04ff'\u2019\s0-9]/g, '');
         if (!cleanTarget) {
           return { word: rawWord, status: 'good', advice: 'Tốt!' };
         }
@@ -2608,10 +2660,10 @@ All dialogue sentences must be natural spoken French at the requested CEFR level
     // WEB SPEECH API (TEXT TO SPEECH)
     // ==========================================
     let EN_VOICES = [];
-    const FEM_RE = /female|samantha|\bava\b|allison|susan|zoe|karen|moira|tessa|fiona|victoria|serena|kate\b|aria|jenny|michelle|emma|\bana\b|sonia|libby|zira|hazel|catherine|linda|heather|joanna|salli|kendra|kimberly|ivy|amy|nicole|olivia|sara\b|nicky|martha|rebecca|ellen|isabella|google us english|amélie|amelie|audrey|aurélie|aurelie|marie|julie|hortense|denise|eloise|vivienne|sylvie|google français/i;
-    const MAL_RE = /\bmale\b|daniel|\balex\b|\btom\b|oliver|aaron|arthur|gordon|\bguy\b|davis|christopher|eric\b|roger|steffan|ryan|mark\b|david|james|richard|george|brian|andrew|liam|ethan|evan|nathan|rishi|\blee\b|joey|matthew|justin|kevin|thomas|henri|paul\b|claude|rémy|remy|jérôme|jerome|nicolas|antoine|mathieu|xavier/i;
-    const FEM_NAMES = /^(léa|lea|manon|juliette|inès|ines|clara|louise|amélie|margot|camille|linh|hana|lan|hoa|mai|huong|trang|thu|ngoc|vy|my|maya|chloe|emma|sarah|lily|anna|mia|sophie|olivia|emily|grace|lucy|kate|nora|ella|zoe|amy|jessica|linda|rachel|mary|jenny|lisa|tina|sofia|ruby|hannah|ivy|nina|julia|sara|chloé|ava|isla|ellie|rosa|lena|maria|nicole|laura|karen|susan|claire|megan|alice|bella|daisy|eva|holly|jade|kim|nancy|paula|rita|sally|vera|wendy)$/i;
-    const MAL_NAMES = /^(lucas|louis|jules|gabriel|théo|theo|maxime|antoine|pierre|jean|thomas|nicolas|julien|mathieu|minh|tuan|nam|hung|long|duc|khoa|phong|son|hai|binh|tung|leo|jax|tom|mike|jack|ben|david|james|john|ryan|max|dan|chris|kevin|noah|liam|ethan|luke|mark|peter|henry|oscar|jake|tony|eric|sam|alex|carlos|diego|frank|george|harry|ivan|jason|kyle|larry|nick|paul|ray|steve|tim|victor|will|zack|adam|brian|charlie|daniel|ed|felix|greg|hugo|ian|joe|ken|marco|neil|owen|pete|sean)$/i;
+    const FEM_RE = /female|samantha|\bava\b|allison|susan|zoe|karen|moira|tessa|fiona|victoria|serena|kate\b|aria|jenny|michelle|emma|\bana\b|sonia|libby|zira|hazel|catherine|linda|heather|joanna|salli|kendra|kimberly|ivy|amy|nicole|olivia|sara\b|nicky|martha|rebecca|ellen|isabella|google us english|amélie|amelie|audrey|aurélie|aurelie|marie|julie|hortense|denise|eloise|vivienne|sylvie|google français|milena|katya|irina|svetlana|elena|tatyana|google русский/i;
+    const MAL_RE = /\bmale\b|daniel|\balex\b|\btom\b|oliver|aaron|arthur|gordon|\bguy\b|davis|christopher|eric\b|roger|steffan|ryan|mark\b|david|james|richard|george|brian|andrew|liam|ethan|evan|nathan|rishi|\blee\b|joey|matthew|justin|kevin|thomas|henri|paul\b|claude|rémy|remy|jérôme|jerome|nicolas|antoine|mathieu|xavier|yuri|pavel|dmitry|maxim|oleg/i;
+    const FEM_NAMES = /^(olga|natasha|katya|irina|svetlana|masha|elena|tatiana|sonya|dasha|alisa|polina|yulia|anya|анна|léa|lea|manon|juliette|inès|ines|clara|louise|amélie|margot|camille|linh|hana|lan|hoa|mai|huong|trang|thu|ngoc|vy|my|maya|chloe|emma|sarah|lily|anna|mia|sophie|olivia|emily|grace|lucy|kate|nora|ella|zoe|amy|jessica|linda|rachel|mary|jenny|lisa|tina|sofia|ruby|hannah|ivy|nina|julia|sara|chloé|ava|isla|ellie|rosa|lena|maria|nicole|laura|karen|susan|claire|megan|alice|bella|daisy|eva|holly|jade|kim|nancy|paula|rita|sally|vera|wendy)$/i;
+    const MAL_NAMES = /^(dmitri|dmitry|sergey|alexei|andrei|pavel|nikolai|mikhail|boris|igor|oleg|vlad|maxim|yuri|иван|lucas|louis|jules|gabriel|théo|theo|maxime|antoine|pierre|jean|thomas|nicolas|julien|mathieu|minh|tuan|nam|hung|long|duc|khoa|phong|son|hai|binh|tung|leo|jax|tom|mike|jack|ben|david|james|john|ryan|max|dan|chris|kevin|noah|liam|ethan|luke|mark|peter|henry|oscar|jake|tony|eric|sam|alex|carlos|diego|frank|george|harry|ivan|jason|kyle|larry|nick|paul|ray|steve|tim|victor|will|zack|adam|brian|charlie|daniel|ed|felix|greg|hugo|ian|joe|ken|marco|neil|owen|pete|sean)$/i;
     const voiceRank = (v) => (LC.prefRe.test(v.lang) ? 10 : 0) + (/natural|online|neural|google|aria|jenny|guy|samantha|ava|allison|zoe|siri/i.test(v.name) ? 5 : 0);
     const voiceGender = (v) => /female/i.test(v.name) ? 'F' : MAL_RE.test(v.name) ? 'M' : FEM_RE.test(v.name) ? 'F' : null;
     const lsGet = (k) => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
@@ -2669,7 +2721,7 @@ All dialogue sentences must be natural spoken French at the requested CEFR level
       const vf = pickVoice('F'), vm = pickVoice('M');
       if (hint) {
         if (EN_VOICES.length < 2 || (vf && vm && vf.name === vm.name)) {
-          hint.textContent = 'Máy chỉ có 1 giọng ' + LC.name + ' nên hai nhân vật nghe giống nhau (app hạ thấp tông giọng nam để phân biệt). Trên iPhone: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → ' + (LANG === 'fr' ? 'Français, rồi tải thêm giọng như Thomas, Amélie' : 'English, rồi tải thêm giọng như Aaron, Nicky, Daniel') + '.';
+          hint.textContent = 'Máy chỉ có 1 giọng ' + LC.name + ' nên hai nhân vật nghe giống nhau (app hạ thấp tông giọng nam để phân biệt). Trên iPhone: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → ' + (LANG === 'fr' ? 'Français, rồi tải thêm giọng như Thomas, Amélie' : LANG === 'ru' ? 'Русский, rồi tải thêm giọng như Milena, Yuri' : 'English, rồi tải thêm giọng như Aaron, Nicky, Daniel') + '.';
           hint.classList.remove('hidden');
         } else hint.classList.add('hidden');
       }
@@ -4393,7 +4445,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
       const ls0 = document.getElementById('lang-select'); if (ls0) ls0.value = LANG;
-      document.title = LANG === 'fr' ? 'SunnySpeak - Học Nói Tiếng Pháp Mỗi Ngày' : document.title;
+      document.title = LANG === 'en' ? document.title : 'SunnySpeak - Học Nói ' + LC.name.replace('tiếng', 'Tiếng') + ' Mỗi Ngày';
       loadLocal();
       renderCloud();
       initCloud();
