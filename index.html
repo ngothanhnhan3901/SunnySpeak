@@ -183,6 +183,7 @@
           <option value="fr">🇫🇷 Tiếng Pháp</option>
           <option value="ru">🇷🇺 Tiếng Nga</option>
           <option value="zh">🇨🇳 Tiếng Trung</option>
+          <option value="yue">🇭🇰 Tiếng Quảng Đông</option>
         </select>
         <!-- API Key Settings Button -->
         <button id="header-apikey-btn" onclick="openApiKeyModal()" class="flex items-center gap-2 bg-slate-50 hover:bg-teal-50 border-2 border-slate-200 hover:border-teal-300 px-3 py-1.5 rounded-2xl transition cursor-pointer" title="Cài đặt Gemini API Key & Model">
@@ -559,7 +560,7 @@
       </div>
     </div>
 
-    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản đa ngôn ngữ (Anh · Pháp · Nga · Trung)</p>
+    <p class="text-center text-sm text-slate-500 mt-10">SunnySpeak · bản đa ngôn ngữ (Anh · Pháp · Nga · Trung · Quảng Đông)</p>
   </main>
 
   <!-- ==========================================
@@ -645,7 +646,10 @@
             <label class="text-xs font-extrabold text-slate-700 uppercase">
               Gemini API Key (Tùy chọn - Lấy miễn phí tại Google AI Studio):
             </label>
-            \1
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 justify-end">
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-xs font-extrabold text-teal-600 hover:underline">Lấy API Key ↗</a>
+              <a href="https://aistudio.google.com/usage?tab=rate-limit" target="_blank" rel="noopener noreferrer" class="text-xs font-extrabold text-indigo-600 hover:underline">Xem hạn mức ↗</a>
+            </div>
           </div>
           <div class="relative flex items-center">
             <input
@@ -745,6 +749,13 @@ All dialogue sentences must be natural spoken Russian written in Cyrillic at the
         ipa: 'standard pinyin with tone marks for the whole sentence (no slashes)',
         coach: `You are a cheerful, expert native Mandarin Chinese (Putonghua) speaking coach creating daily interactive lessons for Vietnamese learners, who may be complete beginners.
 All dialogue sentences must be natural spoken Mandarin written in Simplified Chinese characters at the requested HSK level. Put the Chinese sentence in the field named 'english' and keep every field name unchanged. In the 'linking' field write the pinyin with tone marks AS ACTUALLY SPOKEN: apply third-tone sandhi (nǐ hǎo -> ní hǎo), the tone changes of 一 and 不, neutral tones and erhua, and use the '‿' symbol to join the syllables of one word or phrase that is pronounced as a unit (e.g. ní‿hǎo, xiè‿xie). In the 'phonetic' field write the standard dictionary pinyin with tone marks (no slashes). For 'viPron' give a Vietnamese-style approximation that uses Vietnamese tone marks to imitate the four Mandarin tones (tone 1 flat/ngang, tone 2 rising/sắc, tone 3 dipping/hỏi, tone 4 falling/huyền or nặng) with hyphens between syllables, e.g. 你好 -> ní hảo. The 'vietnamese' field is the Vietnamese translation. For linkingSecrets focus on the four tones, tone sandhi, the neutral tone, aspirated versus unaspirated consonants (p/b, t/d, k/g), the retroflex zh ch sh r, j q x, the vowel ü, erhua and final -n/-ng; put the characters and pinyin in 'phrase'. For nativeExpressions give natural spoken Mandarin (colloquial phrases such as 没问题, 行, 对啊) and put the textbook or formal version in 'textbook'. Keep every sentence short.`
+      },
+      yue: {
+        name: 'tiếng Quảng Đông', L: 'Cantonese', speech: 'zh-HK', voiceRe: /^(zh[-_]HK|yue)/i, prefRe: /zh[-_]HK|yue/i,
+        test: "你好！好開心識到你。",
+        ipa: 'standard Jyutping with tone numbers 1-6 for the whole sentence (no slashes)',
+        coach: `You are a cheerful, expert native Cantonese (Hong Kong) speaking coach creating daily interactive lessons for Vietnamese learners, who may be complete beginners.
+All dialogue sentences must be natural SPOKEN Cantonese written in Traditional Chinese characters with the colloquial Cantonese characters (e.g. 嘅 ge3, 咗 zo2, 喺 hai2, 唔 m4, 冇 mou5, 係 hai6, 佢 keoi5, 啲 di1, 乜嘢 mat1 je5, 咩 me1), never Mandarin written style. Put the Cantonese sentence in the field named 'english' and keep every field name unchanged. In the 'linking' field write Jyutping with tone numbers 1-6 as actually spoken and use the '‿' symbol to join the syllables of one word or phrase pronounced as a unit (e.g. nei5‿hou2, m4‿goi1). In the 'phonetic' field write the standard Jyutping with tone numbers (no slashes). For 'viPron' give a Vietnamese-style approximation that uses Vietnamese tone marks to imitate the six Cantonese tones (1 high level = no mark or ngang, 2 high rising = sắc, 3 mid level = no mark, short, 4 low falling = huyền, 5 low rising = hỏi, 6 low level = nặng) with hyphens between syllables; final -p, -t, -k are unreleased just like in Vietnamese. The 'vietnamese' field is the Vietnamese translation. For linkingSecrets focus on the six tones, the final stops -p -t -k, initials ng- gw- kw-, the vowels eu oe yu, sentence-final particles (呀 aa3, 啦 laa1, 喎 wo3, 咩 me1, 呢 ne1) and colloquial tone change; put the characters and Jyutping in 'phrase'. For nativeExpressions give natural spoken Cantonese (e.g. 唔該, 冇問題, 好呀) and put the Standard Written Chinese or formal version in 'textbook'. Keep every sentence short.`
       }
     };
     if (!LANGS[LANG]) LANG = 'en';
@@ -1660,7 +1671,37 @@ All dialogue sentences must be natural spoken Mandarin written in Simplified Chi
       ]
     };
 
-    const DEFAULT_LESSON = LANG === 'fr' ? FR_LESSON : LANG === 'ru' ? RU_LESSON : LANG === 'zh' ? ZH_LESSON : BUILTIN_LESSONS_BANK.coffee;
+    const YUE_LESSON = {
+      id: 'builtin-yue-cafe',
+      topic: 'Gọi đồ ở quán cà phê (喺咖啡店)',
+      situation: 'Bạn bước vào một quán cà phê nhỏ ở Hồng Kông và gọi đồ uống, bánh với nhân viên phục vụ.',
+      level: 'A1 - Mới bắt đầu',
+      characters: {
+        A: { name: '阿欣 (侍應)', gender: 'female', avatar: '🦊', role: 'Nhân viên phục vụ thân thiện' },
+        B: { name: '阿明 (客人)', gender: 'male', avatar: '🐼', role: 'Khách hàng' }
+      },
+      dialogue: [
+        { speaker: 'A', english: "你好！你想飲啲乜嘢呀？", linking: "Nei5‿hou2! Nei5 soeng2 jam2 di1 mat1‿je5 aa3?", phonetic: "nei5 hou2! nei5 soeng2 jam2 di1 mat1 je5 aa3?", viPron: "Nẻi hóu! Nẻi xóng dấm đi mắt dẻ a?", vietnamese: "Xin chào! Bạn muốn uống gì ạ?", tip: "'你' đọc 'nei5' (thanh 5: thấp rồi lên, giống dấu hỏi tiếng Việt). '乜嘢' (mat1 je5) là 'cái gì' trong khẩu ngữ. '呀' (aa3) cuối câu làm lời hỏi thân thiện hơn." },
+        { speaker: 'B', english: "你好！我要一杯咖啡，唔該。", linking: "Nei5‿hou2! Ngo5 jiu3 jat1‿bui1 gaa3‿fe1, m4‿goi1.", phonetic: "nei5 hou2! ngo5 jiu3 jat1 bui1 gaa3 fe1, m4 goi1.", viPron: "Nẻi hóu! Ngỏ yiu dắt bui ca-phê, ầm coi.", vietnamese: "Xin chào! Cho tôi một ly cà phê, làm ơn.", tip: "'唔該' (m4 goi1) vừa là 'làm ơn' vừa là 'cảm ơn' khi nhờ vả. '多謝' (do1 ze6) dùng khi nhận quà hoặc lời khen. '我' đọc 'ngo5' với âm đầu ng- như 'ngà'." },
+        { speaker: 'A', english: "好呀。仲要啲乜嘢呢？", linking: "Hou2‿aa3. Zung6 jiu3 di1 mat1‿je5 ne1?", phonetic: "hou2 aa3. zung6 jiu3 di1 mat1 je5 ne1?", viPron: "Hóu a. Giụng yiu đi mắt dẻ nè?", vietnamese: "Được ạ. Bạn còn muốn gọi gì nữa không?", tip: "'仲' (zung6) nghĩa là 'còn, nữa'. '呢' (ne1) cuối câu làm câu hỏi mềm hơn. Âm cuối -t trong 'mat1' ngắt gọn như tiếng Việt." },
+        { speaker: 'B', english: "再嚟一個麵包。幾多錢呀？", linking: "Zoi3 lai4 jat1‿go3 min6‿baau1. Gei2‿do1 cin2 aa3?", phonetic: "zoi3 lai4 jat1 go3 min6 baau1. gei2 do1 cin2 aa3?", viPron: "Choi lài dắt cò mịn-bao. Kẻ-đô chìn a?", vietnamese: "Cho thêm một cái bánh mì. Bao nhiêu tiền?", tip: "'再嚟' (zoi3 lai4) = lấy thêm. '幾多錢' (gei2 do1 cin2) là cách hỏi giá. '個' (go3) là lượng từ chung cho đồ vật." },
+        { speaker: 'A', english: "一共二十蚊。", linking: "Jat1‿gung6 ji6‿sap6 man1.", phonetic: "jat1 gung6 ji6 sap6 man1.", viPron: "Dắt-cụng dị-xập mần.", vietnamese: "Tổng cộng 20 đô (đô Hồng Kông).", tip: "'蚊' (man1) là cách nói thông thường của '元' (đô la). Âm cuối -p, -t, -k của tiếng Quảng Đông ngắt gọn giống tiếng Việt, ví dụ 'sap6' nghe như 'xập'." }
+      ],
+      linkingSecrets: [
+        { phrase: "媽 麻 馬 罵", type: "Sáu thanh điệu", standardPronunciation: "maa1, maa4, maa5, maa6", nativePronunciation: "ma, mà, mả, mạ", explanation: "Tiếng Quảng Đông có 6 thanh (chưa kể 3 thanh nhập), gần với 6 thanh tiếng Việt nên người Việt có lợi thế lớn khi học thanh điệu.", example: "媽媽買馬。" },
+        { phrase: "食 十 六", type: "Âm cuối -p -t -k", standardPronunciation: "sik6, sap6, luk6", nativePronunciation: "thực, thập, lục", explanation: "Kết thúc bằng p, t, k và dừng lại không bật hơi, giống tiếng Việt: 'thức', 'thập', 'lục'. Nhiều từ Hán Việt đọc rất gần tiếng Quảng Đông.", example: "食飯，十蚊，六個。" },
+        { phrase: "呀 啦 喎 咩", type: "Trợ từ cuối câu", standardPronunciation: "aa3, laa1, wo3, me1", nativePronunciation: "a, la, uô, mê", explanation: "Trợ từ cuối câu đổi sắc thái: 呀 thân thiện, 啦 hoàn tất hoặc thúc giục, 喎 báo điều mới biết, 咩 hỏi ngờ vực.", example: "好啦，走啦！" },
+        { phrase: "我 國 困", type: "Âm đầu khó (ng- gw- kw-)", standardPronunciation: "ngo5, gwok3, kwan3", nativePronunciation: "ngỏ, quốc, khuân", explanation: "Âm đầu 'ng' xuất hiện nhiều (我, 牛, 眼) như 'ng' trong 'ngà'. 'gw' và 'kw' là âm tròn môi, gần 'qu' tiếng Việt.", example: "我係廣東人。" }
+      ],
+      nativeExpressions: [
+        { native: "唔該", textbook: "謝謝 / 請", meaning: "Làm ơn / cảm ơn (khi nhờ vả)", context: "Dùng liên tục khi gọi món, nhờ vả, hỏi đường.", example: "唔該，一杯茶。" },
+        { native: "我要……", textbook: "我想要……", meaning: "Cho tôi...", context: "Cách gọi món nhanh gọn ở quán ăn.", example: "我要一碗麵。" },
+        { native: "幾多錢？", textbook: "請問價錢係幾多？", meaning: "Bao nhiêu tiền?", context: "Hỏi giá khi mua hàng hoặc thanh toán.", example: "呢個幾多錢？" },
+        { native: "好呀", textbook: "好的", meaning: "Được ạ / Ok", context: "Cách đồng ý thân thiện và thoải mái.", example: "好呀，冇問題！" }
+      ]
+    };
+
+    const DEFAULT_LESSON = LANG === 'fr' ? FR_LESSON : LANG === 'ru' ? RU_LESSON : LANG === 'zh' ? ZH_LESSON : LANG === 'yue' ? YUE_LESSON : BUILTIN_LESSONS_BANK.coffee;
 
     const PRESET_TOPICS = [
       { id: 'coffee', label: '☕ Quán Cà Phê', prompt: 'Ordering drinks and pastries at a cozy morning coffee shop' },
@@ -1880,12 +1921,29 @@ All dialogue sentences must be natural spoken Mandarin written in Simplified Chi
       const f = p.focus.split('|');
       p.topics.split('|').forEach((t, i) => ROADMAP.push([t, `${t} (title of the situation, in Vietnamese). Overall theme of this phase: ${p.theme}.`, f[i % f.length]]));
     });
+    // ===== Tiếng Quảng Đông: dùng lại tiêu đề & tình huống của lộ trình Pháp, đổi phần ngữ pháp riêng =====
+    const yueFix = (p) => p.replace(/with the passé composé basics/g, 'using 咗 for completed actions').replace(/with the passé composé/g, 'using 咗 for completed actions').replace(/with the imparfait/g, 'using 過 and 以前 for past experience').replace(/with passé composé and imparfait/g, 'using 咗 and 過').replace(/with aller \+ infinitive/g, 'using 會 and 打算').replace(/with devoir and il faut/g, 'using 要 and 應該').replace(/with the futur simple/g, 'using 會').replace(/with the conditionnel/g, 'using 想 and 如果…就').replace(/with je pense que and à mon avis/g, 'using 我覺得 and 我認為').replace(/French food, recipes and wine/g, 'Cantonese food, dim sum and tea').replace(/Visiting Paris/g, 'Visiting Hong Kong').replace(/French/g, 'Cantonese');
+    const YUE_FOCUS = "6 thanh điệu (1–6)|âm cuối -p -t -k|âm đầu ng- và gw-/kw-|nguyên âm eu, oe, yu|thanh 4 và thanh 6|trợ từ cuối câu (呀, 啦, 喎)|đổi thanh khẩu ngữ|âm bật hơi (p t k) và không bật hơi (b d g)|âm j và z/c|ngữ điệu câu hỏi (呀, 咩, 呢)".split('|');
+    if (LANG === 'yue') {
+      ROADMAP.splice(0, ROADMAP.length, ...FR_ROADMAP.map((r, i) => [r[0].replace('Paris', 'Hồng Kông').replace('Pháp', 'Quảng Đông'), yueFix(r[1]), YUE_FOCUS[i % YUE_FOCUS.length]]));
+      ROADMAP[2] = ['Jyutping & 6 thanh điệu', 'Learning Jyutping and the six tones, and saying your name in Cantonese', YUE_FOCUS[2]];
+    }
+    const YUE_PH = [{"level": "A2", "len": "max 10 characters per sentence", "focus": "thanh 4 và thanh 6|âm cuối -p -t -k|trợ từ cuối câu|đọc số & ngày tháng|ngữ điệu hỏi (咩, 呢)|nối âm trong câu hỏi dài"}, {"level": "A2+", "len": "max 12 characters per sentence", "focus": "nhịp kể & ngắt nghỉ|ngữ điệu cảm xúc|trợ từ cảm thán (啊, 喎, 嘅)|đổi thanh khẩu ngữ|ngữ điệu ngạc nhiên|giọng thì thầm & hạ giọng"}, {"level": "B1", "len": "max 14 characters per sentence", "focus": "đọc số liệu & tên riêng|ngắt nhóm ý dài|ngữ điệu lịch sự khi từ chối|trợ từ công sở|nhấn từ logic|ngữ điệu mềm khi góp ý"}, {"level": "B1", "len": "max 16 characters per sentence", "focus": "ngữ điệu tự tin|nhấn động từ hành động|ngắt nhịp câu dài|âm cuối khi kể thành tích|ngữ điệu trung thực|ngữ điệu hỏi lịch sự"}, {"level": "B1+", "len": "max 18 characters per sentence", "focus": "ngữ điệu phản biện|nhấn từ phủ định (唔, 冇)|ngắt nhóm ý trong lập luận|ngữ điệu nhượng bộ|nhấn tương phản|kết luận hạ giọng"}, {"level": "B1+", "len": "max 20 characters per sentence", "focus": "ngữ điệu trung lập|nhấn từ khóa trong tin tức|giọng khách quan|nhịp điệu thảo luận|ngữ điệu hỏi mở|đọc tên riêng & số liệu"}, {"level": "B1+", "len": "max 20 characters per sentence", "focus": "thought groups & ngắt nghỉ|nhấn trọng âm nhóm từ|ngữ điệu mở đầu|giọng trầm ổn định|tốc độ vừa phải|kết thúc hạ giọng"}, {"level": "B2", "len": "max 22 characters per sentence", "focus": "nhấn thuật ngữ|đọc từ vay mượn tiếng Anh|ngắt nhóm ý khi giải thích|ngữ điệu giải thích rõ ràng|nhấn số & đơn vị|ngữ điệu liệt kê"}, {"level": "B2", "len": "max 18 characters per sentence, very colloquial spoken Cantonese", "focus": "khẩu ngữ & tiếng lóng (潮語)|ngữ điệu mỉa mai|trợ từ 喎, 囉, 咋, 嘛|nối âm tốc độ cao|nuốt âm giữa từ|nhịp trêu đùa"}, {"level": "B2", "len": "max 22 characters per sentence", "focus": "tổng hợp 6 thanh|tổng hợp ngữ điệu|tổng hợp âm cuối & trợ từ|nói trôi chảy liên tục|phản xạ nhanh|tự sửa lỗi khi nói"}];
+    const PHASES_EXTRA_YUE = YUE_PH.map((m, k) => {
+      const e = PHASES_EXTRA[FR_PH[k].src];
+      return { name: FR_PH[k].name || e.name, level: m.level, len: m.len, theme: e.theme, focus: m.focus,
+        topics: e.topics.replace('Nói chuyện với người Anh', 'Nói chuyện với người Hồng Kông').replace('Nói chuyện với người Úc', 'Nói chuyện với người Quảng Châu').replace(/Mô phỏng IELTS Part/g, 'Mô phỏng hội thoại phần').replace('Mô phỏng TOEIC nói', 'Mô phỏng nói thi vấn đáp') };
+    });
+    if (LANG === 'yue') PHASES_EXTRA_YUE.forEach((p) => {
+      const f = p.focus.split('|');
+      p.topics.split('|').forEach((t, i) => ROADMAP.push([t, `${t} (title of the situation, in Vietnamese). Overall theme of this phase: ${p.theme}.`, f[i % f.length]]));
+    });
     const phaseOf = (n) => {
       const g = Math.ceil(n / 30);
-      if (LANG !== 'en' && g >= 3) { const p = (LANG === 'ru' ? PHASES_EXTRA_RU : LANG === 'zh' ? PHASES_EXTRA_ZH : PHASES_EXTRA_FR)[g - 3]; return { group: g, name: p.name, level: p.level, len: p.len, lines: LANG === 'fr' ? 20 : 16, extras: LANG === 'fr' ? 5 : 4, theme: p.theme }; }
+      if (LANG !== 'en' && g >= 3) { const p = (LANG === 'ru' ? PHASES_EXTRA_RU : LANG === 'zh' ? PHASES_EXTRA_ZH : LANG === 'yue' ? PHASES_EXTRA_YUE : PHASES_EXTRA_FR)[g - 3]; return { group: g, name: p.name, level: p.level, len: p.len, lines: LANG === 'fr' ? 20 : 16, extras: LANG === 'fr' ? 5 : 4, theme: p.theme }; }
       if (LANG !== 'en') {
         const nm = LANG === 'zh' ? [['Khởi động', 'HSK1'], ['Cơ bản', 'HSK1+'], ['Giao tiếp', 'HSK2'], ['Mở rộng', 'HSK2+'], ['Tự tin', 'HSK3'], ['Vững vàng', 'HSK3']] : [['Khởi động', 'A1'], ['Cơ bản', 'A1+'], ['Giao tiếp', 'A2'], ['Mở rộng', 'A2+'], ['Tự tin', 'B1'], ['Vững vàng', 'B1+']];
-        const ln = LANG === 'zh' ? ['max 6 characters per sentence', 'max 8 characters per sentence', 'max 10 characters per sentence', 'max 12 characters per sentence', 'max 16 characters per sentence', 'max 20 characters per sentence'] : LANG === 'ru' ? ['max 5 words per sentence', 'max 7 words per sentence', 'max 9 words per sentence', 'max 12 words per sentence', 'max 16 words per sentence', 'max 20 words per sentence'] : ['max 6 words per sentence', 'max 8 words per sentence', 'max 10 words per sentence', 'max 14 words per sentence', 'max 18 words per sentence', 'max 22 words per sentence'];
+        const ln = (LANG === 'zh' || LANG === 'yue') ? ['max 6 characters per sentence', 'max 8 characters per sentence', 'max 10 characters per sentence', 'max 12 characters per sentence', 'max 16 characters per sentence', 'max 20 characters per sentence'] : LANG === 'ru' ? ['max 5 words per sentence', 'max 7 words per sentence', 'max 9 words per sentence', 'max 12 words per sentence', 'max 16 words per sentence', 'max 20 words per sentence'] : ['max 6 words per sentence', 'max 8 words per sentence', 'max 10 words per sentence', 'max 14 words per sentence', 'max 18 words per sentence', 'max 22 words per sentence'];
         const i = Math.min(5, Math.floor((n - 1) / 10));
         return { group: g, name: nm[i][0], level: nm[i][1], len: ln[i], lines: LANG !== 'fr' ? (g === 1 ? 10 : 14) : (g === 1 ? 12 : 18), extras: 4 };
       }
@@ -2542,6 +2600,7 @@ All dialogue sentences must be natural spoken Mandarin written in Simplified Chi
       if (LANG === 'fr') return FR_LESSON;
       if (LANG === 'ru') return RU_LESSON;
       if (LANG === 'zh') return ZH_LESSON;
+      if (LANG === 'yue') return YUE_LESSON;
       if (presetId && BUILTIN_LESSONS_BANK[presetId]) {
         return BUILTIN_LESSONS_BANK[presetId];
       }
@@ -2636,14 +2695,14 @@ All dialogue sentences must be natural spoken Mandarin written in Simplified Chi
     // SMART LOCAL PRONUNCIATION EVALUATOR (DETAILED & ACCURATE)
     // ==========================================
     function evaluateSpeechLocally(targetSentence, linkingGuide, spokenTranscript, tipText) {
-      const targetWords = LANG === 'zh' ? Array.from(targetSentence.replace(/[\s，。！？、；：“”,.!?]/g, '')) : targetSentence.trim().split(/\s+/);
+      const targetWords = (LANG === 'zh' || LANG === 'yue') ? Array.from(targetSentence.replace(/[\s，。！？、；：“”,.!?]/g, '')) : targetSentence.trim().split(/\s+/);
       let cleanSpokenWords = spokenTranscript
         .toLowerCase()
         .replace(/[^a-z\u00e0-\u00ff\u0153\u00e6\u0400-\u04ff\u4e00-\u9fff'\u2019\s0-9]/g, '')
         .split(/\s+/)
         .filter(Boolean);
 
-      if (LANG === 'zh') cleanSpokenWords = Array.from(spokenTranscript.replace(/[\s，。！？、；：,.!?]/g, ''));
+      if (LANG === 'zh' || LANG === 'yue') cleanSpokenWords = Array.from(spokenTranscript.replace(/[\s，。！？、；：,.!?]/g, ''));
       let matchedCount = 0;
       let almostCount = 0;
 
@@ -2718,8 +2777,8 @@ All dialogue sentences must be natural spoken Mandarin written in Simplified Chi
     // WEB SPEECH API (TEXT TO SPEECH)
     // ==========================================
     let EN_VOICES = [];
-    const FEM_RE = /female|samantha|\bava\b|allison|susan|zoe|karen|moira|tessa|fiona|victoria|serena|kate\b|aria|jenny|michelle|emma|\bana\b|sonia|libby|zira|hazel|catherine|linda|heather|joanna|salli|kendra|kimberly|ivy|amy|nicole|olivia|sara\b|nicky|martha|rebecca|ellen|isabella|google us english|amélie|amelie|audrey|aurélie|aurelie|marie|julie|hortense|denise|eloise|vivienne|sylvie|google français|milena|katya|irina|svetlana|elena|tatyana|google русский|tingting|ting-ting|huihui|yaoyao|xiaoxiao|xiaoyi|lili|meijia|mei-jia|普通话/i;
-    const MAL_RE = /\bmale\b|daniel|\balex\b|\btom\b|oliver|aaron|arthur|gordon|\bguy\b|davis|christopher|eric\b|roger|steffan|ryan|mark\b|david|james|richard|george|brian|andrew|liam|ethan|evan|nathan|rishi|\blee\b|joey|matthew|justin|kevin|thomas|henri|paul\b|claude|rémy|remy|jérôme|jerome|nicolas|antoine|mathieu|xavier|yuri|pavel|dmitry|maxim|oleg|kangkang|yunyang|yunxi|yunjian|yunhao/i;
+    const FEM_RE = /female|samantha|\bava\b|allison|susan|zoe|karen|moira|tessa|fiona|victoria|serena|kate\b|aria|jenny|michelle|emma|\bana\b|sonia|libby|zira|hazel|catherine|linda|heather|joanna|salli|kendra|kimberly|ivy|amy|nicole|olivia|sara\b|nicky|martha|rebecca|ellen|isabella|google us english|amélie|amelie|audrey|aurélie|aurelie|marie|julie|hortense|denise|eloise|vivienne|sylvie|google français|milena|katya|irina|svetlana|elena|tatyana|google русский|tingting|ting-ting|huihui|yaoyao|xiaoxiao|xiaoyi|lili|meijia|mei-jia|普通话|hiumaan|hiugaai|sinji|sin-ji/i;
+    const MAL_RE = /\bmale\b|daniel|\balex\b|\btom\b|oliver|aaron|arthur|gordon|\bguy\b|davis|christopher|eric\b|roger|steffan|ryan|mark\b|david|james|richard|george|brian|andrew|liam|ethan|evan|nathan|rishi|\blee\b|joey|matthew|justin|kevin|thomas|henri|paul\b|claude|rémy|remy|jérôme|jerome|nicolas|antoine|mathieu|xavier|yuri|pavel|dmitry|maxim|oleg|kangkang|yunyang|yunxi|yunjian|yunhao|wanlung/i;
     const FEM_NAMES = /^(olga|natasha|katya|irina|svetlana|masha|elena|tatiana|sonya|dasha|alisa|polina|yulia|anya|анна|léa|lea|manon|juliette|inès|ines|clara|louise|amélie|margot|camille|linh|hana|lan|hoa|mai|huong|trang|thu|ngoc|vy|my|maya|chloe|emma|sarah|lily|anna|mia|sophie|olivia|emily|grace|lucy|kate|nora|ella|zoe|amy|jessica|linda|rachel|mary|jenny|lisa|tina|sofia|ruby|hannah|ivy|nina|julia|sara|chloé|ava|isla|ellie|rosa|lena|maria|nicole|laura|karen|susan|claire|megan|alice|bella|daisy|eva|holly|jade|kim|nancy|paula|rita|sally|vera|wendy)$/i;
     const MAL_NAMES = /^(dmitri|dmitry|sergey|alexei|andrei|pavel|nikolai|mikhail|boris|igor|oleg|vlad|maxim|yuri|иван|lucas|louis|jules|gabriel|théo|theo|maxime|antoine|pierre|jean|thomas|nicolas|julien|mathieu|minh|tuan|nam|hung|long|duc|khoa|phong|son|hai|binh|tung|leo|jax|tom|mike|jack|ben|david|james|john|ryan|max|dan|chris|kevin|noah|liam|ethan|luke|mark|peter|henry|oscar|jake|tony|eric|sam|alex|carlos|diego|frank|george|harry|ivan|jason|kyle|larry|nick|paul|ray|steve|tim|victor|will|zack|adam|brian|charlie|daniel|ed|felix|greg|hugo|ian|joe|ken|marco|neil|owen|pete|sean)$/i;
     const voiceRank = (v) => (LC.prefRe.test(v.lang) ? 10 : 0) + (/natural|online|neural|google|aria|jenny|guy|samantha|ava|allison|zoe|siri/i.test(v.name) ? 5 : 0);
@@ -2779,7 +2838,7 @@ All dialogue sentences must be natural spoken Mandarin written in Simplified Chi
       const vf = pickVoice('F'), vm = pickVoice('M');
       if (hint) {
         if (EN_VOICES.length < 2 || (vf && vm && vf.name === vm.name)) {
-          hint.textContent = 'Máy chỉ có 1 giọng ' + LC.name + ' nên hai nhân vật nghe giống nhau (app hạ thấp tông giọng nam để phân biệt). Trên iPhone: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → ' + (LANG === 'fr' ? 'Français, rồi tải thêm giọng như Thomas, Amélie' : LANG === 'ru' ? 'Русский, rồi tải thêm giọng như Milena, Yuri' : LANG === 'zh' ? 'Chinese (Mainland), rồi tải thêm giọng như Tingting' : 'English, rồi tải thêm giọng như Aaron, Nicky, Daniel') + '.';
+          hint.textContent = 'Máy chỉ có 1 giọng ' + LC.name + ' nên hai nhân vật nghe giống nhau (app hạ thấp tông giọng nam để phân biệt). Trên iPhone: Cài đặt → Trợ năng → Nội dung được đọc → Giọng nói → ' + (LANG === 'fr' ? 'Français, rồi tải thêm giọng như Thomas, Amélie' : LANG === 'ru' ? 'Русский, rồi tải thêm giọng như Milena, Yuri' : LANG === 'zh' ? 'Chinese (Mainland), rồi tải thêm giọng như Tingting' : LANG === 'yue' ? 'Chinese (Hong Kong), rồi tải thêm giọng như Sinji' : 'English, rồi tải thêm giọng như Aaron, Nicky, Daniel') + '.';
           hint.classList.remove('hidden');
         } else hint.classList.add('hidden');
       }
