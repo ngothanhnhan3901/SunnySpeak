@@ -144,6 +144,22 @@
     }
       .practice-nav{position:sticky;top:calc(env(safe-area-inset-top) + .5rem);z-index:30;backdrop-filter:blur(6px)}
     .practice-nav button:disabled{opacity:.4;cursor:not-allowed}
+      /* ===== Gọn hơn trên điện thoại ===== */
+    .topic-select-m{display:none}
+    @media (max-width:640px){
+      .topic-select-m{display:block}
+      #preset-topics-container{display:none!important}
+      .practice-nav{width:fit-content;margin-inline:auto;gap:.75rem!important;padding:.2rem .5rem!important;border-radius:9999px!important;top:calc(env(safe-area-inset-top) + .25rem)!important}
+      .practice-nav button{flex:0 0 auto!important;width:2.75rem;height:2.25rem;min-height:0!important;padding:0!important;justify-content:center}
+      .practice-nav button span{display:none}
+      .practice-nav-count{font-size:.95rem!important;padding:0 .25rem!important}
+      .mic-wrap{flex-direction:column;text-align:center;gap:.6rem}
+      .mic-wrap p{text-align:center}
+      #mic-record-btn{width:5rem!important;height:5rem!important}
+      #view-learn h2{font-size:1.2rem!important}
+      #lesson-settings summary{padding:.7rem 1rem}
+      #roadmap-card{padding:1rem!important}
+    }
   </style>
 </head>
 <body class="min-h-screen pb-16 selection:bg-amber-200">
@@ -224,6 +240,11 @@
         <span>Luyện nói</span>
       </button>
 
+      <button id="tab-btn-talk" onclick="switchMainTab('talk')" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-slate-100/80 text-slate-600 hover:bg-indigo-50 hover:text-indigo-700">
+        <i data-lucide="messages-square" class="w-4 h-4"></i>
+        <span>Nói với AI</span>
+      </button>
+
       <button id="tab-btn-journal" onclick="switchMainTab('journal')" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap bg-slate-100/80 text-slate-600 hover:bg-amber-50 hover:text-amber-700">
         <i data-lucide="calendar" class="w-4 h-4"></i>
         <span id="tab-journal-label">Nhật ký (1)</span>
@@ -253,8 +274,14 @@
             </h2>
           </div>
 
-          <!-- Audio Speed Control -->
-          <div class="flex flex-wrap items-center gap-2 self-start max-w-full bg-white px-3.5 py-2 rounded-2xl border-2 border-teal-100 shadow-sm">
+          
+        </div>
+
+        <!-- Cài đặt giọng và tốc độ (thu gọn) -->
+        <details id="lesson-settings" class="bg-white border-2 border-teal-100 rounded-2xl mb-4">
+          <summary class="px-4 py-3 font-bold text-slate-800 cursor-pointer">⚙️ Giọng đọc và tốc độ nghe</summary>
+          <div class="px-4 pb-4 space-y-3">
+            <div class="flex flex-wrap items-center gap-2 self-start max-w-full bg-white px-3.5 py-2 rounded-2xl border-2 border-teal-100 shadow-sm">
             <i data-lucide="headphones" class="w-4 h-4 text-teal-600"></i>
             <span class="text-xs font-bold text-slate-600">Tốc độ:</span>
             <button id="speed-btn-normal" onclick="setGlobalSpeechRate(1.0)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold cursor-pointer transition bg-teal-500 text-white">
@@ -264,10 +291,7 @@
               0.75x Chậm
             </button>
           </div>
-        </div>
-
-        <!-- Voice Panel -->
-        <div class="bg-white border-2 border-teal-100 rounded-2xl p-4 space-y-3 mb-4">
+            <div class="space-y-3 pt-1">
           <p class="text-base font-bold text-slate-800">🎙️ Giọng đọc nhân vật <span id="voice-count" class="text-sm font-medium text-slate-500"></span></p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label class="block space-y-1.5">
@@ -281,8 +305,14 @@
           </div>
           <p id="voice-assign" class="text-sm font-medium text-slate-700 leading-relaxed"></p>
           <p id="voice-hint" class="hidden text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 leading-relaxed"></p>
-        </div>
+            </div>
+          </div>
+        </details>
 
+        <div class="topic-select-m mb-4">
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5" for="topic-select">Chọn nhanh một tình huống</label>
+          <select id="topic-select" onchange="pickTopicFromSelect(this.value)" class="w-full bg-white border-2 border-teal-200 rounded-2xl px-4 py-3 text-base font-semibold text-slate-800"></select>
+        </div>
         <!-- Preset Topic Pills Container -->
         <div id="preset-topics-container" class="flex flex-wrap gap-2 mb-4"></div>
 
@@ -428,7 +458,7 @@
           <!-- Microphone Controls & Transcript Box -->
           <div class="bg-white rounded-3xl p-5 border-2 border-rose-200 space-y-4">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div class="flex items-center gap-3.5">
+              <div class="mic-wrap flex items-center gap-3.5">
                 <button
                   id="mic-record-btn"
                   onclick="toggleListening()"
@@ -442,13 +472,13 @@
                     Bấm Micro để đọc to câu trên
                   </p>
                   <p class="text-xs text-slate-500 font-medium">
-                    Bấm lần nữa để dừng. Giọng bạn được gửi lên Google Gemini để nhận dạng và chấm điểm.
+                    Bấm lần nữa để dừng. Giọng bạn được gửi lên Google Gemini để chấm điểm.
                   </p>
                 </div>
               </div>
 
               <!-- Quick Simulation Buttons -->
-              <div class="flex flex-wrap gap-2">
+              <div class="hide-m flex flex-wrap gap-2">
                 <button onclick="simulateVoiceAttempt('perfect')" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-xs cursor-pointer transition">
                   ⚡ Giả lập đọc chuẩn
                 </button>
@@ -487,6 +517,7 @@
     <!-- ==========================================
          VIEW 3: STUDY JOURNAL & REWARD BADGES
     ========================================== -->
+    <div id="view-talk" class="hidden"></div>
     <div id="view-journal" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Cloud Sync Card -->
       <div class="lg:col-span-12 bg-white border-2 border-indigo-200 rounded-3xl p-5 space-y-3 shadow-sm">
@@ -682,6 +713,8 @@
             <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (Nhẹ, nhanh, hạn mức rộng)</option>
           </select>
         </div>
+
+        <div id="usage-box" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm space-y-2"></div>
 
         <!-- Test Connection Feedback Box -->
         <div id="apikey-test-feedback" class="hidden p-3 rounded-2xl text-xs font-bold"></div>
@@ -1976,8 +2009,7 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
       const noKey = !(state.customApiKey || '').trim() && typeof __app_id === 'undefined';
       const tabs = Array.from({ length: GROUPS }, (_, k) => k + 1).map((g) => `<button onclick="setRoadmapView(${g})" class="py-2 rounded-xl text-sm font-bold cursor-pointer border-2 ${view === g ? 'bg-indigo-600 border-indigo-600 text-white' : phaseDone(g, done) ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-white border-indigo-200 text-indigo-800'}">${phaseDone(g, done) ? '✓' : g}${unlocked(g) ? '' : '🔒'}</button>`).join('');
       el.innerHTML = `
-        <p class="text-sm font-semibold text-slate-600 mb-2">Lộ trình ${ROADMAP.length} ngày · ${GROUPS} giai đoạn (bấm số để xem từng giai đoạn)</p>
-        <div class="grid grid-cols-6 sm:grid-cols-12 gap-2 mb-4">${tabs}</div>
+        
         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div class="space-y-1">
             ${allDone
@@ -1991,12 +2023,18 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
           </div>
           ${allDone ? '' : `<button onclick="startRoadmapDay(${next + 1})" class="px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">Bắt đầu Ngày ${dayInPhase}</button>`}
         </div>
-        <div class="grid grid-cols-6 sm:grid-cols-10 gap-2">
+        <details ${(window.__rmOpen ?? window.innerWidth >= 1024) ? 'open' : ''} ontoggle="window.__rmOpen = this.open" class="rounded-2xl border-2 border-indigo-100">
+          <summary class="px-4 py-3 font-bold text-indigo-800 cursor-pointer">📅 Chọn giai đoạn và ngày · đã xong ${done.length}/${ROADMAP.length}</summary>
+          <div class="px-3 pb-3 space-y-3">
+            <div class="grid grid-cols-6 sm:grid-cols-12 gap-2">${tabs}</div>
+            <div class="grid grid-cols-6 sm:grid-cols-10 gap-2">
           ${ROADMAP.slice(start, start + 30).map((d, i) => {
             const n = start + i + 1, isDone = done.includes(n);
             return `<button onclick="startRoadmapDay(${n})" title="${escapeHtml(d[0])}" class="py-2 rounded-xl text-sm font-semibold border-2 cursor-pointer ${isDone ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : n === next + 1 ? 'bg-amber-100 border-amber-400 text-amber-900' : locked ? 'bg-slate-100 border-slate-200 text-slate-400' : 'bg-white border-slate-200 text-slate-700'} ${state.currentDay === n ? 'ring-2 ring-teal-500' : ''}">${isDone ? '✓' : i + 1}</button>`;
           }).join('')}
-        </div>`;
+        </div>
+          </div>
+        </details>`;
     }
     window.setRoadmapView = (v) => { state.roadmapView = v; renderRoadmap(); };
 
@@ -2452,6 +2490,293 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
       } finally { cloud.busy = false; renderCloud(); }
     }
 
+    // ===== Đếm lượt gọi Gemini =====
+    const pacificDay = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+    function readUsage() {
+      try { const u = JSON.parse(localStorage.getItem('ss_usage') || 'null'); if (u && u.day === pacificDay()) return u; } catch (e) {}
+      return { day: pacificDay(), total: 0, ok: 0, fail: 0, rl: 0, models: {} };
+    }
+    function trackUsage(model, status) {
+      const u = readUsage();
+      u.total++;
+      if (status >= 200 && status < 300) u.ok++; else { u.fail++; if (status === 429) u.rl++; }
+      u.models[model] = (u.models[model] || 0) + 1;
+      try { localStorage.setItem('ss_usage', JSON.stringify(u)); } catch (e) {}
+      renderUsage();
+    }
+    window.setUsageLimit = (v) => { try { localStorage.setItem('ss_usage_limit', String(Math.max(0, Number(v) || 0))); } catch (e) {} renderUsage(); };
+    function renderUsage() {
+      const u = readUsage(), limit = Number(lsGet('ss_usage_limit') || 0);
+      const pt = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Los_Angeles', hour12: false });
+      const [h, mi] = pt.split(':').map(Number);
+      const left = 24 * 60 - (h * 60 + mi), reset = `${Math.floor(left / 60)} giờ ${left % 60} phút`;
+      const chip = document.getElementById('usage-chip');
+      if (chip) chip.textContent = `📊 Hôm nay: ${u.total} lượt gọi AI${limit ? ' / ' + limit : ''}`;
+      const box = document.getElementById('usage-box');
+      if (!box) return;
+      const pct = limit ? Math.min(100, Math.round(u.total / limit * 100)) : 0;
+      box.innerHTML = `<p class="font-bold text-slate-800">📊 Mức dùng Gemini hôm nay (trên thiết bị này)</p>
+        <p>${u.total} lượt · thành công ${u.ok} · lỗi ${u.fail}${u.rl ? ` (<b class="text-rose-700">${u.rl} lần 429 = chạm giới hạn</b>)` : ''}</p>
+        ${limit ? `<div class="h-2.5 rounded-full bg-slate-200 overflow-hidden"><div class="h-full ${pct >= 100 ? 'bg-rose-500' : pct >= 80 ? 'bg-amber-500' : 'bg-emerald-500'}" style="width:${pct}%"></div></div><p>${pct >= 100 ? '⚠️ Đã chạm giới hạn bạn đặt.' : pct >= 80 ? '⚠️ Sắp chạm giới hạn.' : 'Còn trong giới hạn.'}</p>` : '<p class="text-slate-500">Nhập giới hạn lượt mỗi ngày của bạn (xem ở AI Studio) để hiện thanh tiến độ.</p>'}
+        <div class="flex flex-wrap items-center gap-2"><label class="text-xs font-semibold">Giới hạn lượt mỗi ngày:</label><input type="number" min="0" value="${limit || ''}" onchange="setUsageLimit(this.value)" class="w-24 border rounded-lg px-2 py-1" /><span class="text-xs text-slate-500">Làm mới sau khoảng ${reset} (nửa đêm giờ Thái Bình Dương)</span></div>
+        <p class="text-xs text-slate-500">Chỉ đếm lượt gọi từ thiết bị này, không gồm thiết bị khác hoặc ứng dụng khác dùng chung khóa.</p>`;
+    }
+
+    // ===== Nói với AI: hội thoại và độc thoại =====
+    const talk = {
+      mode: 'chat', auto: true,
+      chat: { active: false, topic: '', turns: [], busy: false, rec: false, summary: null },
+      mono: { theme: 'free', dur: 1, card: null, busy: false, rec: false, t0: 0, timer: null, result: null }
+    };
+    const MONO_THEMES = [['free', 'Tự do (AI chọn đề)', 'any everyday topic'], ['intro', 'Giới thiệu bản thân', 'introducing yourself, your family and your daily life'], ['weekend', 'Kể về cuối tuần hoặc kỳ nghỉ', 'telling about a weekend or a holiday'], ['work', 'Công việc hoặc học tập', 'your job or your studies'], ['future', 'Kế hoạch và mục tiêu', 'future plans and goals'], ['opinion', 'Nêu ý kiến về một vấn đề', 'giving and defending an opinion on an everyday issue'], ['place', 'Mô tả nơi bạn sống', 'describing the place where you live']];
+    const hasKey = () => (state.customApiKey || '').trim().length > 5 || typeof __app_id !== 'undefined';
+    const curLevel = () => { const done = state.userStats.roadmapDone || []; let n = ROADMAP.findIndex((_, i) => !done.includes(i + 1)); if (n < 0) n = ROADMAP.length - 1; return phaseOf(n + 1); };
+    const isCJK = () => LANG === 'zh' || LANG === 'yue';
+    const countUnits = (t) => isCJK() ? Array.from(String(t || '').replace(/[\s，。！？、；：,.!?]/g, '')).length : String(t || '').trim().split(/\s+/).filter(Boolean).length;
+    const fmtTime = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+    function speakAI(text) { if (!talk.auto || !text) return; window._forceGender = 'F'; speakText(text, state.speechRate); }
+    window.talkAuto = (v) => { talk.auto = !!v; };
+    window.talkMode = (m) => { talk.mode = m; renderTalk(); };
+
+    let talkRec = null, talkChunks = [];
+    async function talkRecStart() {
+      if (state.isListening) { showToast('Hãy dừng ghi âm ở tab Luyện nói trước.', 'info'); return false; }
+      try {
+        if (!mediaStream || !mediaStream.getTracks().some((t) => t.readyState === 'live')) {
+          mediaStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+        }
+        mediaStream.getTracks().forEach((t) => (t.enabled = true));
+      } catch (e) { micError(e.name); return false; }
+      talkChunks = [];
+      talkRec = new MediaRecorder(mediaStream);
+      talkRec.ondataavailable = (e) => { if (e.data.size) talkChunks.push(e.data); };
+      talkRec.start();
+      return true;
+    }
+    function talkRecStop() {
+      return new Promise((res) => {
+        if (!talkRec || talkRec.state !== 'recording') { res(null); return; }
+        talkRec.onstop = () => { mediaStream.getTracks().forEach((t) => (t.enabled = false)); res(new Blob(talkChunks, { type: talkRec.mimeType || 'audio/webm' })); };
+        talkRec.stop();
+      });
+    }
+    function talkAbort() {
+      try {
+        clearInterval(talk.mono.timer);
+        if (talkRec && talkRec.state === 'recording') { talkRec.onstop = () => { mediaStream.getTracks().forEach((t) => (t.enabled = false)); }; talkRec.stop(); }
+      } catch (e) {}
+      talk.chat.rec = false; talk.mono.rec = false;
+    }
+
+    // ---- Hội thoại với AI ----
+    async function chatCall(learner) {
+      const c = talk.chat, lv = curLevel();
+      const sys = `You are a friendly native ${LC.L} speaker role-playing a realistic everyday conversation with a Vietnamese learner. Situation: "${c.topic}". Learner level: ${lv.level}. Stay in your role. Keep every reply to 1-2 short sentences at the learner's level and end with a simple question so the conversation continues. Write 'reply' in ${LC.L} only. 'replyVi' is its Vietnamese translation. 'hint' is a short, easy sentence in ${LC.L} the learner could say next and 'hintVi' is its Vietnamese translation. If a learner turn is provided: 'heard' is exactly what the learner said (literal transcription, never corrected) and 'feedbackVi' is ONE short Vietnamese sentence: praise if it was good, otherwise the single most important correction with the corrected sentence in ${LC.L}. If there is no learner turn, return empty strings for heard and feedbackVi.`;
+      const base = learner ? c.turns.slice(0, -1) : c.turns;
+      const hist = base.slice(-8).map((t) => (t.role === 'ai' ? 'AI: ' + t.text : 'Learner: ' + (t.heard || t.text || ''))).join('\n');
+      const parts = [{ text: (hist ? `Conversation so far:\n${hist}\n\n` : 'Start the conversation with a natural opening line.\n') + (learner ? (learner.text ? `Learner says (typed): "${learner.text}"` : 'The learner just spoke (audio attached). Respond to what they said.') : '') }];
+      if (learner && learner.audio) parts.push({ inlineData: { mimeType: 'audio/wav', data: learner.audio } });
+      return callGeminiAPI({
+        contents: [{ parts }], systemInstruction: { parts: [{ text: sys }] },
+        generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { heard: { type: 'STRING' }, feedbackVi: { type: 'STRING' }, reply: { type: 'STRING' }, replyVi: { type: 'STRING' }, hint: { type: 'STRING' }, hintVi: { type: 'STRING' } }, required: ['heard', 'feedbackVi', 'reply', 'replyVi', 'hint', 'hintVi'] } }
+      });
+    }
+    window.chatStart = async () => {
+      if (!hasKey()) { showToast('Hội thoại AI cần Gemini API Key (Cài đặt AI).', 'error'); return; }
+      const topic = ((document.getElementById('talk-custom') || {}).value || '').trim() || (document.getElementById('talk-scenario') || {}).value || '';
+      if (!topic) { showToast('Hãy chọn hoặc nhập một tình huống.', 'info'); return; }
+      const c = talk.chat;
+      Object.assign(c, { active: true, topic, turns: [], summary: null, busy: true }); renderTalk();
+      try { const r = await chatCall(null); c.turns.push({ role: 'ai', text: r.reply, vi: r.replyVi, hint: r.hint, hintVi: r.hintVi }); speakAI(r.reply); }
+      catch (e) { showToast('AI chưa phản hồi (' + (e.message || e) + ').', 'error'); c.active = false; }
+      c.busy = false; renderTalk();
+    };
+    async function chatSend(learner) {
+      const c = talk.chat;
+      if (c.busy) return;
+      if (c.turns.filter((t) => t.role === 'user').length >= 12) { showToast('Đã đủ 12 lượt, bấm Kết thúc để nhận nhận xét nhé.', 'info'); return; }
+      const turn = { role: 'user', text: learner.text || '', heard: '', fb: '' };
+      c.turns.push(turn); c.busy = true; renderTalk();
+      try {
+        const r = await chatCall(learner);
+        turn.heard = (r.heard || learner.text || '').trim(); turn.fb = r.feedbackVi || '';
+        c.turns.push({ role: 'ai', text: r.reply, vi: r.replyVi, hint: r.hint, hintVi: r.hintVi });
+        speakAI(r.reply);
+        updateStats({ xp: state.userStats.xp + 5 });
+      } catch (e) { c.turns.pop(); showToast('AI chưa phản hồi (' + (e.message || e) + '). Thử lại nhé.', 'error'); }
+      c.busy = false; renderTalk();
+    }
+    window.chatMic = async () => {
+      const c = talk.chat;
+      if (c.busy) return;
+      if (!c.rec) { if (await talkRecStart()) { c.rec = true; renderTalk(); } return; }
+      c.rec = false;
+      const blob = await talkRecStop();
+      renderTalk();
+      if (!blob) return;
+      try { await chatSend({ audio: await audioToWavBase64(blob) }); } catch (e) { showToast('Không xử lý được âm thanh: ' + e.message, 'error'); }
+    };
+    window.chatSendText = () => {
+      const el = document.getElementById('talk-input'), t = ((el && el.value) || '').trim();
+      if (!t) return;
+      el.value = ''; chatSend({ text: t });
+    };
+    window.chatHint = (i) => { const t = talk.chat.turns[i]; if (t) { t.showHint = !t.showHint; renderTalk(); } };
+    window.chatSpeak = (i) => { const t = talk.chat.turns[i]; if (t) { window._forceGender = 'F'; speakText(t.text, state.speechRate); } };
+    window.chatReset = () => { talkAbort(); talk.chat = { active: false, topic: '', turns: [], busy: false, rec: false, summary: null }; renderTalk(); };
+    window.chatEnd = async () => {
+      const c = talk.chat;
+      if (c.busy) return;
+      if (!c.turns.some((t) => t.role === 'user')) { window.chatReset(); return; }
+      talkAbort(); c.busy = true; renderTalk();
+      const transcript = c.turns.map((t) => t.role === 'ai' ? 'AI: ' + t.text : 'Learner: ' + (t.heard || t.text)).join('\n');
+      try {
+        const r = await callGeminiAPI({
+          contents: [{ parts: [{ text: `Situation: "${c.topic}". Learner level: ${curLevel().level}. Conversation:\n${transcript}\n\nEvaluate ONLY the learner's turns. Be encouraging and concise. Return JSON: score (0-100), strengthsVi (2 short Vietnamese sentences), fixes (up to 3 items with said, better, whyVi in Vietnamese), newWords (up to 5 items with word in ${LC.L} and vi), nextStepVi (one Vietnamese sentence).` }] }],
+          generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { score: { type: 'INTEGER' }, strengthsVi: { type: 'STRING' }, fixes: { type: 'ARRAY', items: { type: 'OBJECT', properties: { said: { type: 'STRING' }, better: { type: 'STRING' }, whyVi: { type: 'STRING' } }, required: ['said', 'better', 'whyVi'] } }, newWords: { type: 'ARRAY', items: { type: 'OBJECT', properties: { word: { type: 'STRING' }, vi: { type: 'STRING' } }, required: ['word', 'vi'] } }, nextStepVi: { type: 'STRING' } }, required: ['score', 'strengthsVi', 'fixes', 'newWords', 'nextStepVi'] } }
+        });
+        c.summary = r;
+        const xp = Math.round((r.score || 0) / 4) + 10;
+        await updateStats({ xp: state.userStats.xp + xp });
+        showToast(`🎉 Hoàn thành hội thoại: ${r.score}/100 (+${xp} XP)`);
+      } catch (e) { showToast('Chưa lấy được nhận xét (' + (e.message || e) + ').', 'error'); }
+      c.busy = false; renderTalk();
+    };
+
+    // ---- Độc thoại 1 đến 2 phút ----
+    window.monoSet = (k, v) => { talk.mono[k] = k === 'dur' ? Number(v) : v; };
+    window.monoMake = async () => {
+      if (!hasKey()) { showToast('Bài độc thoại cần Gemini API Key (Cài đặt AI).', 'error'); return; }
+      const m = talk.mono, th = MONO_THEMES.find((x) => x[0] === m.theme) || MONO_THEMES[0];
+      m.busy = true; m.result = null; m.card = null; renderTalk();
+      try {
+        m.card = await callGeminiAPI({
+          contents: [{ parts: [{ text: `Create a monologue speaking task in ${LC.L} for a Vietnamese learner at level ${curLevel().level}. Theme: ${th[2]}. The learner should be able to speak about ${m.dur} minute(s). Return JSON: title (short, Vietnamese), question (the task in ${LC.L}, 1-2 sentences), questionVi (Vietnamese translation), outline (3 or 4 short Vietnamese bullet prompts, each with one ${LC.L} keyword), phrases (5 useful ${LC.L} phrases with vi translation).` }] }],
+          generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { title: { type: 'STRING' }, question: { type: 'STRING' }, questionVi: { type: 'STRING' }, outline: { type: 'ARRAY', items: { type: 'STRING' } }, phrases: { type: 'ARRAY', items: { type: 'OBJECT', properties: { phrase: { type: 'STRING' }, vi: { type: 'STRING' } }, required: ['phrase', 'vi'] } } }, required: ['title', 'question', 'questionVi', 'outline', 'phrases'] } }
+        });
+      } catch (e) { showToast('Chưa tạo được đề (' + (e.message || e) + ').', 'error'); }
+      m.busy = false; renderTalk();
+    };
+    window.monoMic = async () => {
+      const m = talk.mono;
+      if (m.busy || !m.card) return;
+      if (!m.rec) {
+        if (!(await talkRecStart())) return;
+        m.rec = true; m.t0 = Date.now(); m.result = null;
+        m.timer = setInterval(() => {
+          const el = Math.floor((Date.now() - m.t0) / 1000), t = document.getElementById('mono-timer');
+          if (t) t.textContent = `${fmtTime(el)} / ${fmtTime(m.dur * 60)}`;
+          if (el >= m.dur * 60) window.monoMic();
+        }, 500);
+        renderTalk(); return;
+      }
+      clearInterval(m.timer); m.rec = false;
+      const secs = Math.round((Date.now() - m.t0) / 1000);
+      m.busy = true; renderTalk();
+      const blob = await talkRecStop();
+      if (!blob || secs < 5) { m.busy = false; showToast('Bài nói quá ngắn, hãy nói thêm ít nhất vài chục giây.', 'info'); renderTalk(); return; }
+      try {
+        const b64 = await audioToWavBase64(blob);
+        const sys = `You are an encouraging ${LC.L} speaking examiner for Vietnamese learners at level ${curLevel().level}. The learner answered this task: "${m.card.question}" (target length ${m.dur} minute(s)). The attached audio is the learner's whole answer. Transcribe it literally in 'heard'. Score 0-100: fluency, grammar, vocabulary, pronunciation, coherence and overall, judged for the learner's level; be honest but encouraging. 'strengthsVi': 2 short Vietnamese sentences. 'fixes': up to 4 items (said = what the learner said in ${LC.L}, better = a more natural or correct version, whyVi = short Vietnamese reason). 'nextStepVi': one Vietnamese sentence about what to practise next.`;
+        const num = { type: 'INTEGER' };
+        const r = await callGeminiAPI({
+          contents: [{ parts: [{ text: 'Evaluate the attached recording.' }, { inlineData: { mimeType: 'audio/wav', data: b64 } }] }], systemInstruction: { parts: [{ text: sys }] },
+          generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { heard: { type: 'STRING' }, fluency: num, grammar: num, vocabulary: num, pronunciation: num, coherence: num, overall: num, strengthsVi: { type: 'STRING' }, fixes: { type: 'ARRAY', items: { type: 'OBJECT', properties: { said: { type: 'STRING' }, better: { type: 'STRING' }, whyVi: { type: 'STRING' } }, required: ['said', 'better', 'whyVi'] } }, nextStepVi: { type: 'STRING' } }, required: ['heard', 'fluency', 'grammar', 'vocabulary', 'pronunciation', 'coherence', 'overall', 'strengthsVi', 'fixes', 'nextStepVi'] } }
+        });
+        r.secs = secs; r.units = countUnits(r.heard); r.pace = Math.round(r.units / Math.max(1, secs) * 60);
+        m.result = r;
+        const xp = Math.round((r.overall || 0) / 3) + 15;
+        await updateStats({ xp: state.userStats.xp + xp });
+        showToast(`🎉 Bài độc thoại: ${r.overall}/100 (+${xp} XP)`);
+      } catch (e) { showToast('Chưa chấm được bài nói (' + (e.message || e) + ').', 'error'); }
+      m.busy = false; renderTalk();
+    };
+    window.monoSpeak = (i) => { const p = talk.mono.card && talk.mono.card.phrases[i]; if (p) { window._forceGender = 'F'; speakText(p.phrase, state.speechRate); } };
+    window.monoNew = () => { talkAbort(); talk.mono.card = null; talk.mono.result = null; renderTalk(); };
+    window.monoSave = async () => {
+      const m = talk.mono, r = m.result;
+      if (!r) return;
+      state.journalEntries = [{ id: 'local-' + Date.now(), date: new Date().toLocaleDateString('vi-VN'), timestamp: Date.now(), topic: 'Độc thoại: ' + ((m.card && m.card.title) || ''), sentence: String(r.heard || '').slice(0, 120), score: r.overall, mood: state.selectedMood, note: 'Cần sửa: ' + (r.fixes || []).slice(0, 2).map((f) => f.better).join(' · ') }, ...state.journalEntries];
+      await updateStats({ xp: state.userStats.xp + 10 });
+      renderBadgesAndJournal();
+      showToast('📓 Đã lưu vào nhật ký (+10 XP)');
+    };
+
+    // ---- Giao diện ----
+    function chatHtml() {
+      const c = talk.chat, e = escapeHtml, lv = curLevel();
+      if (!c.active) {
+        return `<p class="text-sm text-slate-600">AI đóng vai người bản xứ trò chuyện với bạn. Bạn nói hoặc gõ, AI nhận xét ngắn từng câu rồi trả lời tiếp. Cấp độ hiện tại theo lộ trình: <b>${e(lv.level)}</b>.</p>
+          <label class="block text-sm font-semibold text-slate-700" for="talk-scenario">Chọn tình huống</label>
+          <select id="talk-scenario" class="w-full bg-white border-2 border-indigo-200 rounded-2xl px-4 py-3 text-base font-semibold">${PRESET_TOPICS.map((t) => `<option value="${e(t.prompt)}">${e(t.label)}</option>`).join('')}</select>
+          <input id="talk-custom" type="text" placeholder="Hoặc tự nhập tình huống riêng..." class="w-full bg-white border-2 border-indigo-200 rounded-2xl px-4 py-3 text-base" />
+          <button onclick="chatStart()" class="w-full px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer">${c.busy ? '⏳ Đang bắt đầu...' : '▶ Bắt đầu hội thoại'}</button>`;
+      }
+      const last = c.turns.length - 1;
+      const msgs = c.turns.map((t, i) => t.role === 'ai'
+        ? `<div class="flex gap-2"><span class="text-2xl">🤖</span><div class="max-w-[88%] bg-indigo-50 border border-indigo-200 rounded-2xl p-3 space-y-1"><p class="text-lg font-bold text-slate-900">${e(t.text)}</p><p class="text-sm text-slate-600">${e(t.vi)}</p><div class="flex flex-wrap gap-2 pt-1"><button onclick="chatSpeak(${i})" class="px-3 py-1 rounded-full text-sm font-semibold border-2 border-indigo-200 bg-white">🔊 Nghe lại</button>${i === last && !c.summary ? `<button onclick="chatHint(${i})" class="px-3 py-1 rounded-full text-sm font-semibold border-2 border-amber-300 bg-amber-50">💡 Gợi ý</button>` : ''}</div>${t.showHint ? `<p class="text-sm text-amber-900 bg-amber-50 rounded-xl p-2">💡 <b>${e(t.hint)}</b> <span class="text-slate-600">(${e(t.hintVi)})</span></p>` : ''}</div></div>`
+        : `<div class="flex justify-end"><div class="max-w-[88%] bg-teal-50 border border-teal-200 rounded-2xl p-3 space-y-1"><p class="text-lg font-bold text-slate-900">${e(t.heard || t.text || '…')}</p>${t.fb ? `<p class="text-sm text-amber-800">📝 ${e(t.fb)}</p>` : ''}</div></div>`).join('');
+      let tail = '';
+      if (c.summary) {
+        const r = c.summary;
+        tail = `<div class="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-4 space-y-2"><p class="text-xl font-bold text-emerald-800">🎉 Điểm hội thoại: ${r.score}/100</p><p class="text-sm text-slate-700">${e(r.strengthsVi)}</p>
+          ${(r.fixes || []).map((f) => `<p class="text-sm"><span class="line-through text-slate-500">${e(f.said)}</span> → <b>${e(f.better)}</b><br><span class="text-slate-600">${e(f.whyVi)}</span></p>`).join('')}
+          ${(r.newWords || []).length ? `<p class="text-sm"><b>Từ nên nhớ:</b> ${r.newWords.map((w) => `${e(w.word)} (${e(w.vi)})`).join(' · ')}</p>` : ''}
+          <p class="text-sm font-semibold text-indigo-800">👉 ${e(r.nextStepVi)}</p></div>
+          <button onclick="chatReset()" class="w-full px-5 py-3 rounded-2xl bg-indigo-600 text-white font-bold cursor-pointer">Hội thoại mới</button>`;
+      } else {
+        tail = `${c.busy ? '<p class="text-sm text-slate-500">⏳ AI đang xử lý...</p>' : ''}
+          <div class="flex items-center gap-2">
+            <button onclick="chatMic()" ${c.busy ? 'disabled' : ''} class="shrink-0 w-14 h-14 rounded-2xl text-2xl cursor-pointer ${c.rec ? 'bg-rose-600 text-white animate-pulse' : 'bg-gradient-to-tr from-rose-500 to-orange-400 text-white'} disabled:opacity-50">${c.rec ? '⏹' : '🎙️'}</button>
+            <input id="talk-input" type="text" placeholder="${c.rec ? 'Đang ghi âm... bấm ⏹ để gửi' : 'Hoặc gõ câu trả lời...'}" onkeydown="if(event.key==='Enter')chatSendText()" class="flex-1 min-w-0 bg-white border-2 border-slate-200 rounded-2xl px-3 py-3 text-base" />
+            <button onclick="chatSendText()" ${c.busy ? 'disabled' : ''} class="shrink-0 px-4 py-3 rounded-2xl bg-indigo-600 text-white font-bold cursor-pointer disabled:opacity-50">Gửi</button>
+          </div>
+          <button onclick="chatEnd()" class="w-full px-5 py-2.5 rounded-2xl bg-slate-100 text-slate-700 font-bold cursor-pointer">Kết thúc và nhận nhận xét</button>`;
+      }
+      return `<p class="text-sm font-semibold text-indigo-800">Tình huống: ${e(c.topic)}</p><div class="space-y-3">${msgs}</div>${tail}<div id="chat-end"></div>`;
+    }
+    function monoHtml() {
+      const m = talk.mono, e = escapeHtml, r = m.result;
+      const setup = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="block space-y-1"><span class="text-sm font-semibold text-slate-700">Chủ đề</span><select onchange="monoSet('theme',this.value)" class="w-full bg-white border-2 border-indigo-200 rounded-2xl px-3 py-3 text-base">${MONO_THEMES.map((t) => `<option value="${t[0]}" ${m.theme === t[0] ? 'selected' : ''}>${e(t[1])}</option>`).join('')}</select></label>
+          <label class="block space-y-1"><span class="text-sm font-semibold text-slate-700">Thời lượng</span><select onchange="monoSet('dur',this.value)" class="w-full bg-white border-2 border-indigo-200 rounded-2xl px-3 py-3 text-base"><option value="1" ${m.dur === 1 ? 'selected' : ''}>1 phút</option><option value="2" ${m.dur === 2 ? 'selected' : ''}>2 phút</option></select></label></div>
+        <button onclick="monoMake()" ${m.busy ? 'disabled' : ''} class="w-full px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer disabled:opacity-60">${m.busy && !m.card ? '⏳ AI đang ra đề...' : m.card ? '🔄 Đổi đề khác' : '✨ Tạo đề bài'}</button>`;
+      if (!m.card) return `<p class="text-sm text-slate-600">AI ra một đề, bạn nói liên tục 1 đến 2 phút, AI chấm độ trôi chảy, ngữ pháp, từ vựng, phát âm và đưa ra cách nói tự nhiên hơn. Cấp độ hiện tại: <b>${e(curLevel().level)}</b>.</p>${setup}`;
+      const c = m.card;
+      const card = `<div class="rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 space-y-2"><p class="text-sm font-bold text-amber-800">${e(c.title)}</p><p class="text-xl font-bold text-slate-900">${e(c.question)}</p><p class="text-sm text-slate-600">${e(c.questionVi)}</p>
+          <ul class="list-disc pl-5 text-sm text-slate-700 space-y-0.5">${(c.outline || []).map((o) => `<li>${e(o)}</li>`).join('')}</ul>
+          <div class="flex flex-wrap gap-2 pt-1">${(c.phrases || []).map((p, i) => `<button onclick="monoSpeak(${i})" class="px-3 py-1 rounded-full text-sm border-2 border-amber-300 bg-white text-left">🔊 ${e(p.phrase)} <span class="text-slate-500">· ${e(p.vi)}</span></button>`).join('')}</div></div>`;
+      const rec = m.busy ? '<p class="text-center text-slate-600">⏳ AI đang nghe và chấm bài nói của bạn (có thể mất 20 đến 60 giây)...</p>'
+        : `<div class="text-center space-y-2"><p id="mono-timer" class="text-3xl font-bold text-slate-800">${m.rec ? fmtTime(Math.floor((Date.now() - m.t0) / 1000)) : '0:00'} / ${fmtTime(m.dur * 60)}</p>
+            <button onclick="monoMic()" class="w-full sm:w-auto px-8 py-4 rounded-2xl text-lg font-bold cursor-pointer text-white ${m.rec ? 'bg-rose-600 animate-pulse' : 'bg-gradient-to-r from-rose-500 to-orange-400'}">${m.rec ? '⏹ Dừng và chấm điểm' : '🎙️ Bắt đầu nói'}</button></div>`;
+      let res = '';
+      if (r) {
+        const bar = (label, v) => `<div><div class="flex justify-between text-sm"><span>${label}</span><b>${v}</b></div><div class="h-2 rounded-full bg-slate-200 overflow-hidden"><div class="h-full ${v >= 80 ? 'bg-emerald-500' : v >= 60 ? 'bg-amber-500' : 'bg-rose-500'}" style="width:${Math.min(100, v)}%"></div></div></div>`;
+        res = `<div class="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-4 space-y-3"><p class="text-2xl font-bold text-emerald-800">🎉 Điểm tổng: ${r.overall}/100</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${bar('Trôi chảy', r.fluency)}${bar('Ngữ pháp', r.grammar)}${bar('Từ vựng', r.vocabulary)}${bar('Phát âm', r.pronunciation)}${bar('Mạch lạc', r.coherence)}</div>
+          <p class="text-sm text-slate-700">⏱ ${fmtTime(r.secs)} · tốc độ ${r.pace} ${isCJK() ? 'chữ' : 'từ'}/phút (${r.units} ${isCJK() ? 'chữ' : 'từ'})</p>
+          <p class="text-sm text-slate-700">${e(r.strengthsVi)}</p>
+          ${(r.fixes || []).map((f) => `<p class="text-sm"><span class="line-through text-slate-500">${e(f.said)}</span> → <b>${e(f.better)}</b><br><span class="text-slate-600">${e(f.whyVi)}</span></p>`).join('')}
+          <p class="text-sm font-semibold text-indigo-800">👉 ${e(r.nextStepVi)}</p>
+          <details class="text-sm"><summary class="cursor-pointer font-semibold">Xem lời bạn đã nói</summary><p class="mt-1 text-slate-700">${e(r.heard)}</p></details>
+          <button onclick="monoSave()" class="w-full px-5 py-2.5 rounded-2xl bg-amber-500 text-white font-bold cursor-pointer">📓 Lưu vào nhật ký (+10 XP)</button></div>`;
+      }
+      return `${card}${rec}${res}<details class="text-sm"><summary class="cursor-pointer font-semibold text-indigo-800">Đổi chủ đề hoặc thời lượng</summary><div class="space-y-3 mt-2">${setup}</div></details>`;
+    }
+    function renderTalk() {
+      const el = document.getElementById('view-talk');
+      if (!el) return;
+      const tb = (m, label) => `<button onclick="talkMode('${m}')" class="flex-1 py-2.5 rounded-xl font-bold text-sm cursor-pointer border-2 ${talk.mode === m ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-indigo-200 text-indigo-800'}">${label}</button>`;
+      el.innerHTML = `<div class="bg-white border-2 border-indigo-200 rounded-3xl p-4 sm:p-5 space-y-4 shadow-sm">
+        <div class="flex gap-2">${tb('chat', '💬 Hội thoại với AI')}${tb('mono', '🎤 Nói độc thoại')}</div>
+        <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-600"><span id="usage-chip"></span><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" ${talk.auto ? 'checked' : ''} onchange="talkAuto(this.checked)" class="w-4 h-4" /> Tự đọc lời AI</label></div>
+        ${talk.mode === 'chat' ? chatHtml() : monoHtml()}
+      </div>`;
+      renderUsage();
+      const end = document.getElementById('chat-end');
+      if (end && talk.mode === 'chat') end.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
     function saveLocal() {
       try { localStorage.setItem(K('ss_local_ts'), String(Date.now())); } catch (e) {}
       scheduleCloudPush();
@@ -2561,7 +2886,7 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
           const doFetch = (p) => {
             const ctl = new AbortController();
             const timer = setTimeout(() => ctl.abort(), 120000);
-            return fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(attemptCfg.key ? { 'x-goog-api-key': attemptCfg.key } : {}) }, body: JSON.stringify(p), signal: ctl.signal }).finally(() => clearTimeout(timer));
+            return fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(attemptCfg.key ? { 'x-goog-api-key': attemptCfg.key } : {}) }, body: JSON.stringify(p), signal: ctl.signal }).then((r) => { trackUsage(attemptCfg.model, r.status); return r; }, (e) => { trackUsage(attemptCfg.model, 0); throw e; }).finally(() => clearTimeout(timer));
           };
           let response;
           if (state.noThinkCfg) {
@@ -3507,6 +3832,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
           })
         });
 
+        trackUsage(modelSelect, response.status);
         if (!response.ok) {
           throw new Error(`Mã lỗi HTTP ${response.status}`);
         }
@@ -3677,7 +4003,17 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       }
     }
 
+    window.pickTopicFromSelect = (id) => {
+      const t = PRESET_TOPICS.find((x) => x.id === id);
+      if (t) window.selectPresetTopic(t.id, t.prompt);
+    };
     function renderPresetTopics() {
+      const sel = document.getElementById('topic-select');
+      if (sel) {
+        sel.innerHTML = '<option value="">— Chọn tình huống —</option>' + PRESET_TOPICS.map((t) => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.label)}</option>`).join('');
+        const cur = PRESET_TOPICS.find((t) => t.prompt === state.selectedTopicPrompt);
+        sel.value = cur ? cur.id : '';
+      }
       const container = document.getElementById('preset-topics-container');
       if (!container) return;
       container.innerHTML = PRESET_TOPICS.map((t) => {
@@ -4307,7 +4643,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
     // ==========================================
     window.switchMainTab = (tab) => {
       state.activeTab = tab;
-      ['learn', 'practice', 'journal'].forEach((t) => {
+      ['learn', 'practice', 'talk', 'journal'].forEach((t) => {
         const viewEl = document.getElementById(`view-${t}`);
         const btnEl = document.getElementById(`tab-btn-${t}`);
         if (t === tab) {
@@ -4327,6 +4663,10 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
 
       if (tab === 'practice') renderPracticeView();
       if (tab === 'journal') renderBadgesAndJournal();
+      if (tab !== 'talk') talkAbort();
+      if (tab === 'talk') renderTalk();
+      const tkb = document.getElementById('tab-btn-talk');
+      if (tkb) tkb.className = 'flex items-center gap-2 px-5 py-2.5 rounded-2xl font-extrabold text-sm transition cursor-pointer whitespace-nowrap ' + (tab === 'talk' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' : 'bg-slate-100/80 text-slate-600 hover:bg-indigo-50 hover:text-indigo-700');
       lucide.createIcons();
     };
 
@@ -4524,6 +4864,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       if (selectEl) selectEl.value = state.selectedModel || 'gemini-3.5-flash';
       if (feedbackEl) feedbackEl.classList.add('hidden');
       renderApiKeyModalStatus();
+      renderUsage();
       const modal = document.getElementById('apikey-modal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -4575,9 +4916,11 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
         ta.addEventListener('input', grow);
         if (window.ResizeObserver) new ResizeObserver(grow).observe(ta.parentElement);
       }
+      { const ds = document.getElementById('lesson-settings'); if (ds && window.innerWidth >= 1024) ds.open = true; }
       loadVoices();
       if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = loadVoices;
       renderHeaderStats();
+      renderUsage();
       renderPresetTopics();
       renderLessonOverview();
       renderLearnSubTabContent();
