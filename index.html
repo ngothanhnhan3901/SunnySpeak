@@ -1781,6 +1781,7 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
       isGeneratingLesson: false,
       roleplayFilter: 'ALL',
       selectedPracticeItem: {
+        idx: 1,
         english: DEFAULT_LESSON.dialogue[1].english,
         linking: DEFAULT_LESSON.dialogue[1].linking,
         vietnamese: DEFAULT_LESSON.dialogue[1].vietnamese,
@@ -2041,7 +2042,7 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
     function loadLesson(l, n) {
       state.currentLesson = normalizeLesson(l); state.currentDay = n || null;
       const f = l.dialogue[0], ch = l.characters?.[f.speaker] || {};
-      state.selectedPracticeItem = { english: f.english, linking: f.linking, vietnamese: f.vietnamese, tip: f.tip, speakerName: ch.name || 'Speaker', avatar: ch.avatar || '🌟' };
+      state.selectedPracticeItem = { idx: 0, english: f.english, linking: f.linking, vietnamese: f.vietnamese, tip: f.tip, speakerName: ch.name || 'Speaker', avatar: ch.avatar || '🌟' };
       state.evaluationResult = null;
       renderLessonOverview(); renderLearnSubTabContent(); renderPracticeView(); saveLocal();
       ensurePron();
@@ -2196,8 +2197,10 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
       return d.map((l, i) => i).filter((i) => f !== 'A' && f !== 'B' ? true : d[i].speaker === f);
     }
     function currentLineIdx() {
-      const e = state.selectedPracticeItem && state.selectedPracticeItem.english;
-      return (state.currentLesson.dialogue || []).findIndex((l) => l.english === e);
+      const si = state.selectedPracticeItem || {}, d = state.currentLesson.dialogue || [];
+      if (Number.isInteger(si.idx) && si.idx >= 0 && d[si.idx] && d[si.idx].english === si.english) return si.idx;
+      if (si.idx === -1) return -1;
+      return d.findIndex((l) => l.english === si.english);
     }
     function updatePracticeNav() {
       const list = practiceIndices(), pos = list.indexOf(currentLineIdx());
@@ -2792,7 +2795,7 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
         if (d.l && d.l.dialogue && d.l.dialogue.length) {
           state.currentLesson = normalizeLesson(d.l); state.currentDay = d.d || null;
           const f = d.l.dialogue[0], ch = d.l.characters?.[f.speaker] || {};
-          state.selectedPracticeItem = { english: f.english, linking: f.linking, vietnamese: f.vietnamese, tip: f.tip, speakerName: ch.name || 'Speaker', avatar: ch.avatar || '🌟' };
+          state.selectedPracticeItem = { idx: 0, english: f.english, linking: f.linking, vietnamese: f.vietnamese, tip: f.tip, speakerName: ch.name || 'Speaker', avatar: ch.avatar || '🌟' };
         }
         if (state.userStats.customApiKey) { state.customApiKey = state.userStats.customApiKey; state.aiConnectedStatus = 'connected'; }
       } catch (e) {}
@@ -3169,6 +3172,8 @@ All dialogue sentences must be natural SPOKEN Cantonese written in Traditional C
       }
     }
     function speakerFor(text, pitch) {
+      if (window._forceSpeaker) { const sp = window._forceSpeaker; window._forceSpeaker = null; return sp; }
+      { const si = state.selectedPracticeItem || {}, cur = (state.currentLesson.dialogue || [])[si.idx]; if (cur && cur.english === text) return cur.speaker; }
       if (pitch > 1.1) return 'B';
       const d = state.currentLesson.dialogue || [];
       const f = d.find((l) => l.english === text) || d.find((l) => l.english === (state.selectedPracticeItem || {}).english);
@@ -3603,6 +3608,7 @@ Include EXACTLY ${targetLines} natural dialogue turns between Character A and Ch
           const firstLine = nextLesson.dialogue[0];
           const charInfo = nextLesson.characters[firstLine.speaker] || { name: 'Speaker', avatar: '🌟' };
           state.selectedPracticeItem = {
+            idx: 0,
             english: firstLine.english,
             linking: firstLine.linking,
             vietnamese: firstLine.vietnamese,
@@ -4318,7 +4324,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
         .map((line) => {
           const originalIdx = lesson.dialogue.indexOf(line);
           const char = line.speaker === 'A' ? lesson.characters?.A : lesson.characters?.B;
-          const isSelected = state.selectedPracticeItem.english === line.english;
+          const isSelected = originalIdx === currentLineIdx();
           return `
             <div
               onclick="selectPracticeDialogueLine(${originalIdx})"
@@ -4722,6 +4728,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
     window.speakDialogueLine = (idx, rate) => {
       const line = state.currentLesson.dialogue?.[idx];
       if (!line) return;
+      window._forceSpeaker = line.speaker;
       speakText(line.english, rate, line.speaker === 'A' ? 1.0 : 1.15);
     };
 
@@ -4740,6 +4747,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       if (!line) return;
       const char = line.speaker === 'A' ? state.currentLesson.characters?.A : state.currentLesson.characters?.B;
       state.selectedPracticeItem = {
+        idx,
         english: line.english,
         linking: line.linking,
         vietnamese: line.vietnamese,
@@ -4762,6 +4770,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
         linking: item.example,
         vietnamese: item.explanation,
         tip: `Chú ý cụm nối âm: ${item.phrase}`,
+        idx: -1,
         speakerName: 'Bí Kíp Nối Âm',
         avatar: '🔗'
       };
@@ -4780,6 +4789,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
         linking: exp.example,
         vietnamese: exp.meaning,
         tip: exp.context,
+        idx: -1,
         speakerName: 'Cụm Từ Bản Xứ',
         avatar: '🦄'
       };
@@ -4800,6 +4810,7 @@ Evaluate the learner's attempt and return a structured JSON score breakdown.`;
       if (!line) return;
       const char = line.speaker === 'A' ? state.currentLesson.characters?.A : state.currentLesson.characters?.B;
       state.selectedPracticeItem = {
+        idx,
         english: line.english,
         linking: line.linking,
         vietnamese: line.vietnamese,
